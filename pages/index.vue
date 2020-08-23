@@ -7,11 +7,11 @@
       </div>
       <div class="function-buttons">
         <button class="toolbar-button" v-on:click="mergeSortButton">Merge Sort</button>
-        <button class="toolbar-button" :click="quickSortButton">Quick Sort</button>
-        <button class="toolbar-button" :click="heapSort">Heap Sort</button>
-        <button class="toolbar-button" :click="bubbleSort">Bubble Sort</button>
-        <button class="toolbar-button" :click="selectionSort">Selection Sort</button>
-        <button class="toolbar-button" :click="insertionSort">Insertion Sort</button>
+        <button class="toolbar-button" v-on:click="quickSortButton">Quick Sort</button>
+        <button class="toolbar-button" v-on:click="heapSortButton">Heap Sort</button>
+        <button class="toolbar-button" v-on:click="bubbleSortButton">Bubble Sort</button>
+        <button class="toolbar-button" v-on:click="selectionSortButton">Selection Sort</button>
+        <button class="toolbar-button" v-on:click="insertionSortButton">Insertion Sort</button>
       </div>
     </div>
     <div class="active-window">
@@ -64,6 +64,7 @@ export default {
     },
     // Resets the array to randomized integers to be sorted
     newArray: function () {
+      this.sorted = false
       this.array = [];
       for (let i = 0; i < 40; i++) {
         this.array.push(this.randomIntFromInterval(50, 800));
@@ -73,7 +74,7 @@ export default {
 
     // Resets array to the unsorted version
     resetArray: function () {
-      this.array = this.defaultArr;
+      this.array = this.defaultArr.slice(0);
       this.sorted = false;
       console.log("Reset array complete.");
     },
@@ -90,60 +91,61 @@ export default {
       this.sorted = true; // Set the array to sorted
     },
 
-    quickSortButton: function() {
+    quickSortButton: function () {
       // If array has already been sorted then return
       if (this.sorted === true) {
         console.log("Array already sorted.");
         return;
       }
+      console.log(this.array, "Quick Sort started.")
+      let res = this.quickSort(this.array, 0, this.array.length - 1);
+      this.array = res;
+      this.sorted = true; // Set the array to sorted
+      console.log(this.array, "Quick Sort finished.")
+    },
 
-      let res = quickSort(this.array, 0, this.array.length - 1);
+    heapSortButton() {
+      if (this.sorted === true) {
+        console.log("Array already sorted.");
+        return;
+      }
+      let res = this.heapSort(this.array);
       this.array = res;
       this.sorted = true; // Set the array to sorted
     },
 
-    // heapSort() {
-    //   if (this.state.sorted === true) {
-    //     console.log("Array already sorted.");
-    //     return;
-    //   }
-    //   let res = heapSort(this.state.array);
-    //   this.setState({ array: res });
-    //   this.setState({ sorted: true }); // Set the array to sorted
-    // },
+    bubbleSortButton() {
+      if (this.sorted === true) {
+        console.log("Array already sorted.");
+        return;
+      }
 
-    // bubbleSort() {
-    //   if (this.state.sorted === true) {
-    //     console.log("Array already sorted.");
-    //     return;
-    //   }
+      let res = this.bubbleSort(this.array);
+      this.array = res;
+      this.sorted = true; // Set the array to sorted
+    },
 
-    //   let res = bubbleSort(this.state.array);
-    //   this.setState({ array: res });
-    //   this.setState({ sorted: true }); // Set the array to sorted
-    // },
+    selectionSortButton() {
+      if (this.sorted === true) {
+        console.log("Array already sorted.");
+        return;
+      }
 
-    // selectionSort() {
-    //   if (this.state.sorted === true) {
-    //     console.log("Array already sorted.");
-    //     return;
-    //   }
+      let res = this.selectionSort(this.array);
+      this.array = res;
+      this.sorted = true; // Set the array to sorted
+    },
 
-    //   let res = selectionSort(this.state.array);
-    //   this.setState({ array: res });
-    //   this.setState({ sorted: true }); // Set the array to sorted
-    // },
+    insertionSortButton() {
+      if (this.sorted === true) {
+        console.log("Array already sorted.");
+        return;
+      }
 
-    // insertionSort() {
-    //   if (this.state.sorted === true) {
-    //     console.log("Array already sorted.");
-    //     return;
-    //   }
-
-    //   let res = insertionSort(this.state.array);
-    //   this.setState({ array: res });
-    //   this.setState({ sorted: true }); // Set the array to sorted
-    // },
+      let res = this.insertionSort(this.array);
+      this.array = res;
+      this.sorted = true; // Set the array to sorted
+    },
   },
 };
 </script>

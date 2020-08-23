@@ -51,7 +51,7 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    '@nuxtjs/style-resources'
+    '@nuxtjs/style-resources',
   ],
   /*
   ** Build configuration
@@ -60,6 +60,6 @@ export default {
   build: {
   },
   styleResources: {
-    scss: ['./assets/scss/*.scss']
+    scss: ['assets/scss/colors.scss']
   },
 }

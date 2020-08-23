@@ -9,7 +9,9 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "node": "^14.8.0",
     "nuxt": "^2.14.0",
+    "sass": "^1.26.10",
     "vue": "^2.6.12"
   },
   "devDependencies": {
