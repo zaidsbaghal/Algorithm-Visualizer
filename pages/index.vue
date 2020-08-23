@@ -2,12 +2,12 @@
   <div class="sort-container">
     <div class="toolbar-container">
       <div class="main-buttons">
-        <button class="toolbar-button" :click="newArray">Generate New Array</button>
-        <button class="toolbar-button" :click="resetArray">Reset Array</button>
+        <button class="toolbar-button" v-on:click="newArray">Generate New Array</button>
+        <button class="toolbar-button" v-on:click="resetArray">Reset Array</button>
       </div>
       <div class="function-buttons">
-        <button class="toolbar-button" :click="mergeSort">Merge Sort</button>
-        <button class="toolbar-button" :click="quickSort">Quick Sort</button>
+        <button class="toolbar-button" v-on:click="mergeSortButton">Merge Sort</button>
+        <button class="toolbar-button" :click="quickSortButton">Quick Sort</button>
         <button class="toolbar-button" :click="heapSort">Heap Sort</button>
         <button class="toolbar-button" :click="bubbleSort">Bubble Sort</button>
         <button class="toolbar-button" :click="selectionSort">Selection Sort</button>
@@ -30,21 +30,31 @@
 </template>
 
 <script>
-import { mergeSort } from "../SortingAlgorithms/MergeSort.js";
-import { quickSort } from "../SortingAlgorithms/QuickSort.js";
-import { heapSort } from "../SortingAlgorithms/HeapSort.js";
-import { bubbleSort } from "../SortingAlgorithms/BubbleSort.js";
-import { selectionSort } from "../SortingAlgorithms/SelectionSort.js";
-import { insertionSort } from "../SortingAlgorithms/InsertionSort.js";
+import mergeSortJS from "~/mixins/MergeSort.js";
+import quickSortJS from "~/mixins/QuickSort.js";
+import heapSortJS from "~/mixins/HeapSort.js";
+import bubbleSortJS from "~/mixins/BubbleSort.js";
+import selectionSortJS from "~/mixins/SelectionSort.js";
+import insertionSortJS from "~/mixins/InsertionSort.js";
 export default {
+  mixins: [
+    mergeSortJS,
+    quickSortJS,
+    heapSortJS,
+    bubbleSortJS,
+    selectionSortJS,
+    insertionSortJS,
+  ],
   data: function () {
     return {
-      array: []
-    }
+      array: [],
+      defaultArr: [],
+      sorted: false,
+    };
   },
-  mounted: function () {
+  beforeMount: function () {
     this.$nextTick(function () {
-      this.newArray()
+      this.newArray();
     });
   },
   methods: {
@@ -53,95 +63,96 @@ export default {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
     // Resets the array to randomized integers to be sorted
-    newArray() {
-      console.log("New array.")
+    newArray: function () {
+      this.array = [];
       for (let i = 0; i < 40; i++) {
-        this.array.push(this.randomIntFromInterval(5, 800));
+        this.array.push(this.randomIntFromInterval(50, 800));
       }
-      // this.$store.commit("setCurrArray", array);
-      // this.$store.commit("setDefArray", array.slice(0));
-      // this.$store.commit("setSorted", false); // sets he sorted boolean to false
+      this.defaultArr = this.array.slice(0); // set default array
     },
 
     // Resets array to the unsorted version
-    resetArray() {
-      this.$store.commit("setCurrArray", this.$store.defaultArr.slice(0));
-      this.$store.commit("setSorted", false); // sets he sorted boolean to false
+    resetArray: function () {
+      this.array = this.defaultArr;
+      this.sorted = false;
       console.log("Reset array complete.");
     },
 
-    mergeSort() {
+    mergeSortButton: function () {
       // If array has already been sorted then return
-      if (this.state.sorted === true) {
+      if (this.sorted === true) {
         console.log("Array already sorted.");
         return;
       }
 
-      let res = mergeSort(this.state.array);
-      this.setState({ array: res });
-      this.setState({ sorted: true }); // Set the array to sorted
+      let res = this.mergeSort(this.array);
+      this.array = res;
+      this.sorted = true; // Set the array to sorted
     },
 
-    quickSort() {
+    quickSortButton: function() {
       // If array has already been sorted then return
-      if (this.state.sorted === true) {
+      if (this.sorted === true) {
         console.log("Array already sorted.");
         return;
       }
 
-      let res = quickSort(this.state.array, 0, this.state.array.length - 1);
-      this.setState({ array: res });
-      this.setState({ sorted: true }); // Set the array to sorted
+      let res = quickSort(this.array, 0, this.array.length - 1);
+      this.array = res;
+      this.sorted = true; // Set the array to sorted
     },
 
-    heapSort() {
-      if (this.state.sorted === true) {
-        console.log("Array already sorted.");
-        return;
-      }
-      let res = heapSort(this.state.array);
-      this.setState({ array: res });
-      this.setState({ sorted: true }); // Set the array to sorted
-    },
+    // heapSort() {
+    //   if (this.state.sorted === true) {
+    //     console.log("Array already sorted.");
+    //     return;
+    //   }
+    //   let res = heapSort(this.state.array);
+    //   this.setState({ array: res });
+    //   this.setState({ sorted: true }); // Set the array to sorted
+    // },
 
-    bubbleSort() {
-      if (this.state.sorted === true) {
-        console.log("Array already sorted.");
-        return;
-      }
+    // bubbleSort() {
+    //   if (this.state.sorted === true) {
+    //     console.log("Array already sorted.");
+    //     return;
+    //   }
 
-      let res = bubbleSort(this.state.array);
-      this.setState({ array: res });
-      this.setState({ sorted: true }); // Set the array to sorted
-    },
+    //   let res = bubbleSort(this.state.array);
+    //   this.setState({ array: res });
+    //   this.setState({ sorted: true }); // Set the array to sorted
+    // },
 
-    selectionSort() {
-      if (this.state.sorted === true) {
-        console.log("Array already sorted.");
-        return;
-      }
+    // selectionSort() {
+    //   if (this.state.sorted === true) {
+    //     console.log("Array already sorted.");
+    //     return;
+    //   }
 
-      let res = selectionSort(this.state.array);
-      this.setState({ array: res });
-      this.setState({ sorted: true }); // Set the array to sorted
-    },
+    //   let res = selectionSort(this.state.array);
+    //   this.setState({ array: res });
+    //   this.setState({ sorted: true }); // Set the array to sorted
+    // },
 
-    insertionSort() {
-      if (this.state.sorted === true) {
-        console.log("Array already sorted.");
-        return;
-      }
+    // insertionSort() {
+    //   if (this.state.sorted === true) {
+    //     console.log("Array already sorted.");
+    //     return;
+    //   }
 
-      let res = insertionSort(this.state.array);
-      this.setState({ array: res });
-      this.setState({ sorted: true }); // Set the array to sorted
-    },
+    //   let res = insertionSort(this.state.array);
+    //   this.setState({ array: res });
+    //   this.setState({ sorted: true }); // Set the array to sorted
+    // },
   },
 };
 </script>
 
-<style>
+<style lang="scss">
+@import "./assets/scss/colors.scss";
+
 .sort-container {
+  background-color: $alabaster;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -165,14 +176,17 @@ export default {
 
 .array-bar {
   width: 30px;
-  background-color: #a5c9ff;
+  background-color: $charcoal;
   display: inline-block;
   margin: 0 4px;
 }
 
 .array-bar-value {
+  color: $alabaster;
   transform: scaleY(-1);
   margin: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .toolbar-container {
@@ -181,15 +195,13 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: whitesmoke;
 }
 
 .toolbar-button {
   margin: 15px;
-  background-color: #a5ffc9;
-  /* Green */
+  background-color: $persian-green;
   border: none;
-  color: #090909;
+  color: $alabaster;
   padding: 10px 16px;
   text-align: center;
   display: inline-block;

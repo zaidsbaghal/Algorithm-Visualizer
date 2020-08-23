@@ -15,7 +15,7 @@ export function bubbleSort(array) {
     return array;
 }
 
-// Function that swaps two indices in ana array
+// Function that swaps two indices in an array
 function swap(i, j, array) {
     let temp = array[i];
     array[i] = array[j];
