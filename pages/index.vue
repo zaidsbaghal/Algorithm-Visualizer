@@ -99,7 +99,7 @@ export default {
       }
       console.log(this.array, "Quick Sort started.")
       let res = this.quickSort(this.array, 0, this.array.length - 1);
-      this.array = res;
+      this.array = res.slice(0);
       this.sorted = true; // Set the array to sorted
       console.log(this.array, "Quick Sort finished.")
     },
@@ -110,7 +110,7 @@ export default {
         return;
       }
       let res = this.heapSort(this.array);
-      this.array = res;
+      this.array = res.slice(0);
       this.sorted = true; // Set the array to sorted
     },
 
@@ -121,7 +121,7 @@ export default {
       }
 
       let res = this.bubbleSort(this.array);
-      this.array = res;
+      this.array = res.slice(0);
       this.sorted = true; // Set the array to sorted
     },
 
@@ -132,7 +132,7 @@ export default {
       }
 
       let res = this.selectionSort(this.array);
-      this.array = res;
+      this.array = res.slice(0);
       this.sorted = true; // Set the array to sorted
     },
 
@@ -143,7 +143,7 @@ export default {
       }
 
       let res = this.insertionSort(this.array);
-      this.array = res;
+      this.array = res.slice(0);
       this.sorted = true; // Set the array to sorted
     },
   },

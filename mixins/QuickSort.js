@@ -1,5 +1,3 @@
-import vue from 'vue'
-
 // Quick sort
 export default {
     methods: {
@@ -32,8 +30,8 @@ export default {
         // Swaps values at the left and right indices
         qsswap: function (input, li, ri) {
             var temp = input[li];
-            vue.set(input,li,input[ri])
-            vue.set(input, ri, temp)
+            input[li] = input[ri];
+            input[ri] = temp;
         },
         quickSort: function (input, left, right) {
             var index;
