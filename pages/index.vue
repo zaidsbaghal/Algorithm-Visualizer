@@ -64,7 +64,7 @@ export default {
     },
     // Resets the array to randomized integers to be sorted
     newArray: function () {
-      this.sorted = false
+      this.sorted = false;
       this.array = [];
       for (let i = 0; i < 40; i++) {
         this.array.push(this.randomIntFromInterval(50, 800));
@@ -97,11 +97,11 @@ export default {
         console.log("Array already sorted.");
         return;
       }
-      console.log(this.array, "Quick Sort started.")
+      console.log(this.array, "Quick Sort started.");
       let res = this.quickSort(this.array, 0, this.array.length - 1);
       this.array = res.slice(0);
       this.sorted = true; // Set the array to sorted
-      console.log(this.array, "Quick Sort finished.")
+      console.log(this.array, "Quick Sort finished.");
     },
 
     heapSortButton() {
@@ -192,6 +192,8 @@ export default {
 }
 
 .toolbar-container {
+  padding-left: 40px;
+  padding-right: 40px;
   margin-bottom: 20px;
   width: 100%;
   display: flex;
