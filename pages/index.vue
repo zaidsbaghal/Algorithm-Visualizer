@@ -134,25 +134,31 @@ export default {
         let command = animations[i][0];
         const bars = document.getElementsByClassName("array-bar");
         const barsValues = document.getElementsByClassName("array-bar-value");
-        let changeColor = false;
         let color = "$charcoal";
 
         // If we are comparing two elements change their color
         if (command == "comp1") {
-          changeColor = true;
           color = "#E76F51";
-        } else if (command == "comp2") {
-          changeColor = true;
-          color = "#E76F51";
-        }
-        if (changeColor == true) {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(() => {
             bars[idxone].style.backgroundColor = color;
-            bars[idxone].style.backgroundColor = color;
+            bars[idxtwo].style.backgroundColor = color;
+          }, i * this.animSpeed);
+        } else if (command == "clear") {
+          let index = animations[i][1];
+          setTimeout(() => {
+            bars[index].style.backgroundColor = "#264653";
+          }, i * this.animSpeed);
+        } else if (command == "sorted") {
+          let index = animations[i][1];
+          setTimeout(() => {
+            for (let j = 0; j < index; j++) {
+              bars[j].style.backgroundColor = "#E76F51";
+            }
           }, i * this.animSpeed);
         } else {
+          // swap command
           let index = animations[i][1];
           let newHeight = animations[i][2];
           setTimeout(() => {
