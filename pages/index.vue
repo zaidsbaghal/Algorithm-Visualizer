@@ -47,9 +47,11 @@ export default {
   ],
   data: function () {
     return {
-      array: [],
-      defaultArr: [],
-      sorted: false,
+      array: [], // stores the currently displayed array on screen
+      animations: [], // stores the animations of the current sort
+      defaultArr: [], // stores the newly generated array in unsorted form
+      sorted: false, // is the current array sorted?,
+      animSpeed: 20, // animation speed
     };
   },
   beforeMount: function () {
@@ -120,9 +122,45 @@ export default {
         return;
       }
 
-      let res = this.bubbleSort(this.array);
-      this.array = res.slice(0);
+      const result = this.bubbleSort(this.array, this.animations);
+      // this.array = result[0].slice(0);
+      let sortedarray = result[0];
+      let animations = result[1];
       this.sorted = true; // Set the array to sorted
+
+      // Display animations
+      for (let i = 0; i < animations.length; i++) {
+        // Get animation variables
+        let command = animations[i][0];
+        const bars = document.getElementsByClassName("array-bar");
+        const barsValues = document.getElementsByClassName("array-bar-value");
+        let changeColor = false;
+        let color = "$charcoal";
+
+        // If we are comparing two elements change their color
+        if (command == "comp1") {
+          changeColor = true;
+          color = "#E76F51";
+        } else if (command == "comp2") {
+          changeColor = true;
+          color = "#E76F51";
+        }
+        if (changeColor == true) {
+          let idxone = animations[i][1];
+          let idxtwo = animations[i][2];
+          setTimeout(() => {
+            bars[idxone].style.backgroundColor = color;
+            bars[idxone].style.backgroundColor = color;
+          }, i * this.animSpeed);
+        } else {
+          let index = animations[i][1];
+          let newHeight = animations[i][2];
+          setTimeout(() => {
+            bars[index].style.height = `${newHeight * 0.5}px`;
+            barsValues[index].innerHTML = newHeight;
+          }, i * this.animSpeed);
+        }
+      }
     },
 
     selectionSortButton() {
