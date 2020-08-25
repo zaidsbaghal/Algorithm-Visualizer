@@ -150,17 +150,27 @@ export default {
         const bars = document.getElementsByClassName("array-bar");
 
         // If we are comparing two elements change their color
-        if (command == "comp") {
+        if (command == "curr") {
+          let idxone = animations[i][1];
+          setTimeout(function () {
+            bars[idxone].style.backgroundColor = "#2A9D8F";
+          }, i * this.animSpeed);
+        } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E76F51";
-            bars[idxtwo].style.backgroundColor = "#E76F51";
+            bars[idxone].style.backgroundColor = "#E9C46A";
+            bars[idxtwo].style.backgroundColor = "#E9C46A";
           }, i * this.animSpeed);
         } else if (command == "clear") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#264653";
+          }, i * this.animSpeed);
+        } else if (command == "done") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            bars[idx].style.backgroundColor = "#E76F51";
           }, i * this.animSpeed);
         } else if (command == "sorted") {
           let idx = animations[i][1];
@@ -213,7 +223,12 @@ export default {
         let command = animations[i][0];
         const bars = document.getElementsByClassName("array-bar");
 
-        if (command == "init") {
+        if (command == "curr") {
+          let idxone = animations[i][1];
+          setTimeout(function () {
+            bars[idxone].style.backgroundColor = "#E9C46A";
+          }, i * this.animSpeed);
+        } else if (command == "init") {
           let idxone = animations[i][1];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E76F51";
