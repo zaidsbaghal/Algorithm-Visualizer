@@ -2,7 +2,7 @@
   <div class="sort-container">
     <div class="toolbar-container">
       <div class="main-buttons">
-        <button class="toolbar-button" v-on:click="newArray">Generate New Array</button>
+        <button class="toolbar-button" v-on:click="genArray">Generate New Array</button>
         <button class="toolbar-button" v-on:click="resetArray">Reset Array</button>
       </div>
       <div class="function-buttons">
@@ -51,7 +51,8 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 20, // animation speed
+      animSpeed: 2, // animation speed
+      context: this,
     };
   },
   beforeMount: function () {
@@ -64,23 +65,39 @@ export default {
     randomIntFromInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
+    // Resets the color of the array to default
+    colorReset: function () {
+      const bars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < this.array.length; i++) {
+        bars[i].style.backgroundColor = "#264653";
+      }
+    },
     // Resets the array to randomized integers to be sorted
     newArray: function () {
       this.sorted = false;
       this.array = [];
+
       for (let i = 0; i < 40; i++) {
-        this.array.push(this.randomIntFromInterval(50, 800));
+        this.$set(this.array, i, this.randomIntFromInterval(50, 800));
       }
+
       this.defaultArr = this.array.slice(0); // set default array
     },
-
+    // Resets the array to randomized integers to be sorted
+    genArray: function () {
+      this.colorReset();
+      this.newArray();
+    },
     // Resets array to the unsorted version
     resetArray: function () {
+      this.colorReset();
       this.array = this.defaultArr.slice(0);
+
+      this.animations = [];
       this.sorted = false;
       console.log("Reset array complete.");
     },
-
+    // Trigger merge sort animation
     mergeSortButton: function () {
       // If array has already been sorted then return
       if (this.sorted === true) {
@@ -123,50 +140,52 @@ export default {
       }
 
       const result = this.bubbleSort(this.array, this.animations);
-      // this.array = result[0].slice(0);
       let sortedarray = result[0];
       let animations = result[1];
-      this.sorted = true; // Set the array to sorted
 
       // Display animations
       for (let i = 0; i < animations.length; i++) {
         // Get animation variables
         let command = animations[i][0];
         const bars = document.getElementsByClassName("array-bar");
-        const barsValues = document.getElementsByClassName("array-bar-value");
         let color = "$charcoal";
 
         // If we are comparing two elements change their color
-        if (command == "comp1") {
+        if (command == "comp") {
           color = "#E76F51";
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
-          setTimeout(() => {
+          setTimeout(function () {
             bars[idxone].style.backgroundColor = color;
             bars[idxtwo].style.backgroundColor = color;
           }, i * this.animSpeed);
         } else if (command == "clear") {
-          let index = animations[i][1];
-          setTimeout(() => {
-            bars[index].style.backgroundColor = "#264653";
+          let idx = animations[i][1];
+          setTimeout(function () {
+            bars[idx].style.backgroundColor = "#264653";
           }, i * this.animSpeed);
         } else if (command == "sorted") {
-          let index = animations[i][1];
-          setTimeout(() => {
-            for (let j = 0; j < index; j++) {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            for (let j = 0; j <= idx; j++) {
               bars[j].style.backgroundColor = "#E76F51";
             }
           }, i * this.animSpeed);
         } else {
           // swap command
-          let index = animations[i][1];
+          let idx = animations[i][1];
           let newHeight = animations[i][2];
-          setTimeout(() => {
-            bars[index].style.height = `${newHeight * 0.5}px`;
-            barsValues[index].innerHTML = newHeight;
-          }, i * this.animSpeed);
+          setTimeout(
+            function () {
+              bars[idx].style.height = `${newHeight * 0.5}px`;
+              this.$set(this.array, idx, newHeight);
+            }.bind(this),
+            i * this.animSpeed
+          );
         }
       }
+      this.animations = [];
+      this.sorted = true; // Set the array to sorted
     },
 
     selectionSortButton() {
