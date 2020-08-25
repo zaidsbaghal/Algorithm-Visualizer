@@ -1,15 +1,19 @@
 export default {
     methods: {
 
-        insertionSort: function (array) {
+        insertionSort: function (array, animations) {
+            animations.push(["init", 0])
             for (let i = 1; i < array.length; i++) {
                 let j = i;
+                animations.push(["comp", i, j])
                 while (j > 0 && array[j] < array[j - 1]) {
+                    animations.push(["swap", j, array[j - 1]])
+                    animations.push(["swap", j - 1, array[j]])
                     this.swap(j, j - 1, array);
                     j -= 1;
                 }
             }
-            return array;
+            return [array, animations];
         },
 
         swap: function (i, j, array) {
