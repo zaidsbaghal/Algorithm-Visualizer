@@ -5,10 +5,14 @@ export default {
             animations.push(["init", 0])
             for (let i = 1; i < array.length; i++) {
                 let j = i;
-                animations.push(["comp", i, j])
+                animations.push(["curr", i])
+                if (array[j] >= array[j - 1]) {
+                    animations.push(["init", j])
+                }
                 while (j > 0 && array[j] < array[j - 1]) {
-                    animations.push(["swap", j, array[j - 1]])
-                    animations.push(["swap", j - 1, array[j]])
+                    animations.push(["comp", j, j - 1])
+                    animations.push(["swap", j, j - 1, array[j - 1]])
+                    animations.push(["swap", j - 1, j, array[j]])
                     this.swap(j, j - 1, array);
                     j -= 1;
                 }

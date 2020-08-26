@@ -10,6 +10,7 @@ export default {
                     }
                 }
                 this.swap(currentIdx, smallest, input);
+
                 currentIdx += 1
             }
             return input;

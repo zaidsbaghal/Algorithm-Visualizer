@@ -7,7 +7,7 @@ export default {
             while (!isSorted) {
                 isSorted = true // Assume array is sorted
                 for (let i = 0; i < array.length - 1 - counter; i++) {
-                    animations.push(["curr", i]) // update comparison colors
+                    animations.push(["curr", i]) 
                     animations.push(["comp", i, i + 1]) // update comparison colors
                     if (array[i] > array[i + 1]) {
                         animations.push(["swap", i, array[i + 1]]) // update swap colors

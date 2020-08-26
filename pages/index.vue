@@ -51,7 +51,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 2, // animation speed
+      animSpeed: 50, // animation speed
       context: this,
     };
   },
@@ -226,28 +226,32 @@ export default {
         if (command == "curr") {
           let idxone = animations[i][1];
           setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E9C46A";
+            bars[idxone].style.backgroundColor = "#2A9D8F"; // green
           }, i * this.animSpeed);
         } else if (command == "init") {
           let idxone = animations[i][1];
           setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E76F51";
+            bars[idxone].style.backgroundColor = "#E76F51"; // red for sorted list
           }, i * this.animSpeed);
         } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E76F51";
-            bars[idxtwo].style.backgroundColor = "#E76F51";
+            bars[idxone].style.backgroundColor = "#E9C46A"; // comparisons are yellow
+            // bars[idxone].style.backgroundColor = "#E76F51"; // switch back to red
+            bars[idxtwo].style.backgroundColor = "#E9C46A";
           }, i * this.animSpeed);
         } else {
           // swap command
-          let idx = animations[i][1];
-          let newHeight = animations[i][2];
+          let idxone = animations[i][1];
+          let idxtwo = animations[i][2];
+          let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idx].style.height = `${newHeight * 0.5}px`;
-              this.$set(this.array, idx, newHeight);
+              bars[idxone].style.height = `${newHeight * 0.5}px`;
+              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.backgroundColor = "#E76F51";
+              bars[idxone].style.backgroundColor = "#E76F51";
             }.bind(this),
             i * this.animSpeed
           );
