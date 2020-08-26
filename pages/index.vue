@@ -8,7 +8,6 @@
       </select>
     </div>
     <div class="toolbar-container">
-      <div class="main-buttons"></div>
       <div class="function-buttons">
         <button
           class="toolbar-button"
@@ -67,6 +66,7 @@ export default {
       sorted: false, // is the current array sorted?,
       animSpeed: 5, // animation speed
       context: this,
+      processing: false, // is something running currently?
     };
   },
   beforeMount: function () {
@@ -99,11 +99,20 @@ export default {
     },
     // Resets the array to randomized integers to be sorted
     genArray: function () {
-      this.colorReset();
-      this.newArray();
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      } else {
+        this.colorReset();
+        this.newArray();
+      }
     },
     // Resets array to the unsorted version
     resetArray: function () {
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
       this.colorReset();
       this.array = this.defaultArr.slice(0);
 
@@ -118,9 +127,15 @@ export default {
         console.log("Array already sorted.");
         return;
       }
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
+      this.processing = true; // set processing to true as we are about to run the algorithm
 
       let res = this.mergeSort(this.array);
       this.array = res;
+      this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
 
@@ -130,9 +145,16 @@ export default {
         console.log("Array already sorted.");
         return;
       }
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
+      this.processing = true; // set processing to true as we are about to run the algorithm
+
       console.log(this.array, "Quick Sort started.");
       let res = this.quickSort(this.array, 0, this.array.length - 1);
       this.array = res.slice(0);
+      this.processing = false;
       this.sorted = true; // Set the array to sorted
       console.log(this.array, "Quick Sort finished.");
     },
@@ -142,8 +164,14 @@ export default {
         console.log("Array already sorted.");
         return;
       }
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
+      this.processing = true; // set processing to true as we are about to run the algorithm
       let res = this.heapSort(this.array);
       this.array = res.slice(0);
+      this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
 
@@ -152,6 +180,11 @@ export default {
         console.log("Array already sorted.");
         return;
       }
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
+      this.processing = true; // set processing to true as we are about to run the algorithm
 
       const result = this.bubbleSort(this.array.slice(), this.animations);
       // let sortedarray = result[0];
@@ -207,6 +240,7 @@ export default {
         }
       }
       this.animations = [];
+      this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
 
@@ -215,9 +249,15 @@ export default {
         console.log("Array already sorted.");
         return;
       }
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
+      this.processing = true; // set processing to true as we are about to run the algorithm
 
       let res = this.selectionSort(this.array);
       this.array = res.slice(0);
+      this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
 
@@ -226,6 +266,11 @@ export default {
         console.log("Array already sorted.");
         return;
       }
+      // Check if something is running
+      if (this.processing === true) {
+        return;
+      }
+      this.processing = true; // set processing to true as we are about to run the algorithm
 
       const result = this.insertionSort(this.array.slice(), this.animations);
       // let sortedarray = result[0];
@@ -273,6 +318,7 @@ export default {
       }
 
       this.animations = [];
+      this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
   },
