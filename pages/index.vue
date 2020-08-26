@@ -64,7 +64,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 5, // animation speed
+      animSpeed: 1, // animation speed
       context: this,
       processing: false, // is something running currently?
     };
@@ -255,8 +255,63 @@ export default {
       }
       this.processing = true; // set processing to true as we are about to run the algorithm
 
-      let res = this.selectionSort(this.array);
-      this.array = res.slice(0);
+      const result = this.selectionSort(this.array.slice(), this.animations);
+
+      let animations = result[1];
+      // Display animations
+      for (let i = 0; i < animations.length; i++) {
+        // Get animation variables
+        let command = animations[i][0];
+        const bars = document.getElementsByClassName("array-bar");
+
+        // If we are comparing two elements change their color
+        if (command == "curr") {
+          let idxone = animations[i][1];
+          setTimeout(function () {
+            bars[idxone].style.backgroundColor = "#2A9D8F";
+          }, i * this.animSpeed);
+        } else if (command == "comp") {
+          let idxone = animations[i][1];
+          let idxtwo = animations[i][2];
+          setTimeout(function () {
+            bars[idxone].style.backgroundColor = "#E9C46A";
+            bars[idxtwo].style.backgroundColor = "#E9C46A";
+          }, i * this.animSpeed);
+        } else if (command == "clear") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            bars[idx].style.backgroundColor = "#264653";
+          }, i * this.animSpeed);
+        } else if (command == "done") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            bars[idx].style.backgroundColor = "#E76F51";
+          }, i * this.animSpeed);
+        } else if (command == "sorted") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            for (let j = 0; j <= idx; j++) {
+              bars[j].style.backgroundColor = "#E76F51";
+            }
+          }, i * this.animSpeed);
+        } else {
+          // swap command
+          let idxone = animations[i][1];
+          let idxtwo = animations[i][2];
+          let newHeight = animations[i][3];
+          setTimeout(
+            function () {
+              bars[idxone].style.height = `${newHeight * 0.5}px`;
+              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.backgroundColor = "#E76F51";
+              bars[idxone].style.backgroundColor = "#E76F51";
+            }.bind(this),
+            i * this.animSpeed
+          );
+        }
+      }
+
+      this.animations = []
       this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
