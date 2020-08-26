@@ -1,8 +1,15 @@
 <template>
   <div class="sort-container">
+    <div class="algorithm-container">
+      <select class="algo-select" name="algorithms" id="algorithms">
+        <option value="volvo">Sorting</option>
+        <option value="saab">Pathfinding</option>
+        <option value="mercedes">Searching</option>
+      </select>
+    </div>
     <div class="toolbar-container">
       <div class="main-buttons">
-        <button class="toolbar-button" v-on:click="genArray">Generate New Array</button>
+        <button class="toolbar-button" v-on:click="genArray">Generate New</button>
         <button class="toolbar-button" v-on:click="resetArray">Reset Array</button>
       </div>
       <div class="function-buttons">
@@ -51,7 +58,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 50, // animation speed
+      animSpeed: 5, // animation speed
       context: this,
     };
   },
@@ -268,23 +275,51 @@ export default {
 <style lang="scss">
 @import "./assets/scss/colors.scss";
 
+select{
+  text-align-last: center;
+}
+
+.algorithm-container {
+  height: 6rem;
+  display: flex;
+  justify-content: center;
+  .algo-select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    text-align: center;
+    width: min-content;
+    height: 100px;
+    font-size: 45px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: $alabaster;
+    border: none;
+    color: $charcoal;
+    appearance: none;
+  }
+}
+
 .sort-container {
   background-color: $alabaster;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   width: 100%;
 }
 
 .active-window {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 3rem;
 }
 
 .array-container {
   display: flex;
   flex-direction: row;
-  height: 88vh;
   width: 100%;
   justify-content: center;
   left: 100px;
@@ -307,9 +342,8 @@ export default {
 }
 
 .toolbar-container {
-  padding-left: 40px;
-  padding-right: 40px;
-  margin-bottom: 20px;
+  padding-left: 150px;
+  padding-right: 150px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -328,11 +362,11 @@ export default {
 }
 
 .main-buttons {
-  padding-left: 20px;
+  // padding-left: 20px;
 }
 
 .function-buttons {
-  padding-right: 20px;
+  // padding-right: 20px;
 }
 
 .toolbar-button:hover {
