@@ -2,17 +2,24 @@
   <div class="sort-container">
     <div class="algorithm-container">
       <select class="algo-select" name="algorithms" id="algorithms">
-        <option value="volvo">Sorting</option>
-        <option value="saab">Pathfinding</option>
-        <option value="mercedes">Searching</option>
+        <option value="sorting">Sorting</option>
+        <option value="pathfinding">Pathfinding</option>
+        <option value="searching">Searching</option>
       </select>
     </div>
     <div class="toolbar-container">
-      <div class="main-buttons">
-        <button class="toolbar-button" v-on:click="genArray">Generate New</button>
-        <button class="toolbar-button" v-on:click="resetArray">Reset Array</button>
-      </div>
+      <div class="main-buttons"></div>
       <div class="function-buttons">
+        <button
+          class="toolbar-button"
+          style="background-color: #E76F51"
+          v-on:click="genArray"
+        >Generate New</button>
+        <button
+          class="toolbar-button"
+          style="background-color: #E76F51"
+          v-on:click="resetArray"
+        >Reset Array</button>
         <button class="toolbar-button" v-on:click="mergeSortButton">Merge Sort</button>
         <button class="toolbar-button" v-on:click="quickSortButton">Quick Sort</button>
         <button class="toolbar-button" v-on:click="heapSortButton">Heap Sort</button>
@@ -85,7 +92,7 @@ export default {
       this.array = [];
 
       for (let i = 0; i < 40; i++) {
-        this.$set(this.array, i, this.randomIntFromInterval(50, 800));
+        this.$set(this.array, i, this.randomIntFromInterval(50, 999));
       }
 
       this.defaultArr = this.array.slice(0); // set default array
@@ -275,12 +282,14 @@ export default {
 <style lang="scss">
 @import "./assets/scss/colors.scss";
 
-select{
+select {
   text-align-last: center;
 }
 
 .algorithm-container {
-  height: 6rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  height: 5.5rem;
   display: flex;
   justify-content: center;
   .algo-select {
@@ -290,6 +299,8 @@ select{
     margin: 0 auto;
     text-align: center;
     width: min-content;
+    padding-left: 10px;
+    padding-right: 10px;
     height: 100px;
     font-size: 45px;
     font-weight: bold;
@@ -346,23 +357,19 @@ select{
   padding-right: 150px;
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
 .toolbar-button {
   margin: 15px;
-  background-color: $persian-green;
+  background-color: $charcoal;
   border: none;
   color: $alabaster;
   padding: 10px 16px;
   text-align: center;
   display: inline-block;
   font-size: 16px;
-}
-
-.main-buttons {
-  // padding-left: 20px;
 }
 
 .function-buttons {
