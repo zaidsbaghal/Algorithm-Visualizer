@@ -1,11 +1,13 @@
 <template>
   <div class="sort-container">
     <div class="algorithm-container">
-      <select class="algo-select" name="algorithms" id="algorithms">
-        <option value="sorting">Sorting</option>
-        <option value="pathfinding">Pathfinding</option>
-        <option value="searching">Searching</option>
-      </select>
+      <div class="select-container">
+        <select class="algo-select" name="algorithms" id="algorithms">
+          <option value="sorting">Sorting</option>
+          <option value="pathfinding">Pathfinding</option>
+          <option value="searching">Searching</option>
+        </select>
+      </div>
     </div>
     <div class="toolbar-container">
       <div class="function-buttons">
@@ -21,7 +23,6 @@
         >Reset Array</button>
         <button class="toolbar-button" v-on:click="mergeSortButton">Merge Sort</button>
         <button class="toolbar-button" v-on:click="quickSortButton">Quick Sort</button>
-        <button class="toolbar-button" v-on:click="heapSortButton">Heap Sort</button>
         <button class="toolbar-button" v-on:click="bubbleSortButton">Bubble Sort</button>
         <button class="toolbar-button" v-on:click="selectionSortButton">Selection Sort</button>
         <button class="toolbar-button" v-on:click="insertionSortButton">Insertion Sort</button>
@@ -45,7 +46,6 @@
 <script>
 import mergeSortJS from "~/mixins/MergeSort.js";
 import quickSortJS from "~/mixins/QuickSort.js";
-import heapSortJS from "~/mixins/HeapSort.js";
 import bubbleSortJS from "~/mixins/BubbleSort.js";
 import selectionSortJS from "~/mixins/SelectionSort.js";
 import insertionSortJS from "~/mixins/InsertionSort.js";
@@ -64,7 +64,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 1, // animation speed
+      animSpeed: 5, // animation speed
       context: this,
       processing: false, // is something running currently?
     };
@@ -133,8 +133,8 @@ export default {
       }
       this.processing = true; // set processing to true as we are about to run the algorithm
 
-      let res = this.mergeSort(this.array);
-      this.array = res;
+      let res = this.mergeSort(this.array.slice());
+      this.array = res[0];
       this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
@@ -157,22 +157,6 @@ export default {
       this.processing = false;
       this.sorted = true; // Set the array to sorted
       console.log(this.array, "Quick Sort finished.");
-    },
-
-    heapSortButton() {
-      if (this.sorted === true) {
-        console.log("Array already sorted.");
-        return;
-      }
-      // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
-      this.processing = true; // set processing to true as we are about to run the algorithm
-      let res = this.heapSort(this.array);
-      this.array = res.slice(0);
-      this.processing = false;
-      this.sorted = true; // Set the array to sorted
     },
 
     bubbleSortButton() {
@@ -311,7 +295,7 @@ export default {
         }
       }
 
-      this.animations = []
+      this.animations = [];
       this.processing = false;
       this.sorted = true; // Set the array to sorted
     },
@@ -399,9 +383,9 @@ select {
     align-items: center;
     margin: 0 auto;
     text-align: center;
-    width: min-content;
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 300px;
+    padding-left: 20px;
+    padding-right: 20px;
     height: 100px;
     font-size: 45px;
     font-weight: bold;
@@ -471,10 +455,6 @@ select {
   text-align: center;
   display: inline-block;
   font-size: 16px;
-}
-
-.function-buttons {
-  // padding-right: 20px;
 }
 
 .toolbar-button:hover {
