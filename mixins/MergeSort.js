@@ -6,6 +6,10 @@ export default {
             const auxillaryArray = mainArray.slice()
             this.mergeSortHelper(mainArray, 0, mainArray.length - 1, auxillaryArray, animations)
 
+            for (let i = 0; i < mainArray.length;i++){
+                animations.push(["sorted", i])
+            }
+
             return [mainArray, animations]
         },
         // Merge helper function
@@ -13,6 +17,7 @@ export default {
             if (start === end) return;
             const middle = Math.floor((start + end) / 2)
             animations.push(["curr", middle])
+            animations.push(["clear", middle])
             this.mergeSortHelper(auxillaryArray, start, middle, mainArray, animations); // split array in half
             this.mergeSortHelper(auxillaryArray, middle + 1, end, mainArray, animations); // split array in half
             this.doMerge(mainArray, start, middle, end, auxillaryArray, animations);
@@ -32,8 +37,11 @@ export default {
                     mainArray[k] = auxillaryArray[j];
                     j += 1;
                 }
+                animations.push(["clear", i - 1]);
+                animations.push(["clear", j - 1]);
                 k += 1;
             }
+            animations.push(["clear", i]); // clear exit condition
             while (i <= middle) {
                 animations.push(["swap", k, i, auxillaryArray[i]]) // update swap colors
                 mainArray[k] = auxillaryArray[i];
