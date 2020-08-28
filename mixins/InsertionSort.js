@@ -17,6 +17,8 @@ export default {
                     j -= 1;
                 }
             }
+
+            animations.push(["sorted", array.length - 1])
             return [array, animations];
         },
 

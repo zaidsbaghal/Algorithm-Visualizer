@@ -2,22 +2,28 @@
 export default {
     methods: {
         quickSort: function (input, left, right, animations) {
+            let res = this.quickSortHelper(input,left,right,animations);
+
+            animations.push(["sorted", input.length - 1])
+
+            return [res, animations];
+
+        },
+        quickSortHelper: function (input, left, right, animations) {
             var index;
 
             if (input.length > 1) {
                 index = this.partition(input, left, right, animations);
 
                 if (left < index - 1) {
-                    this.quickSort(input, left, index - 1, animations);
+                    this.quickSortHelper(input, left, index - 1, animations);
                 }
 
                 if (index < right) {
-                    this.quickSort(input, index, right, animations);
+                    this.quickSortHelper(input, index, right, animations);
                 }
             }
-
-            return [input, animations];
-
+            return input;
         },
         // Partitions array into smaller arrays based on index left and right
         partition: function (input, left, right, animations) {

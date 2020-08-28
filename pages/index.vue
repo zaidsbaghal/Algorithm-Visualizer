@@ -63,7 +63,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 5, // animation speed
+      animSpeed: 1, // animation speed
       context: this,
       processing: false, // is something running currently?
     };
@@ -463,6 +463,13 @@ export default {
             // bars[idxone].style.backgroundColor = "#E76F51"; // switch back to red
             bars[idxtwo].style.backgroundColor = "#E9C46A";
           }, i * this.animSpeed);
+        } else if (command == "sorted") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            for (let j = 0; j <= idx; j++) {
+              bars[j].style.backgroundColor = "#E76F51";
+            }
+          }, i * this.animSpeed);
         } else {
           // swap command
           let idxone = animations[i][1];
@@ -472,8 +479,8 @@ export default {
             function () {
               bars[idxone].style.height = `${newHeight * 0.65}px`;
               this.$set(this.array, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#E76F51";
-              bars[idxone].style.backgroundColor = "#E76F51";
+              bars[idxone].style.backgroundColor = "#264653";
+              bars[idxone].style.backgroundColor = "#264653";
             }.bind(this),
             i * this.animSpeed
           );
