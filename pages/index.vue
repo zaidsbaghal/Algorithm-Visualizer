@@ -34,9 +34,9 @@
           class="array-bar"
           v-for="(value,index) in this.array"
           :key="index"
-          :style="{ 'height': `${value * .5}`+'px'}"
+          :style="{ 'height': `${value * .65}`+'px'}"
         >
-          <p class="array-bar-value">{{ value }}</p>
+          <!-- <p class="array-bar-value">{{ value }}</p> -->
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@ export default {
       this.sorted = false;
       this.array = [];
 
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 80; i++) {
         this.$set(this.array, i, this.randomIntFromInterval(50, 999));
       }
 
@@ -145,7 +145,9 @@ export default {
         if (command == "curr") {
           let idxone = animations[i][1];
           setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#2A9D8F";
+            try {
+              bars[idxone].style.backgroundColor = "#2A9D8F";
+            } catch (error) {}
           }, i * this.animSpeed);
         } else if (command == "comp") {
           let idxone = animations[i][1];
@@ -157,7 +159,9 @@ export default {
         } else if (command == "clear") {
           let idx = animations[i][1];
           setTimeout(function () {
-            bars[idx].style.backgroundColor = "#264653";
+            try {
+              bars[idx].style.backgroundColor = "#264653";
+            } catch (err) {}
           }, i * this.animSpeed);
         } else if (command == "done") {
           let idx = animations[i][1];
@@ -178,7 +182,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.5}px`;
+              bars[idxone].style.height = `${newHeight * 0.65}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#264653";
               bars[idxone].style.backgroundColor = "#264653";
@@ -204,9 +208,76 @@ export default {
       }
       this.processing = true; // set processing to true as we are about to run the algorithm
 
-      console.log(this.array, "Quick Sort started.");
-      let res = this.quickSort(this.array, 0, this.array.length - 1);
-      this.array = res.slice(0);
+      const result = this.quickSort(
+        this.array.slice(),
+        0,
+        this.array.length - 1,
+        this.animations
+      );
+      let animations = result[1];
+
+      // Display animations
+      for (let i = 0; i < animations.length; i++) {
+        // Get animation variables
+        let command = animations[i][0];
+        const bars = document.getElementsByClassName("array-bar");
+
+        // If we are comparing two elements change their color
+        if (command == "curr") {
+          let idxone = animations[i][1];
+          setTimeout(function () {
+            try {
+              bars[idxone].style.backgroundColor = "#2A9D8F";
+            } catch (error) {}
+          }, i * this.animSpeed);
+        } else if (command == "comp") {
+          let idxone = animations[i][1];
+          let idxtwo = animations[i][2];
+          setTimeout(function () {
+            bars[idxone].style.backgroundColor = "#E9C46A";
+            bars[idxtwo].style.backgroundColor = "#E9C46A";
+          }, i * this.animSpeed);
+        } else if (command == "clear") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            try {
+              bars[idx].style.backgroundColor = "#264653";
+            } catch (error) {}
+          }, i * this.animSpeed);
+        } else if (command == "left") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            bars[idx].style.backgroundColor = "#F4A261";
+          }, i * this.animSpeed);
+        } else if (command == "right") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            bars[idx].style.backgroundColor = "#E76F51";
+          }, i * this.animSpeed);
+        } else if (command == "sorted") {
+          let idx = animations[i][1];
+          setTimeout(function () {
+            for (let j = 0; j <= idx; j++) {
+              bars[j].style.backgroundColor = "#E76F51";
+            }
+          }, i * this.animSpeed);
+        } else {
+          // swap command
+          let idxone = animations[i][1];
+          let idxtwo = animations[i][2];
+          let newHeight = animations[i][3];
+          setTimeout(
+            function () {
+              bars[idxone].style.height = `${newHeight * 0.65}px`;
+              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.backgroundColor = "#E9C46A";
+              bars[idxone].style.backgroundColor = "#E9C46A";
+            }.bind(this),
+            i * this.animSpeed
+          );
+        }
+      }
+      this.animations = [];
       this.processing = false;
       this.sorted = true; // Set the array to sorted
       console.log(this.array, "Quick Sort finished.");
@@ -269,7 +340,7 @@ export default {
           let newHeight = animations[i][2];
           setTimeout(
             function () {
-              bars[idx].style.height = `${newHeight * 0.5}px`;
+              bars[idx].style.height = `${newHeight * 0.65}px`;
               this.$set(this.array, idx, newHeight);
             }.bind(this),
             i * this.animSpeed
@@ -338,7 +409,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.5}px`;
+              bars[idxone].style.height = `${newHeight * 0.65}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#E76F51";
               bars[idxone].style.backgroundColor = "#E76F51";
@@ -399,7 +470,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.5}px`;
+              bars[idxone].style.height = `${newHeight * 0.65}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#E76F51";
               bars[idxone].style.backgroundColor = "#E76F51";
@@ -476,13 +547,14 @@ select {
 }
 
 .array-bar {
-  width: 30px;
+  width: 15px;
   background-color: $charcoal;
   display: inline-block;
-  margin: 0 4px;
+  margin: 0 2px;
 }
 
 .array-bar-value {
+  font-size: 8px;
   color: $alabaster;
   transform: scaleY(-1);
   margin: 0;
