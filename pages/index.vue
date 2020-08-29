@@ -63,7 +63,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 1, // animation speed
+      animSpeed: 3, // animation speed
       context: this,
       processing: false, // is something running currently?
     };
