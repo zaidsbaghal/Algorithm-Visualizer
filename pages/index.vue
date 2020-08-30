@@ -9,6 +9,7 @@
         </select>
       </div>
     </div>
+    <!-- <SortingToolbar @merge="mergeSortButton"></SortingToolbar> -->
     <div class="toolbar-container">
       <div class="function-buttons">
         <button
@@ -49,7 +50,11 @@ import quickSortJS from "~/mixins/QuickSort.js";
 import bubbleSortJS from "~/mixins/BubbleSort.js";
 import selectionSortJS from "~/mixins/SelectionSort.js";
 import insertionSortJS from "~/mixins/InsertionSort.js";
+import SortingToolbar from "~/components/SortingToolbar.vue";
 export default {
+  components: {
+    SortingToolbar,
+  },
   mixins: [
     mergeSortJS,
     quickSortJS,
@@ -567,30 +572,5 @@ select {
   margin: 0;
   display: flex;
   justify-content: center;
-}
-
-.toolbar-container {
-  padding-left: 150px;
-  padding-right: 150px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.toolbar-button {
-  margin: 15px;
-  background-color: $charcoal;
-  border: none;
-  color: $alabaster;
-  padding: 10px 16px;
-  text-align: center;
-  display: inline-block;
-  font-size: 16px;
-}
-
-.toolbar-button:hover {
-  opacity: 0.7;
-  cursor: pointer;
 }
 </style>
