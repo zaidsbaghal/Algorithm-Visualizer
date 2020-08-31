@@ -37,7 +37,6 @@
           :key="index"
           :style="{ 'height': `${value * .65}`+'px'}"
         >
-          <!-- <p class="array-bar-value">{{ value }}</p> -->
         </div>
       </div>
     </div>
