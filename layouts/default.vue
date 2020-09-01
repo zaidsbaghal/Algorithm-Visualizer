@@ -18,6 +18,7 @@ html {
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   background-color: $alabaster;
+  height: 100vh;
 }
 
 *,
