@@ -24,6 +24,7 @@ export default {
 
                 currentIdx += 1
             }
+            animations.push(["sorted", array.length - 1])
             return [array, animations];
         },
         swap: function (i, j, array) {

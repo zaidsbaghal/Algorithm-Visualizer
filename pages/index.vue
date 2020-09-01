@@ -16,17 +16,40 @@
           class="toolbar-button"
           style="background-color: #E76F51"
           v-on:click="genArray"
+          :disabled="buttonDisable"
         >Generate New</button>
         <button
           class="toolbar-button"
           style="background-color: #E76F51"
           v-on:click="resetArray"
+          id="resetbutton"
+          :disabled="buttonDisable"
         >Reset Array</button>
-        <button class="toolbar-button" v-on:click="mergeSortButton">Merge Sort</button>
-        <button class="toolbar-button" v-on:click="quickSortButton">Quick Sort</button>
-        <button class="toolbar-button" v-on:click="bubbleSortButton">Bubble Sort</button>
-        <button class="toolbar-button" v-on:click="selectionSortButton">Selection Sort</button>
-        <button class="toolbar-button" v-on:click="insertionSortButton">Insertion Sort</button>
+        <button
+          class="toolbar-button"
+          v-on:click="mergeSortButton"
+          :disabled="buttonDisable"
+        >Merge Sort</button>
+        <button
+          class="toolbar-button"
+          v-on:click="quickSortButton"
+          :disabled="buttonDisable"
+        >Quick Sort</button>
+        <button
+          class="toolbar-button"
+          v-on:click="bubbleSortButton"
+          :disabled="buttonDisable"
+        >Bubble Sort</button>
+        <button
+          class="toolbar-button"
+          v-on:click="selectionSortButton"
+          :disabled="buttonDisable"
+        >Selection Sort</button>
+        <button
+          class="toolbar-button"
+          v-on:click="insertionSortButton"
+          :disabled="buttonDisable"
+        >Insertion Sort</button>
       </div>
     </div>
     <div class="active-window">
@@ -36,8 +59,7 @@
           v-for="(value,index) in this.array"
           :key="index"
           :style="{ 'height': `${value * .65}`+'px'}"
-        >
-        </div>
+        ></div>
       </div>
     </div>
   </div>
@@ -67,9 +89,9 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultArr: [], // stores the newly generated array in unsorted form
       sorted: false, // is the current array sorted?,
-      animSpeed: 3, // animation speed
+      animSpeed: 1, // animation speed
       context: this,
-      processing: false, // is something running currently?
+      buttonDisable: false, // is something running currently?
     };
   },
   beforeMount: function () {
@@ -78,6 +100,12 @@ export default {
     });
   },
   methods: {
+    disableButtons: function () {
+      this.buttonDisable = true;
+    },
+    enableButtons: function () {
+      this.buttonDisable = false;
+    },
     // Function that gets a random number between min and max
     randomIntFromInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
@@ -103,19 +131,13 @@ export default {
     // Resets the array to randomized integers to be sorted
     genArray: function () {
       // Check if something is running
-      if (this.processing === true) {
-        return;
-      } else {
-        this.colorReset();
-        this.newArray();
-      }
+
+      this.colorReset();
+      this.newArray();
     },
     // Resets array to the unsorted version
     resetArray: function () {
       // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
       this.colorReset();
       this.array = this.defaultArr.slice(0);
 
@@ -130,11 +152,10 @@ export default {
         console.log("Array already sorted.");
         return;
       }
-      // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
-      this.processing = true; // set processing to true as we are about to run the algorithm
+
+      // Disable buttons while running
+      this.disableButtons();
+
       const result = this.mergeSort(this.array.slice(), this.animations);
       // let sortedarray = result[0];
       let animations = result[1];
@@ -174,11 +195,19 @@ export default {
           }, i * this.animSpeed);
         } else if (command == "sorted") {
           let idx = animations[i][1];
-          setTimeout(function () {
-            for (let j = 0; j <= idx; j++) {
-              bars[j].style.backgroundColor = "#E76F51";
-            }
-          }, i * this.animSpeed);
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              for (let j = 0; j <= idx; j++) {
+                bars[j].style.backgroundColor = "#E76F51";
+              }
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            console.log("resolved");
+            this.animations = [];
+            this.enableButtons();
+            this.sorted = true; // Set the array to sorted
+          });
         } else {
           // swap command
           let idxone = animations[i][1];
@@ -195,9 +224,6 @@ export default {
           );
         }
       }
-      this.animations = [];
-      this.processing = false;
-      this.sorted = true; // Set the array to sorted
     },
 
     quickSortButton: function () {
@@ -206,11 +232,9 @@ export default {
         console.log("Array already sorted.");
         return;
       }
-      // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
-      this.processing = true; // set processing to true as we are about to run the algorithm
+
+      // Disable buttons while running
+      this.disableButtons();
 
       const result = this.quickSort(
         this.array.slice(),
@@ -260,11 +284,19 @@ export default {
           }, i * this.animSpeed);
         } else if (command == "sorted") {
           let idx = animations[i][1];
-          setTimeout(function () {
-            for (let j = 0; j <= idx; j++) {
-              bars[j].style.backgroundColor = "#E76F51";
-            }
-          }, i * this.animSpeed);
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              for (let j = 0; j <= idx; j++) {
+                bars[j].style.backgroundColor = "#E76F51";
+              }
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            console.log("resolved");
+            this.animations = [];
+            this.enableButtons();
+            this.sorted = true; // Set the array to sorted
+          });
         } else {
           // swap command
           let idxone = animations[i][1];
@@ -281,10 +313,6 @@ export default {
           );
         }
       }
-      this.animations = [];
-      this.processing = false;
-      this.sorted = true; // Set the array to sorted
-      console.log(this.array, "Quick Sort finished.");
     },
 
     bubbleSortButton() {
@@ -292,11 +320,8 @@ export default {
         console.log("Array already sorted.");
         return;
       }
-      // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
-      this.processing = true; // set processing to true as we are about to run the algorithm
+      // Disable buttons while running
+      this.disableButtons();
 
       const result = this.bubbleSort(this.array.slice(), this.animations);
       // let sortedarray = result[0];
@@ -333,11 +358,18 @@ export default {
           }, i * this.animSpeed);
         } else if (command == "sorted") {
           let idx = animations[i][1];
-          setTimeout(function () {
-            for (let j = 0; j <= idx; j++) {
-              bars[j].style.backgroundColor = "#E76F51";
-            }
-          }, i * this.animSpeed);
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              for (let j = 0; j <= idx; j++) {
+                bars[j].style.backgroundColor = "#E76F51";
+              }
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            this.animations = [];
+            this.enableButtons();
+            this.sorted = true; // Set the array to sorted
+          });
         } else {
           // swap command
           let idx = animations[i][1];
@@ -351,9 +383,6 @@ export default {
           );
         }
       }
-      this.animations = [];
-      this.processing = false;
-      this.sorted = true; // Set the array to sorted
     },
 
     selectionSortButton() {
@@ -361,12 +390,8 @@ export default {
         console.log("Array already sorted.");
         return;
       }
-      // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
-      this.processing = true; // set processing to true as we are about to run the algorithm
-
+      // Disable buttons while running
+      this.disableButtons();
       const result = this.selectionSort(this.array.slice(), this.animations);
 
       let animations = result[1];
@@ -401,11 +426,18 @@ export default {
           }, i * this.animSpeed);
         } else if (command == "sorted") {
           let idx = animations[i][1];
-          setTimeout(function () {
-            for (let j = 0; j <= idx; j++) {
-              bars[j].style.backgroundColor = "#E76F51";
-            }
-          }, i * this.animSpeed);
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              for (let j = 0; j <= idx; j++) {
+                bars[j].style.backgroundColor = "#E76F51";
+              }
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            this.animations = [];
+            this.enableButtons();
+            this.sorted = true; // Set the array to sorted
+          });
         } else {
           // swap command
           let idxone = animations[i][1];
@@ -422,10 +454,6 @@ export default {
           );
         }
       }
-
-      this.animations = [];
-      this.processing = false;
-      this.sorted = true; // Set the array to sorted
     },
 
     insertionSortButton() {
@@ -433,12 +461,8 @@ export default {
         console.log("Array already sorted.");
         return;
       }
-      // Check if something is running
-      if (this.processing === true) {
-        return;
-      }
-      this.processing = true; // set processing to true as we are about to run the algorithm
-
+      // Disable buttons while running
+      this.disableButtons();
       const result = this.insertionSort(this.array.slice(), this.animations);
       // let sortedarray = result[0];
       let animations = result[1];
@@ -469,11 +493,18 @@ export default {
           }, i * this.animSpeed);
         } else if (command == "sorted") {
           let idx = animations[i][1];
-          setTimeout(function () {
-            for (let j = 0; j <= idx; j++) {
-              bars[j].style.backgroundColor = "#E76F51";
-            }
-          }, i * this.animSpeed);
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              for (let j = 0; j <= idx; j++) {
+                bars[j].style.backgroundColor = "#E76F51";
+              }
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            this.animations = [];
+            this.enableButtons();
+            this.sorted = true; // Set the array to sorted
+          });
         } else {
           // swap command
           let idxone = animations[i][1];
@@ -490,10 +521,6 @@ export default {
           );
         }
       }
-
-      this.animations = [];
-      this.processing = false;
-      this.sorted = true; // Set the array to sorted
     },
   },
 };

@@ -20,7 +20,7 @@ export default {
                 counter += 1;
                 animations.push(["done", array.length - counter]) // set last element sorted color
             }
-            animations.push(["sorted", array.length - counter]) // color all  remaining uncolored sorted elements
+            animations.push(["sorted", array.length - 1]) // color all  remaining uncolored sorted elements
             return [array, animations];
         },
         // Function that swaps two indices in an array
