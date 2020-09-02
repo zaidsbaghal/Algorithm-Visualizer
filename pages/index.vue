@@ -1,5 +1,5 @@
 <template>
-  <div class="main fade-in">
+  <div class="main">
     <div class="algorithm-container">
       <div class="select-container">
         <select v-model="AlgoCategory" class="algo-select" name="algorithms" id="algorithms">
