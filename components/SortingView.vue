@@ -1,5 +1,5 @@
 <template>
-  <div class="sort-container">
+  <div class="sort-container fade-in">
     <div class="function-buttons">
       <button
         class="toolbar-button"
@@ -76,6 +76,13 @@ export default {
       context: this,
       buttonDisable: false, // is something running currently?
     };
+  },
+  mounted: function () {
+    this.$nextTick(() => {
+      this.$nuxt.$loading.start();
+
+      setTimeout(() => this.$nuxt.$loading.finish(), 1000);
+    });
   },
   beforeMount: function () {
     this.$nextTick(function () {
@@ -186,7 +193,6 @@ export default {
               resolve();
             }, i * this.animSpeed);
           }).then(() => {
-            console.log("resolved");
             this.animations = [];
             this.enableButtons();
             this.sorted = true; // Set the array to sorted
@@ -275,7 +281,6 @@ export default {
               resolve();
             }, i * this.animSpeed);
           }).then(() => {
-            console.log("resolved");
             this.animations = [];
             this.enableButtons();
             this.sorted = true; // Set the array to sorted

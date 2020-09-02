@@ -26,9 +26,12 @@ export default {
   },
   methods: {
     makeWall: function () {
+      let id = this.getId;
       if (this.isWall === true) {
+        document.getElementById(id).style.backgroundColor = "#F4F4ED";
         this.isWall = false;
       } else {
+        document.getElementById(id).style.backgroundColor = "#264653";
         this.isWall = true;
       }
     },

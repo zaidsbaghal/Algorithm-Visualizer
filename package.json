@@ -12,7 +12,8 @@
     "node": "^14.8.0",
     "nuxt": "^2.14.0",
     "sass": "^1.26.10",
-    "vue": "^2.6.12"
+    "vue": "^2.6.12",
+    "vue-spinner": "^1.0.4"
   },
   "devDependencies": {
     "@nuxtjs/style-resources": "^1.0.0",

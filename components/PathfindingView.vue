@@ -1,5 +1,5 @@
 <template>
-  <div class="path-container">
+  <div class="path-container fade-in">
     <div class="function-buttons">
       <button
         class="toolbar-button"
@@ -47,7 +47,7 @@ export default {
       buttonDisable: false,
     };
   },
-  beforeMount: function () {
+  mounted: function () {
     this.initGrid();
   },
   methods: {
@@ -81,7 +81,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  .function-buttons{
+  .function-buttons {
     padding-bottom: 3rem;
   }
   .graph-action {
@@ -91,7 +91,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    .row{
+    .row {
       display: flex;
     }
   }

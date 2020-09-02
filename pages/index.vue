@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main fade-in">
     <div class="algorithm-container">
       <div class="select-container">
         <select v-model="AlgoCategory" class="algo-select" name="algorithms" id="algorithms">
@@ -9,27 +9,35 @@
         </select>
       </div>
     </div>
-    <div v-if="AlgoCategory === 'sorting'">
+    <div v-show="AlgoCategory === 'sorting'">
+      <grid-loader :loading="loaderLoading" :color="loaderColor" :size="loaderSize"></grid-loader>
       <SortingView></SortingView>
     </div>
-    <div v-else-if="AlgoCategory === 'pathfinding'">
+    <div v-show="AlgoCategory === 'pathfinding'">
       <PathfindingView></PathfindingView>
     </div>
-    <div v-else>hi 2</div>
+    <div v-show="AlgoCategory === 'searching'">
+      <p>Searching Component</p>
+    </div>
   </div>
 </template>
 
 <script>
 import SortingView from "~/components/SortingView.vue";
 import PathfindingView from "~/components/PathfindingView.vue";
+import GridLoader from "vue-spinner/src/GridLoader.vue";
 export default {
   components: {
     SortingView,
     PathfindingView,
+    GridLoader,
   },
   data: function () {
     return {
       AlgoCategory: "sorting",
+      loaderLoading: true,
+      loaderColor: "#264653",
+      loaderSize: "300",
     };
   },
 };

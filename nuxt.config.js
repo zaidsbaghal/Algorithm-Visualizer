@@ -62,4 +62,10 @@ export default {
   styleResources: {
     scss: ['assets/scss/colors.scss']
   },
+  loading: {
+    color: '#E76F51',
+    duration: 500,
+    height: '5px',
+    throttle: 0
+  }
 }
