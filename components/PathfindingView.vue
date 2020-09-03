@@ -60,6 +60,7 @@ export default {
       mousePressed: false,
       moveStart: false,
       moveEnd: false,
+      prevNode: null,
     };
   },
   mounted: function () {
@@ -71,6 +72,7 @@ export default {
   },
   methods: {
     mouseEnter: function (node) {
+      this.prevNode = document.getElementById(node.id).className.slice();
       if (this.moveStart == true) {
         document.getElementById(node.id).className = "start";
       }
@@ -82,39 +84,49 @@ export default {
       }
     },
     mouseOut: function (node) {
+      // Reset old node
       if (this.moveStart == true) {
-        document.getElementById(node.id).className = "box";
+        if (this.prevNode === "start") {
+          document.getElementById(node.id).className = "box";
+        } else {
+          document.getElementById(node.id).className = this.prevNode;
+        }
       } else if (this.moveEnd == true) {
-        document.getElementById(node.id).className = "box";
+        if (this.prevNode === "end") {
+          document.getElementById(node.id).className = "box";
+        } else {
+          document.getElementById(node.id).className = this.prevNode;
+        }
       }
     },
     mouseDown: function (node) {
-      if (node.isStart == true) {
-        node.isStart = false;
+      let element = document.getElementById(node.id);
+      if (element.className === "start") {
         this.moveStart = true;
-      } else if (node.isEnd == true) {
-        node.isEnd = false;
+      } else if (element.className === "end") {
         this.moveEnd = true;
       } else {
         this.mousePressed = true;
         this.makeWall(node);
       }
+      console.log(node);
     },
     mouseUp: function (node) {
       if (this.moveStart == true) {
         document.getElementById(node.id).className = "start";
-        node.isStart = true;
         this.moveStart = false;
       } else if (this.moveEnd == true) {
         document.getElementById(node.id).className = "end";
-        node.isEnd = true;
         this.moveEnd = false;
       }
       this.mousePressed = false;
     },
-    // Stylize wall of box (Does not set the nodes isWall data yer for speed purposes)
+    // Stylize wall of box (Does not set the nodes isWall data yet for speed purposes)
     makeWall: function (node) {
-      if (node.isStart == false && node.isEnd == false) {
+      let element = document.getElementById(node.id);
+      if (element.className === "start" || element.className === "end") {
+        return;
+      } else {
         let element = document.getElementById(node.id);
         if (element.className === "wall") {
           element.className = "box";
@@ -179,7 +191,8 @@ export default {
       for (let row = 0; row < this.rowNum; row++) {
         for (let col = 0; col < this.colNum; col++) {
           let node = this.grid[row][col];
-          if (node.isStart == false && node.isEnd == false) {
+          let eleClass = document.getElementById(node.id).className;
+          if (eleClass !== "start" && eleClass !== "end") {
             node.isWall = false;
             document.getElementById(node.id).className = "box";
           }
