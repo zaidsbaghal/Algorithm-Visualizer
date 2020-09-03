@@ -30,14 +30,12 @@ export default {
   background-color: $charcoal;
 }
 .start {
-  animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
   border: 1px solid $charcoal;
   background-color: #2a9d8f;
 }
 .end {
-  animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
   border: 1px solid $charcoal;

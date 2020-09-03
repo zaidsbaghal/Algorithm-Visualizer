@@ -12,15 +12,15 @@
         style="background-color: #E76F51"
         :disabled="buttonDisable"
       >Reset Visualization</button>
-      <button class="toolbar-button" :disabled="buttonDisable">Depth First</button>
+      <button class="toolbar-button" :disabled="buttonDisable" v-on:click="dfs">Depth First</button>
       <button class="toolbar-button" :disabled="buttonDisable">Breadth First</button>
       <button class="toolbar-button" :disabled="buttonDisable">Dijkstra's</button>
       <button class="toolbar-button" :disabled="buttonDisable">A*</button>
     </div>
     <div class="graph-action">
-      <div class="row" v-for="(row, index) in this.grid" :key="index">
+      <div class="col" v-for="(col, index) in this.grid" :key="index">
         <Node
-          v-for="node in row"
+          v-for="node in col"
           :key="node.id"
           :id="node.id"
           :row="node.row"
@@ -45,22 +45,24 @@ export default {
   },
   data: function () {
     return {
-      rowNum: 30,
-      colNum: 70,
-      grid: [[]],
-      startX: 30,
-      startY: 15,
-      endX: 40,
-      endY: 15,
+      rowNum: 30, // grid rows
+      colNum: 70, // grid columns
+      grid: [[]], // store the 2day array that corresponds with the grid
+      startNode: null,
+      endNode: null,
+      startX: 30, // x coordinate of start node
+      startY: 15, // y coordinate of start node
+      endX: 40, // x coordinate of end node
+      endY: 15, // y coordinate of end node
       animations: [], // stores the animations of the current sort
       defaultGraph: [], // stores the newly generated array in unsorted form
       found: false, // is the current array sorted?,
       animSpeed: 1, // animation speed
-      buttonDisable: false,
-      mousePressed: false,
-      moveStart: false,
-      moveEnd: false,
-      prevNode: null,
+      buttonDisable: false, // disable the action buttons of the toolbar?
+      mousePressed: false, // is the mouse currently pressed?
+      moveStart: false, // are we moving the start node?
+      moveEnd: false, // are we moving the end node?
+      prevNode: null, // Stores state of previous node when moving
     };
   },
   mounted: function () {
@@ -71,6 +73,7 @@ export default {
     });
   },
   methods: {
+    // Function is called when we enter a node
     mouseEnter: function (node) {
       this.prevNode = document.getElementById(node.id).className.slice();
       if (this.moveStart == true) {
@@ -83,6 +86,7 @@ export default {
         this.makeWall(node);
       }
     },
+    // function is called when we leave a node
     mouseOut: function (node) {
       // Reset old node
       if (this.moveStart == true) {
@@ -99,6 +103,7 @@ export default {
         }
       }
     },
+    //function is called when the mouse is pressed down on a node
     mouseDown: function (node) {
       let element = document.getElementById(node.id);
       if (element.className === "start") {
@@ -111,12 +116,17 @@ export default {
       }
       console.log(node);
     },
+    // function is called when we release the mouse press on a node
     mouseUp: function (node) {
       if (this.moveStart == true) {
         document.getElementById(node.id).className = "start";
+        this.startY = node.row;
+        this.startX = node.col;
         this.moveStart = false;
       } else if (this.moveEnd == true) {
         document.getElementById(node.id).className = "end";
+        this.endY = node.row;
+        this.endX = node.col;
         this.moveEnd = false;
       }
       this.mousePressed = false;
@@ -135,29 +145,32 @@ export default {
         }
       }
     },
+    // Initialize the start node
     setStart: function () {
-      let id = this.grid[this.startY][this.startX].id;
+      let id = this.grid[this.startX][this.startY].id;
       document.getElementById(id).className = "start";
-      this.grid[this.startY][this.startX].isStart = true;
+      this.grid[this.startX][this.startY].isStart = true;
     },
+    // Initialize the end node
     setEnd: function () {
-      let id = this.grid[this.endY][this.endX].id;
+      let id = this.grid[this.endX][this.endY].id;
       document.getElementById(id).className = "end";
-      this.grid[this.endY][this.endX].isEnd = true;
+      this.grid[this.endX][this.endY].isEnd = true;
     },
     // Initialize the grid
     initGrid: function () {
       let newgrid = [];
-      for (let row = 0; row < this.rowNum; row++) {
-        const currRow = [];
-        for (let col = 0; col < this.colNum; col++) {
-          currRow.push(this.createNode(col, row));
+      for (let col = 0; col < this.colNum; col++) {
+        const currCol = [];
+        for (let row = 0; row < this.rowNum; row++) {
+          currCol.push(this.createNode(row, col));
         }
-        newgrid.push(currRow);
+        newgrid.push(currCol);
       }
       this.grid = newgrid.slice();
     },
-    createNode: function (col, row) {
+    // Create the node object for a cell
+    createNode: function (row, col) {
       if (col == this.startX && row == this.startY) {
         return {
           col,
@@ -165,7 +178,7 @@ export default {
           isStart: true,
           isEnd: false,
           isWall: false,
-          id: "Node-" + row + "-" + col,
+          id: "Node-" + col + "-" + row,
         };
       } else if (col == this.endX && row == this.endY) {
         return {
@@ -174,7 +187,7 @@ export default {
           isStart: false,
           isEnd: true,
           isWall: false,
-          id: "Node-" + row + "-" + col,
+          id: "Node-" + col + "-" + row,
         };
       }
       return {
@@ -183,14 +196,15 @@ export default {
         isStart: false,
         isEnd: false,
         isWall: false,
-        id: "Node-" + row + "-" + col,
+        id: "Node-" + col + "-" + row,
       };
     },
+    // Clears all walls from the grid
     resetGrid: function () {
       console.log("resetting");
-      for (let row = 0; row < this.rowNum; row++) {
-        for (let col = 0; col < this.colNum; col++) {
-          let node = this.grid[row][col];
+      for (let col = 0; col < this.colNum; col++) {
+        for (let row = 0; row < this.rowNum; row++) {
+          let node = this.grid[col][row];
           let eleClass = document.getElementById(node.id).className;
           if (eleClass !== "start" && eleClass !== "end") {
             node.isWall = false;
@@ -198,6 +212,62 @@ export default {
           }
         }
       }
+    },
+    // returns an array of all neighbor nodes to a node
+    getNeighbors: function (node) {
+      result = [];
+      let row = node.row;
+      let col = node.col;
+
+      //left
+      if (
+        row >= 0 &&
+        row <= this.rowNum &&
+        col - 1 >= 0 &&
+        col - 1 <= this.colNum
+      ) {
+        let id = "Node-" + col + "-" + row - 1;
+        result.append(document.getElementById(id));
+      }
+      // top
+      if (
+        row - 1 >= 0 &&
+        row - 1 <= this.rowNum &&
+        col >= 0 &&
+        col <= this.colNum
+      ) {
+        let id = "Node-" + col - 1 + "-" + row;
+        result.append(document.getElementById(id));
+      }
+      // right
+      if (
+        row >= 0 &&
+        row <= this.rowNum &&
+        col + 1 >= 0 &&
+        col + 1 <= this.colNum
+      ) {
+        let id = "Node-" + col + "-" + row + 1;
+        result.append(document.getElementById(id));
+      }
+      // bottom
+      if (
+        row + 1 >= 0 &&
+        row + 1 <= this.rowNum &&
+        col >= 0 &&
+        col <= this.colNum
+      ) {
+        let id = "Node-" + col + 1 + "-" + row;
+        result.append(document.getElementById(id));
+      }
+    },
+    dfs: function () {
+      console.log(this.startX + " " + this.startY);
+      let id = "Node-" + this.startX + "-" + this.startY;
+      let startElement = document.getElementById(id);
+      this.dfsHelper([startElement]);
+    },
+    dfsHelper: function (array) {
+      console.log(array);
     },
   },
 };
@@ -216,11 +286,10 @@ export default {
     height: 100%;
     width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    .row {
-      display: flex;
+    transform: rotateX(180deg);
+    .col {
     }
   }
 }
