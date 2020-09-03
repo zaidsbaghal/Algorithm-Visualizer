@@ -29,8 +29,9 @@
           :isStart="node.isStart"
           :isEnd="node.isEnd"
           v-on:mousedown.native="mouseDown(node)"
-          v-on:mouseup.native="mouseUp()"
+          v-on:mouseup.native="mouseUp(node)"
           v-on:mouseenter.native="mouseEnter(node)"
+          v-on:mouseout.native="mouseOut(node)"
         ></Node>
       </div>
     </div>
@@ -47,38 +48,90 @@ export default {
       rowNum: 30,
       colNum: 70,
       grid: [[]],
+      startX: 30,
+      startY: 15,
+      endX: 40,
+      endY: 15,
       animations: [], // stores the animations of the current sort
       defaultGraph: [], // stores the newly generated array in unsorted form
       found: false, // is the current array sorted?,
       animSpeed: 1, // animation speed
       buttonDisable: false,
       mousePressed: false,
+      moveStart: false,
+      moveEnd: false,
     };
   },
   mounted: function () {
     this.initGrid();
+    this.$nextTick(function () {
+      this.setStart();
+      this.setEnd();
+    });
   },
   methods: {
     mouseEnter: function (node) {
+      if (this.moveStart == true) {
+        document.getElementById(node.id).className = "start";
+      }
+      if (this.moveEnd == true) {
+        document.getElementById(node.id).className = "end";
+      }
       if (this.mousePressed == true) {
         this.makeWall(node);
       }
     },
-    mouseDown: function (node) {
-      this.mousePressed = true;
-      this.makeWall(node);
+    mouseOut: function (node) {
+      if (this.moveStart == true) {
+        document.getElementById(node.id).className = "box";
+      } else if (this.moveEnd == true) {
+        document.getElementById(node.id).className = "box";
+      }
     },
-    mouseUp: function () {
+    mouseDown: function (node) {
+      if (node.isStart == true) {
+        node.isStart = false;
+        this.moveStart = true;
+      } else if (node.isEnd == true) {
+        node.isEnd = false;
+        this.moveEnd = true;
+      } else {
+        this.mousePressed = true;
+        this.makeWall(node);
+      }
+    },
+    mouseUp: function (node) {
+      if (this.moveStart == true) {
+        document.getElementById(node.id).className = "start";
+        node.isStart = true;
+        this.moveStart = false;
+      } else if (this.moveEnd == true) {
+        document.getElementById(node.id).className = "end";
+        node.isEnd = true;
+        this.moveEnd = false;
+      }
       this.mousePressed = false;
     },
     // Stylize wall of box (Does not set the nodes isWall data yer for speed purposes)
     makeWall: function (node) {
-      let element = document.getElementById(node.id);
-      if (element.className === "wall") {
-        element.className = "box";
-      } else {
-        element.className = "wall";
+      if (node.isStart == false && node.isEnd == false) {
+        let element = document.getElementById(node.id);
+        if (element.className === "wall") {
+          element.className = "box";
+        } else {
+          element.className = "wall";
+        }
       }
+    },
+    setStart: function () {
+      let id = this.grid[this.startY][this.startX].id;
+      document.getElementById(id).className = "start";
+      this.grid[this.startY][this.startX].isStart = true;
+    },
+    setEnd: function () {
+      let id = this.grid[this.endY][this.endX].id;
+      document.getElementById(id).className = "end";
+      this.grid[this.endY][this.endX].isEnd = true;
     },
     // Initialize the grid
     initGrid: function () {
@@ -93,11 +146,30 @@ export default {
       this.grid = newgrid.slice();
     },
     createNode: function (col, row) {
+      if (col == this.startX && row == this.startY) {
+        return {
+          col,
+          row,
+          isStart: true,
+          isEnd: false,
+          isWall: false,
+          id: "Node-" + row + "-" + col,
+        };
+      } else if (col == this.endX && row == this.endY) {
+        return {
+          col,
+          row,
+          isStart: false,
+          isEnd: true,
+          isWall: false,
+          id: "Node-" + row + "-" + col,
+        };
+      }
       return {
         col,
         row,
         isStart: false,
-        isFinish: false,
+        isEnd: false,
         isWall: false,
         id: "Node-" + row + "-" + col,
       };
@@ -107,8 +179,10 @@ export default {
       for (let row = 0; row < this.rowNum; row++) {
         for (let col = 0; col < this.colNum; col++) {
           let node = this.grid[row][col];
-          node.isWall = false;
-          document.getElementById(node.id).className = "box";
+          if (node.isStart == false && node.isEnd == false) {
+            node.isWall = false;
+            document.getElementById(node.id).className = "box";
+          }
         }
       }
     },
