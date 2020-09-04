@@ -41,4 +41,11 @@ export default {
   border: 1px solid $charcoal;
   background-color: #e76f51;
 }
+.visited {
+  animation: fadeIn ease 1s;
+  width: 25px;
+  height: 25px;
+  border: 1px solid $charcoal;
+  background-color: $orange-yellow;
+}
 </style>

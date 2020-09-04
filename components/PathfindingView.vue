@@ -215,59 +215,76 @@ export default {
     },
     // returns an array of all neighbor nodes to a node
     getNeighbors: function (node) {
-      result = [];
+      let result = [];
       let row = node.row;
       let col = node.col;
 
       //left
       if (
         row >= 0 &&
-        row <= this.rowNum &&
+        row < this.rowNum &&
         col - 1 >= 0 &&
-        col - 1 <= this.colNum
+        col - 1 < this.colNum
       ) {
         let id = "Node-" + col + "-" + row - 1;
-        result.append(document.getElementById(id));
+        result.push([col - 1, row]);
       }
       // top
       if (
         row - 1 >= 0 &&
-        row - 1 <= this.rowNum &&
+        row - 1 < this.rowNum &&
         col >= 0 &&
-        col <= this.colNum
+        col < this.colNum
       ) {
         let id = "Node-" + col - 1 + "-" + row;
-        result.append(document.getElementById(id));
+        result.push([col, row - 1]);
       }
       // right
       if (
         row >= 0 &&
-        row <= this.rowNum &&
+        row < this.rowNum &&
         col + 1 >= 0 &&
-        col + 1 <= this.colNum
+        col + 1 < this.colNum
       ) {
         let id = "Node-" + col + "-" + row + 1;
-        result.append(document.getElementById(id));
+        result.push([col + 1, row]);
       }
       // bottom
       if (
         row + 1 >= 0 &&
-        row + 1 <= this.rowNum &&
+        row + 1 < this.rowNum &&
         col >= 0 &&
-        col <= this.colNum
+        col < this.colNum
       ) {
-        let id = "Node-" + col + 1 + "-" + row;
-        result.append(document.getElementById(id));
+        result.push([col, row + 1]);
       }
+      return result;
     },
     dfs: function () {
-      console.log(this.startX + " " + this.startY);
-      let id = "Node-" + this.startX + "-" + this.startY;
-      let startElement = document.getElementById(id);
-      this.dfsHelper([startElement]);
+      this.dfsHelper(this.startX, this.startY);
     },
-    dfsHelper: function (array) {
-      console.log(array);
+    dfsHelper: function (x, y) {
+      let current = this.grid[x][y];
+      let currStyle = document.getElementById(current.id).className;
+
+      // Conditions
+      if (currStyle === "end") {
+        console.log("Found at" + current);
+        return;
+      } else {
+        document.getElementById(current.id).className = "visited";
+      }
+
+      let neighbors = this.getNeighbors(current);
+      for (let i = 0; i < neighbors.length; i++) {
+        let ncoords = neighbors[i];
+        let n = this.grid[ncoords[0]][ncoords[1]];
+        if (document.getElementById(n.id).className !== "visited") {
+          this.dfsHelper(ncoords[0], ncoords[1]);
+        }
+      }
+
+      return;
     },
   },
 };
@@ -289,8 +306,6 @@ export default {
     justify-content: center;
     align-items: center;
     transform: rotateX(180deg);
-    .col {
-    }
   }
 }
 </style>
