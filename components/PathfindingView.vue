@@ -57,7 +57,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultGraph: [], // stores the newly generated array in unsorted form
       found: false, // is the current array sorted?,
-      animSpeed: 1, // animation speed
+      animSpeed: 1000, // animation speed
       buttonDisable: false, // disable the action buttons of the toolbar?
       mousePressed: false, // is the mouse currently pressed?
       moveStart: false, // are we moving the start node?
