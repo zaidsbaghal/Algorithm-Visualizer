@@ -261,9 +261,9 @@ export default {
       return result;
     },
     dfs: function () {
-      this.dfsHelper(this.startX, this.startY);
+      let animations = this.dfsHelper(this.startX, this.startY, this.animations);
     },
-    dfsHelper: function (x, y) {
+    dfsHelper: function (x, y, animations) {
       let current = this.grid[x][y];
       let currStyle = document.getElementById(current.id).className;
 
