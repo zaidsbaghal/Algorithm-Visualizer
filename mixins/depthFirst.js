@@ -1,7 +1,8 @@
 export default {
     methods: {
-        dfs: function (animations, x, y, grid) {
-            return this.dfsHelper(this.startX, this.startY, grid, animations);
+        dfs: function (x, y, grid, animations) {
+            this.dfsHelper(x, y, grid, animations, false);
+            return animations;
         },
         // returns an array of all neighbor nodes to a node
         getNeighbors: function (node) {
@@ -50,24 +51,36 @@ export default {
             }
             return result;
         },
-        dfsHelper: function (x, y, grid, animations) {
-            let current = this.grid[x][y];
+        dfsHelper: function (x, y, grid, animations, found) {
+            if (found == true) {
+                return;
+            }
+            let current = grid[x][y];
             let currStyle = document.getElementById(current.id).className;
 
             // Conditions
             if (currStyle === "end") {
-                console.log("Found at" + current);
-                return;
+                animations.push(["end", x, y])
+                return true;
+            } else if (currStyle === "start") {
+                // do nothing
             } else {
-                document.getElementById(current.id).className = "visited";
+                animations.push(["visit", x, y])
+                current.visited = true;
             }
 
             let neighbors = this.getNeighbors(current);
             for (let i = 0; i < neighbors.length; i++) {
                 let ncoords = neighbors[i];
-                let n = this.grid[ncoords[0]][ncoords[1]];
-                if (document.getElementById(n.id).className !== "visited") {
-                    this.dfsHelper(ncoords[0], ncoords[1]);
+                let n = grid[ncoords[0]][ncoords[1]];
+                if (n.visited != true) {
+                    if (document.getElementById(n.id).className === "wall"){
+                        continue; // skip walls
+                    }
+                    found = this.dfsHelper(ncoords[0], ncoords[1], grid, animations, found);
+                    if (found == true) {
+                        return;
+                    }
                 }
             }
 

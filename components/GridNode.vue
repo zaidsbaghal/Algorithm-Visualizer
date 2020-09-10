@@ -9,6 +9,7 @@ export default {
     isWall: Boolean,
     isStart: Boolean,
     isEnd: Boolean,
+    visited: Boolean,
     id: String,
   },
 };

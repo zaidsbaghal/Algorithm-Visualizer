@@ -32,6 +32,7 @@
           :isWall="node.isWall"
           :isStart="node.isStart"
           :isEnd="node.isEnd"
+          :visited="node.visited"
           v-on:mousedown.native="mouseDown(node)"
           v-on:mouseup.native="mouseUp(node)"
           v-on:mouseenter.native="mouseEnter(node)"
@@ -63,7 +64,7 @@ export default {
       animations: [], // stores the animations of the current sort
       defaultGraph: [], // stores the newly generated array in unsorted form
       found: false, // is the current array sorted?,
-      animSpeed: 1000, // animation speed
+      animSpeed: 10, // animation speed
       buttonDisable: false, // disable the action buttons of the toolbar?
       mousePressed: false, // is the mouse currently pressed?
       moveStart: false, // are we moving the start node?
@@ -120,7 +121,6 @@ export default {
         this.mousePressed = true;
         this.makeWall(node);
       }
-      console.log(node);
     },
     // function is called when we release the mouse press on a node
     mouseUp: function (node) {
@@ -153,15 +153,19 @@ export default {
     },
     // Initialize the start node
     setStart: function () {
-      let id = this.grid[this.startX][this.startY].id;
+      this.startX = 30;
+      this.startY = 15;
+      let id = this.grid[30][15].id;
       document.getElementById(id).className = "start";
-      this.grid[this.startX][this.startY].isStart = true;
+      this.grid[30][15].isStart = true;
     },
     // Initialize the end node
     setEnd: function () {
-      let id = this.grid[this.endX][this.endY].id;
+      this.endX = 40;
+      this.endY = 15;
+      let id = this.grid[40][15].id;
       document.getElementById(id).className = "end";
-      this.grid[this.endX][this.endY].isEnd = true;
+      this.grid[40][15].isEnd = true;
     },
     // Initialize the grid
     initGrid: function () {
@@ -184,6 +188,7 @@ export default {
           isStart: true,
           isEnd: false,
           isWall: false,
+          visited: false,
           id: "Node-" + col + "-" + row,
         };
       } else if (col == this.endX && row == this.endY) {
@@ -193,6 +198,7 @@ export default {
           isStart: false,
           isEnd: true,
           isWall: false,
+          visited: false,
           id: "Node-" + col + "-" + row,
         };
       }
@@ -202,22 +208,26 @@ export default {
         isStart: false,
         isEnd: false,
         isWall: false,
+        visited: false,
         id: "Node-" + col + "-" + row,
       };
     },
     // Clears all walls from the grid
     resetGrid: function () {
-      console.log("resetting");
+      console.log("Resetting...");
       for (let col = 0; col < this.colNum; col++) {
         for (let row = 0; row < this.rowNum; row++) {
           let node = this.grid[col][row];
           let eleClass = document.getElementById(node.id).className;
-          if (eleClass !== "start" && eleClass !== "end") {
-            node.isWall = false;
-            document.getElementById(node.id).className = "box";
-          }
+          node.isWall = false;
+          node.visited = false;
+          node.isStart = false;
+          node.isEnd = false;
+          document.getElementById(node.id).className = "box";
         }
       }
+      this.setStart();
+      this.setEnd();
     },
     depthFirstButton: function () {
       this.animations = this.dfs(
@@ -227,7 +237,26 @@ export default {
         this.animations
       );
 
-      
+      for (let i = 0; i < this.animations.length; i++) {
+        let command = this.animations[i][0]; // current command
+        let x = this.animations[i][1]; // current x
+        let y = this.animations[i][2]; // current y
+        let current = this.grid[x][y]; // current node object
+
+        if (command === "curr") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else if (command === "visit") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else {
+          i = this.animations.length;
+          break;
+        }
+      }
+      this.animations = [];
     },
   },
 };
