@@ -12,7 +12,11 @@
         style="background-color: #E76F51"
         :disabled="buttonDisable"
       >Reset Visualization</button>
-      <button class="toolbar-button" :disabled="buttonDisable" v-on:click="dfs">Depth First</button>
+      <button
+        class="toolbar-button"
+        :disabled="buttonDisable"
+        v-on:click="depthFirstButton"
+      >Depth First</button>
       <button class="toolbar-button" :disabled="buttonDisable">Breadth First</button>
       <button class="toolbar-button" :disabled="buttonDisable">Dijkstra's</button>
       <button class="toolbar-button" :disabled="buttonDisable">A*</button>
@@ -39,7 +43,9 @@
 </template>
 <script>
 import Node from "~/components/GridNode.vue";
+import depthFirst from "~/mixins/depthFirst.js";
 export default {
+  mixins: [depthFirst],
   components: {
     Node,
   },
@@ -213,78 +219,15 @@ export default {
         }
       }
     },
-    // returns an array of all neighbor nodes to a node
-    getNeighbors: function (node) {
-      let result = [];
-      let row = node.row;
-      let col = node.col;
+    depthFirstButton: function () {
+      this.animations = this.dfs(
+        this.startX,
+        this.startY,
+        this.grid,
+        this.animations
+      );
 
-      //left
-      if (
-        row >= 0 &&
-        row < this.rowNum &&
-        col - 1 >= 0 &&
-        col - 1 < this.colNum
-      ) {
-        let id = "Node-" + col + "-" + row - 1;
-        result.push([col - 1, row]);
-      }
-      // top
-      if (
-        row - 1 >= 0 &&
-        row - 1 < this.rowNum &&
-        col >= 0 &&
-        col < this.colNum
-      ) {
-        let id = "Node-" + col - 1 + "-" + row;
-        result.push([col, row - 1]);
-      }
-      // right
-      if (
-        row >= 0 &&
-        row < this.rowNum &&
-        col + 1 >= 0 &&
-        col + 1 < this.colNum
-      ) {
-        let id = "Node-" + col + "-" + row + 1;
-        result.push([col + 1, row]);
-      }
-      // bottom
-      if (
-        row + 1 >= 0 &&
-        row + 1 < this.rowNum &&
-        col >= 0 &&
-        col < this.colNum
-      ) {
-        result.push([col, row + 1]);
-      }
-      return result;
-    },
-    dfs: function () {
-      let animations = this.dfsHelper(this.startX, this.startY, this.animations);
-    },
-    dfsHelper: function (x, y, animations) {
-      let current = this.grid[x][y];
-      let currStyle = document.getElementById(current.id).className;
-
-      // Conditions
-      if (currStyle === "end") {
-        console.log("Found at" + current);
-        return;
-      } else {
-        document.getElementById(current.id).className = "visited";
-      }
-
-      let neighbors = this.getNeighbors(current);
-      for (let i = 0; i < neighbors.length; i++) {
-        let ncoords = neighbors[i];
-        let n = this.grid[ncoords[0]][ncoords[1]];
-        if (document.getElementById(n.id).className !== "visited") {
-          this.dfsHelper(ncoords[0], ncoords[1]);
-        }
-      }
-
-      return;
+      
     },
   },
 };
