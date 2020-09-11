@@ -74,7 +74,7 @@ export default {
                 let ncoords = neighbors[i];
                 let n = grid[ncoords[0]][ncoords[1]];
                 if (n.visited != true) {
-                    if (document.getElementById(n.id).className === "wall"){
+                    if (document.getElementById(n.id).className === "wall") {
                         continue; // skip walls
                     }
                     found = this.dfsHelper(ncoords[0], ncoords[1], grid, animations, found);

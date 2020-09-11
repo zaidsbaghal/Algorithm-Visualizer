@@ -11,6 +11,7 @@
         class="toolbar-button"
         style="background-color: #E76F51"
         :disabled="buttonDisable"
+        v-on:click="resetVis"
       >Reset Visualization</button>
       <button
         class="toolbar-button"
@@ -214,7 +215,6 @@ export default {
     },
     // Clears all walls from the grid
     resetGrid: function () {
-      console.log("Resetting...");
       for (let col = 0; col < this.colNum; col++) {
         for (let row = 0; row < this.rowNum; row++) {
           let node = this.grid[col][row];
@@ -228,6 +228,21 @@ export default {
       }
       this.setStart();
       this.setEnd();
+    },
+    resetVis: function () {
+      for (let col = 0; col < this.colNum; col++) {
+        for (let row = 0; row < this.rowNum; row++) {
+          let node = this.grid[col][row];
+          let eleClass = document.getElementById(node.id).className;
+          node.visited = false;
+          if (eleClass === "start" || eleClass === "end") {
+            continue;
+          }
+          if (eleClass != "wall") {
+            document.getElementById(node.id).className = "box";
+          }
+        }
+      }
     },
     depthFirstButton: function () {
       this.animations = this.dfs(
