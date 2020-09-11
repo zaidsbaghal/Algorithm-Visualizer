@@ -11,6 +11,7 @@ export default {
     isEnd: Boolean,
     visited: Boolean,
     id: String,
+    parent: Object
   },
 };
 </script>

@@ -18,7 +18,11 @@
         :disabled="buttonDisable"
         v-on:click="depthFirstButton"
       >Depth First</button>
-      <button class="toolbar-button" :disabled="buttonDisable">Breadth First</button>
+      <button
+        class="toolbar-button"
+        :disabled="buttonDisable"
+        v-on:click="breadthFirstButton"
+      >Breadth First</button>
       <button class="toolbar-button" :disabled="buttonDisable">Dijkstra's</button>
       <button class="toolbar-button" :disabled="buttonDisable">A*</button>
     </div>
@@ -46,8 +50,9 @@
 <script>
 import Node from "~/components/GridNode.vue";
 import depthFirst from "~/mixins/depthFirst.js";
+import breadthFirst from "~/mixins/breadthFirst.js";
 export default {
-  mixins: [depthFirst],
+  mixins: [depthFirst, breadthFirst],
   components: {
     Node,
   },
@@ -99,12 +104,14 @@ export default {
       // Reset old node
       if (this.moveStart == true) {
         if (this.prevNode === "start") {
+          node.isStart = false;
           document.getElementById(node.id).className = "box";
         } else {
           document.getElementById(node.id).className = this.prevNode;
         }
       } else if (this.moveEnd == true) {
         if (this.prevNode === "end") {
+          node.isEnd = false;
           document.getElementById(node.id).className = "box";
         } else {
           document.getElementById(node.id).className = this.prevNode;
@@ -126,11 +133,13 @@ export default {
     // function is called when we release the mouse press on a node
     mouseUp: function (node) {
       if (this.moveStart == true) {
+        node.isStart = true;
         document.getElementById(node.id).className = "start";
         this.startY = node.row;
         this.startX = node.col;
         this.moveStart = false;
       } else if (this.moveEnd == true) {
+        node.isEnd = true;
         document.getElementById(node.id).className = "end";
         this.endY = node.row;
         this.endX = node.col;
@@ -264,6 +273,37 @@ export default {
           }, i * this.animSpeed);
         } else if (command === "visit") {
           setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else {
+          i = this.animations.length;
+          break;
+        }
+      }
+      this.animations = [];
+    },
+    breadthFirstButton: function () {
+      this.animations = this.bfs(
+        this.startX,
+        this.startY,
+        this.grid,
+        this.animations
+      );
+
+      console.log(this.animations);
+      for (let i = 0; i < this.animations.length; i++) {
+        let command = this.animations[i][0]; // current command
+        let x = this.animations[i][1]; // current x
+        let y = this.animations[i][2]; // current y
+        let current = this.grid[x][y]; // current node object
+
+        if (command === "curr") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else if (command === "visit") {
+          setTimeout(function () {
+            console.log("visit");
             document.getElementById(current.id).className = "visited";
           }, i * this.animSpeed);
         } else {
