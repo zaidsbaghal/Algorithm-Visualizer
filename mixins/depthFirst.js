@@ -2,6 +2,7 @@ export default {
     methods: {
         dfs: function (x, y, grid, animations) {
             this.dfsHelper(x, y, grid, animations, false);
+            animations.push(["nfound"]) // not found
             return animations;
         },
         // returns an array of all neighbor nodes to a node

@@ -59,13 +59,14 @@ select {
     height: 5.5rem;
     display: flex;
     justify-content: center;
+
     .algo-select {
       display: flex;
       justify-content: center;
       align-items: center;
       margin: 0 auto;
       text-align: center;
-      width: 300px;
+      width: 350px;
       padding-left: 20px;
       padding-right: 20px;
       height: 100px;
@@ -75,7 +76,13 @@ select {
       background-color: $alabaster;
       border: none;
       color: $charcoal;
-      appearance: none;
+      // appearance: none;
+    }
+    .down-arrow{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
     }
   }
 }

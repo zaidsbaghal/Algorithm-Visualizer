@@ -76,7 +76,7 @@ export default {
       moveStart: false, // are we moving the start node?
       moveEnd: false, // are we moving the end node?
       prevNode: null, // Stores state of previous node when moving
-      curr: null, // Stores current backtracking node
+      viz: false, // is there a visualization on the board
     };
   },
   mounted: function () {
@@ -87,6 +87,12 @@ export default {
     });
   },
   methods: {
+    disableButtons: function () {
+      this.buttonDisable = true;
+    },
+    enableButtons: function () {
+      this.buttonDisable = false;
+    },
     // Function is called when we enter a node
     mouseEnter: function (node) {
       this.prevNode = document.getElementById(node.id).className.slice();
@@ -122,6 +128,9 @@ export default {
     //function is called when the mouse is pressed down on a node
     mouseDown: function (node) {
       console.log(node);
+      if (this.viz) {
+        return;
+      }
       let element = document.getElementById(node.id);
       if (element.className === "start") {
         this.moveStart = true;
@@ -156,7 +165,8 @@ export default {
         element.className === "start" ||
         element.className === "end" ||
         element.className === "visited" ||
-        element.className === "shortest"
+        element.className === "path" ||
+        this.viz
       ) {
         return;
       } else {
@@ -234,6 +244,7 @@ export default {
     },
     // Clears all walls from the grid
     resetGrid: function () {
+      this.viz = false;
       for (let col = 0; col < this.colNum; col++) {
         for (let row = 0; row < this.rowNum; row++) {
           let node = this.grid[col][row];
@@ -249,6 +260,7 @@ export default {
       this.setEnd();
     },
     resetVis: function () {
+      this.viz = false;
       for (let col = 0; col < this.colNum; col++) {
         for (let row = 0; row < this.rowNum; row++) {
           let node = this.grid[col][row];
@@ -264,6 +276,11 @@ export default {
       }
     },
     depthFirstButton: function () {
+      if (this.viz) {
+        return;
+      }
+      this.disableButtons();
+      this.viz = true;
       this.animations = this.dfs(
         this.startX,
         this.startY,
@@ -283,16 +300,27 @@ export default {
           }, i * this.animSpeed);
         } else if (command === "visit") {
           setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
+            document.getElementById(current.id).className = "path";
           }, i * this.animSpeed);
         } else {
-          i = this.animations.length;
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            this.animations = [];
+            this.enableButtons();
+          });
           break;
         }
       }
-      this.animations = [];
     },
     breadthFirstButton: function () {
+      if (this.viz) {
+        return;
+      }
+      this.viz = true;
+      this.disableButtons();
       this.animations = this.bfs(
         this.startX,
         this.startY,
@@ -316,20 +344,22 @@ export default {
             document.getElementById(current.id).className = "visited";
           }, i * this.animSpeed);
         } else if (command === "path") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "path";
-          }, i * this.animSpeed);
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              document.getElementById(current.id).className = "path";
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            this.animations = [];
+            this.enableButtons();
+          });
         } else {
           // End command
           i = this.animations.length;
-          end = true;
-        }
-        if (end == true) {
           this.animations = [];
           return;
         }
       }
-      this.animations = [];
     },
   },
 };

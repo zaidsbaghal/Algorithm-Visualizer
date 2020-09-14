@@ -2,6 +2,7 @@ export default {
     methods: {
         bfs: function (x, y, grid, animations) {
             this.bfsHelper(x, y, grid, animations)
+            animations.push(["nfound"]) // not found
             return animations
         },
         bfsHelper: function (x, y, grid, animations) {
@@ -32,7 +33,6 @@ export default {
                 }
                 let neighbors = this.getNeighbors(v);
                 for (let i = 0; i < neighbors.length; i++) {
-
                     let ncoords = neighbors[i];
                     let n = grid[ncoords[0]][ncoords[1]];
                     if (document.getElementById(n.id).className === "wall") {
