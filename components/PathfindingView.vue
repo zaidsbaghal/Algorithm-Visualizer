@@ -200,6 +200,7 @@ export default {
           isWall: false,
           visited: false,
           id: "Node-" + col + "-" + row,
+          parent: null,
         };
       } else if (col == this.endX && row == this.endY) {
         return {
