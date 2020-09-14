@@ -11,7 +11,7 @@ export default {
     isEnd: Boolean,
     visited: Boolean,
     id: String,
-    parent: Object
+    parent: Object,
   },
 };
 </script>
@@ -49,5 +49,12 @@ export default {
   height: 25px;
   border: 1px solid $charcoal;
   background-color: $orange-yellow;
+}
+.path {
+  animation: fadeIn ease 1s;
+  width: 25px;
+  height: 25px;
+  border: 1px solid $charcoal;
+  background-color: $sandy-brown;
 }
 </style>

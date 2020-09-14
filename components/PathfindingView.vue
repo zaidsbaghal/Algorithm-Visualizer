@@ -76,6 +76,7 @@ export default {
       moveStart: false, // are we moving the start node?
       moveEnd: false, // are we moving the end node?
       prevNode: null, // Stores state of previous node when moving
+      curr: null, // Stores current backtracking node
     };
   },
   mounted: function () {
@@ -120,6 +121,7 @@ export default {
     },
     //function is called when the mouse is pressed down on a node
     mouseDown: function (node) {
+      console.log(node);
       let element = document.getElementById(node.id);
       if (element.className === "start") {
         this.moveStart = true;
@@ -150,7 +152,12 @@ export default {
     // Stylize wall of box (Does not set the nodes isWall data yet for speed purposes)
     makeWall: function (node) {
       let element = document.getElementById(node.id);
-      if (element.className === "start" || element.className === "end") {
+      if (
+        element.className === "start" ||
+        element.className === "end" ||
+        element.className === "visited" ||
+        element.className === "shortest"
+      ) {
         return;
       } else {
         let element = document.getElementById(node.id);
@@ -211,6 +218,7 @@ export default {
           isWall: false,
           visited: false,
           id: "Node-" + col + "-" + row,
+          parent: null,
         };
       }
       return {
@@ -221,6 +229,7 @@ export default {
         isWall: false,
         visited: false,
         id: "Node-" + col + "-" + row,
+        parent: null,
       };
     },
     // Clears all walls from the grid
@@ -291,7 +300,7 @@ export default {
         this.animations
       );
 
-      console.log(this.animations);
+      let end = false;
       for (let i = 0; i < this.animations.length; i++) {
         let command = this.animations[i][0]; // current command
         let x = this.animations[i][1]; // current x
@@ -304,12 +313,20 @@ export default {
           }, i * this.animSpeed);
         } else if (command === "visit") {
           setTimeout(function () {
-            console.log("visit");
             document.getElementById(current.id).className = "visited";
           }, i * this.animSpeed);
+        } else if (command === "path") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "path";
+          }, i * this.animSpeed);
         } else {
+          // End command
           i = this.animations.length;
-          break;
+          end = true;
+        }
+        if (end == true) {
+          this.animations = [];
+          return;
         }
       }
       this.animations = [];

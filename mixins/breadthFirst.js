@@ -14,17 +14,30 @@ export default {
             }
             q.push(current)
             while (q.length > 0) {
-                console.log(q)
                 let v = q.shift() // pop
                 if (v.isEnd == true) {
-                    console.log("end")
+                    let curr = grid[v.col][v.row].parent
+                    console.log(curr)
+                    while (curr != null) {
+                        if (curr.isStart) {
+                            break;
+                        }
+                        console.log("path")
+                        animations.push(["path", curr.col, curr.row])
+                        curr = curr.parent
+                    }
                     animations.push(["end", x, y])
+                    q = []
                     break;
                 }
                 let neighbors = this.getNeighbors(v);
                 for (let i = 0; i < neighbors.length; i++) {
+
                     let ncoords = neighbors[i];
                     let n = grid[ncoords[0]][ncoords[1]];
+                    if (document.getElementById(n.id).className === "wall") {
+                        continue; // skip walls
+                    }
                     if (n.visited === false) {
                         if (n.isEnd == true) {
                             n.parent = v
