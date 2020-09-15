@@ -38,6 +38,8 @@
           :isStart="node.isStart"
           :isEnd="node.isEnd"
           :visited="node.visited"
+          :parent="node.parent"
+          :ddist="node.ddist"
           v-on:mousedown.native="mouseDown(node)"
           v-on:mouseup.native="mouseUp(node)"
           v-on:mouseenter.native="mouseEnter(node)"
@@ -218,6 +220,7 @@ export default {
           visited: false,
           id: "Node-" + col + "-" + row,
           parent: null,
+          ddist: 0,
         };
       } else if (col == this.endX && row == this.endY) {
         return {
@@ -229,6 +232,7 @@ export default {
           visited: false,
           id: "Node-" + col + "-" + row,
           parent: null,
+          ddist: Number.POSITIVE_INFINITY,
         };
       }
       return {
@@ -240,6 +244,7 @@ export default {
         visited: false,
         id: "Node-" + col + "-" + row,
         parent: null,
+        ddist: Number.POSITIVE_INFINITY,
       };
     },
     // Clears all walls from the grid
@@ -328,7 +333,6 @@ export default {
         this.animations
       );
 
-      let end = false;
       for (let i = 0; i < this.animations.length; i++) {
         let command = this.animations[i][0]; // current command
         let x = this.animations[i][1]; // current x

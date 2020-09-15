@@ -12,6 +12,7 @@ export default {
     visited: Boolean,
     id: String,
     parent: Object,
+    ddist: Number
   },
 };
 </script>
