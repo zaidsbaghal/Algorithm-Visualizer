@@ -4,7 +4,9 @@ export default {
             var unvisited = []
             let current = grid[x][y]
             let neighbors = this.getNeighbors(current);
-            
+            while (neighbors.length > 0){
+                
+            }
         },
         // returns an array of all neighbor nodes to a node
         getNeighbors: function (node) {
