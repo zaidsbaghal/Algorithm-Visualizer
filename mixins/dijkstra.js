@@ -1,12 +1,20 @@
 export default {
     methods: {
         dijkstra: function (grid, x, y, animations) {
-            var unvisited = []
             let current = grid[x][y]
-            let neighbors = this.getNeighbors(current);
-            while (neighbors.length > 0){
-                
+            var unvisited = [current]
+
+            while (unvisited.length > 0) {
+                // Go through each neighbor and calculate the distance 
+                for (let i = 0; i < neighbors.length; i++) {
+                    let ncoords = neighbors[i]; // neighbor coordinates
+                    let n = grid[ncoords[0]][ncoords[1]]; // neighbor node
+                    let preDist = n.ddist; // get previous distance
+                    let
+                }
             }
+
+
         },
         // returns an array of all neighbor nodes to a node
         getNeighbors: function (node) {
