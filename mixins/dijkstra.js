@@ -5,12 +5,13 @@ export default {
             var unvisited = [current]
 
             while (unvisited.length > 0) {
+                let current = unvisited.shift() // get first element out
                 // Go through each neighbor and calculate the distance 
                 for (let i = 0; i < neighbors.length; i++) {
                     let ncoords = neighbors[i]; // neighbor coordinates
                     let n = grid[ncoords[0]][ncoords[1]]; // neighbor node
                     let preDist = n.ddist; // get previous distance
-                    let
+                    
                 }
             }
 
