@@ -23,7 +23,11 @@
         :disabled="buttonDisable"
         v-on:click="breadthFirstButton"
       >Breadth First</button>
-      <button class="toolbar-button" :disabled="buttonDisable">Dijkstra's</button>
+      <button
+        class="toolbar-button"
+        :disabled="buttonDisable"
+        v-on:click="dijkstraButton"
+      >Dijkstra's</button>
       <button class="toolbar-button" :disabled="buttonDisable">A*</button>
     </div>
     <div class="graph-action">
@@ -53,8 +57,9 @@
 import Node from "~/components/GridNode.vue";
 import depthFirst from "~/mixins/depthFirst.js";
 import breadthFirst from "~/mixins/breadthFirst.js";
+import dijkstras from "~/mixins/dijkstra.js";
 export default {
-  mixins: [depthFirst, breadthFirst],
+  mixins: [depthFirst, breadthFirst, dijkstras],
   components: {
     Node,
   },
@@ -364,6 +369,9 @@ export default {
           return;
         }
       }
+    },
+    dijkstraButton: function () {
+      this.dijkstra(this.grid, this.startX, this.startY, this.animations);
     },
   },
 };

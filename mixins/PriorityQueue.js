@@ -7,28 +7,28 @@ export default {
     methods: {
         enqueue: function (element) {
             if (this.isEmpty()) {
-                this.collection.push(element);
+                this.data.push(element);
             } else {
-                let added = false;
-                for (let i = 1; i <= this.collection.length; i++) {
-                    if (element[1] < this.collection[i - 1][1]) {
-                        this.collection.splice(i - 1, 0, element);
+                let added = false; // Was the queue shifted?
+                for (let i = 1; i <= this.data.length; i++) {
+                    if (element.ddist < this.data[i - 1].ddist) {
+                        this.data.splice(i - 1, 0, element);
                         added = true;
                         break;
                     }
                 }
+                // Add element to the end
                 if (!added) {
-                    this.collection.push(element);
+                    this.data.push(element);
                 }
             }
         },
         dequeue: function () {
-            let value = this.collection.shift();
-            return value;
+            let element = this.data.shift();
+            return element;
         },
         isEmpty: function () {
-            return (this.collection.length === 0)
+            return (this.data.length === 0)
         }
     }
-}
 }

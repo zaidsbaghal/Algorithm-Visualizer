@@ -1,6 +1,14 @@
+import pq from './PriorityQueue'
 export default {
+    components: { pq },
+    data: function () {
+        return {
+            q: pq // Priority queue keeps track of distances in smallest-first order
+        }
+    },
     methods: {
         dijkstra: function (grid, x, y, animations) {
+            console.log(this.q)
             let current = grid[x][y]
             var unvisited = [current]
 
@@ -11,7 +19,7 @@ export default {
                     let ncoords = neighbors[i]; // neighbor coordinates
                     let n = grid[ncoords[0]][ncoords[1]]; // neighbor node
                     let preDist = n.ddist; // get previous distance
-                    
+
                 }
             }
 

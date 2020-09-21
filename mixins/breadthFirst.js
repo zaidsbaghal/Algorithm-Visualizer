@@ -18,12 +18,10 @@ export default {
                 let v = q.shift() // pop
                 if (v.isEnd == true) {
                     let curr = grid[v.col][v.row].parent
-                    console.log(curr)
                     while (curr != null) {
                         if (curr.isStart) {
                             break;
                         }
-                        console.log("path")
                         animations.push(["path", curr.col, curr.row])
                         curr = curr.parent
                     }
