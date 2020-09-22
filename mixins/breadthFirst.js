@@ -2,7 +2,7 @@ export default {
     methods: {
         bfs: function (x, y, grid, animations) {
             this.bfsHelper(x, y, grid, animations)
-            animations.push(["path",70,30]) // not found
+            animations.push(["nfound",x,y]) // not found
             return animations
         },
         bfsHelper: function (x, y, grid, animations) {

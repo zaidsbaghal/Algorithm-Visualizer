@@ -95,11 +95,9 @@ export default {
   },
   methods: {
     disableButtons: function () {
-      console.log("disable buttons");
       this.buttonDisable = true;
     },
     enableButtons: function () {
-      console.log("enable buttons");
       this.buttonDisable = false;
     },
     // Function is called when we enter a node
@@ -345,37 +343,29 @@ export default {
         this.grid,
         this.animations
       );
-
       for (let i = 0; i < this.animations.length; i++) {
+        if (this.animations[i] == null || this.animations[i] === "undefined") {
+          continue;
+        }
         let command = this.animations[i][0]; // current command
         let x = this.animations[i][1]; // current x
         let y = this.animations[i][2]; // current y
-        let current = "";
-        try {
-          current = this.grid[x][y]; // current node object
-        } catch (err) {}
+        let current = this.grid[x][y]; // current node object
 
         if (command === "curr") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
           }, i * this.animSpeed);
         } else if (command === "visit") {
-          if (current === null) {
-            continue;
-          }
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
           }, i * this.animSpeed);
         } else if (command === "path") {
           new Promise((resolve, reject) => {
-            if (x == 70) {
+            setTimeout(function () {
+              document.getElementById(current.id).className = "path";
               resolve();
-            } else {
-              setTimeout(function () {
-                document.getElementById(current.id).className = "path";
-                resolve();
-              }, i * this.animSpeed);
-            }
+            }, i * this.animSpeed);
           }).then(() => {
             this.animations = [];
             this.enableButtons();
@@ -387,6 +377,7 @@ export default {
           this.animations = [];
         }
       }
+      this.enableButtons();
     },
     dijkstraButton: function () {
       if (this.viz) {
