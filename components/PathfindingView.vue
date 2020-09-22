@@ -95,9 +95,11 @@ export default {
   },
   methods: {
     disableButtons: function () {
+      console.log("disable buttons");
       this.buttonDisable = true;
     },
     enableButtons: function () {
+      console.log("enable buttons");
       this.buttonDisable = false;
     },
     // Function is called when we enter a node
@@ -192,6 +194,7 @@ export default {
       let id = this.grid[30][15].id;
       document.getElementById(id).className = "start";
       this.grid[30][15].isStart = true;
+      this.grid[30][15].ddist = 0;
     },
     // Initialize the end node
     setEnd: function () {
@@ -263,6 +266,7 @@ export default {
           node.visited = false;
           node.isStart = false;
           node.isEnd = false;
+          node.ddist = Number.POSITIVE_INFINITY;
           document.getElementById(node.id).className = "box";
         }
       }
@@ -276,7 +280,11 @@ export default {
           let node = this.grid[col][row];
           let eleClass = document.getElementById(node.id).className;
           node.visited = false;
+          node.ddist = Number.POSITIVE_INFINITY; // Reset Dijkstra Distance
           if (eleClass === "start" || eleClass === "end") {
+            if (eleClass == "start") {
+              node.ddist = 0;
+            }
             continue;
           }
           if (eleClass != "wall") {
@@ -342,6 +350,64 @@ export default {
         let command = this.animations[i][0]; // current command
         let x = this.animations[i][1]; // current x
         let y = this.animations[i][2]; // current y
+        let current = "";
+        try {
+          current = this.grid[x][y]; // current node object
+        } catch (err) {}
+
+        if (command === "curr") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else if (command === "visit") {
+          if (current === null) {
+            continue;
+          }
+          setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else if (command === "path") {
+          new Promise((resolve, reject) => {
+            if (x == 70) {
+              resolve();
+            } else {
+              setTimeout(function () {
+                document.getElementById(current.id).className = "path";
+                resolve();
+              }, i * this.animSpeed);
+            }
+          }).then(() => {
+            this.animations = [];
+            this.enableButtons();
+            i = this.animations.length;
+          });
+        } else {
+          // End command
+          i = this.animations.length;
+          this.animations = [];
+        }
+      }
+    },
+    dijkstraButton: function () {
+      if (this.viz) {
+        return;
+      }
+      this.viz = true;
+      this.disableButtons();
+      console.log(this.startX + " " + this.startY);
+      var pq = [];
+      this.animations = this.dijkstra(
+        this.grid,
+        this.startX,
+        this.startY,
+        this.animations,
+        pq
+      );
+
+      for (let i = 0; i < this.animations.length; i++) {
+        let command = this.animations[i][0]; // current command
+        let x = this.animations[i][1]; // current x
+        let y = this.animations[i][2]; // current y
         let current = this.grid[x][y]; // current node object
 
         if (command === "curr") {
@@ -359,19 +425,18 @@ export default {
               resolve();
             }, i * this.animSpeed);
           }).then(() => {
+            pq = [];
             this.animations = [];
             this.enableButtons();
           });
         } else {
           // End command
           i = this.animations.length;
+          pq = [];
           this.animations = [];
           return;
         }
       }
-    },
-    dijkstraButton: function () {
-      this.dijkstra(this.grid, this.startX, this.startY, this.animations);
     },
   },
 };

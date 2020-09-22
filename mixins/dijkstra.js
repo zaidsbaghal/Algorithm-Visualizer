@@ -1,29 +1,51 @@
-import pq from './PriorityQueue'
+import PriorityQueue from '~/mixins/PriorityQueue'
 export default {
-    components: { pq },
-    data: function () {
-        return {
-            q: pq // Priority queue keeps track of distances in smallest-first order
-        }
-    },
+    mixins: [PriorityQueue],
     methods: {
-        dijkstra: function (grid, x, y, animations) {
-            console.log(this.q)
+        dijkstra: function (grid, x, y, animations, pq) {
             let current = grid[x][y]
-            var unvisited = [current]
+            this.enqueue(pq, current);
 
-            while (unvisited.length > 0) {
-                let current = unvisited.shift() // get first element out
-                // Go through each neighbor and calculate the distance 
-                for (let i = 0; i < neighbors.length; i++) {
-                    let ncoords = neighbors[i]; // neighbor coordinates
-                    let n = grid[ncoords[0]][ncoords[1]]; // neighbor node
-                    let preDist = n.ddist; // get previous distance
-
+            while (pq.length > 0) {
+                let current = this.dequeue(pq) // get shortest distance node
+                if (current.isEnd == true) {
+                    let curr = grid[current.col][current.row].parent
+                    while (curr != null) {
+                        if (curr.isStart) {
+                            break;
+                        }
+                        animations.push(["path", curr.col, curr.row])
+                        curr = curr.parent
+                    }
+                    animations.push(["end", x, y])
+                    pq = []
+                    return animations;
                 }
+                if (!current.isStart) {
+                    animations.push(["visit", current.col, current.row])
+                }
+
+                let neighbors = this.getNeighbors(current)
+                for (let i = 0; i < neighbors.length; i++) {
+                    let ncoords = neighbors[i];
+                    let n = grid[ncoords[0]][ncoords[1]];
+                    if (document.getElementById(n.id).className === "wall") {
+                        continue;
+                    }
+                    let newDist = current.ddist + 1 // set new distance
+                    // if new distance is less than the current distance
+                    if (newDist < n.ddist) {
+                        n.ddist = newDist // set new distance of neighbor
+                        n.parent = current // set the parent
+                        this.enqueue(pq, n) // add to the priority queue
+                    }
+                }
+
             }
 
-
+            pq = []
+            animations.push(["nfound", x, y]) // not found
+            return animations;
         },
         // returns an array of all neighbor nodes to a node
         getNeighbors: function (node) {
