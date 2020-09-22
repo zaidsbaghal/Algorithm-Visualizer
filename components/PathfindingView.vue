@@ -297,18 +297,28 @@ export default {
       }
       this.disableButtons();
       this.viz = true;
-      this.animations = this.dfs(
-        this.startX,
-        this.startY,
-        this.grid,
-        this.animations
-      );
+      try {
+        this.animations = this.dfs(
+          this.startX,
+          this.startY,
+          this.grid,
+          this.animations
+        );
+      } catch (err) {
+        this.enableButtons();
+      }
 
       for (let i = 0; i < this.animations.length; i++) {
         let command = this.animations[i][0]; // current command
         let x = this.animations[i][1]; // current x
         let y = this.animations[i][2]; // current y
-        let current = this.grid[x][y]; // current node object
+        let current;
+        try {
+          current = this.grid[x][y]; // current node object
+        } catch (err) {
+          this.enableButtons();
+          continue;
+        }
 
         if (command === "curr") {
           setTimeout(function () {
@@ -323,10 +333,14 @@ export default {
             setTimeout(function () {
               resolve();
             }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-          });
+          })
+            .then(() => {
+              this.animations = [];
+              this.enableButtons();
+            })
+            .catch(() => {
+              this.enableButtons();
+            });
           break;
         }
       }
@@ -347,10 +361,17 @@ export default {
         if (this.animations[i] == null || this.animations[i] === "undefined") {
           continue;
         }
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
+        let command = this.animations[i][0]; // cOkaurrent command
+        let x = this.animations[i][1]; // currePOnt x
         let y = this.animations[i][2]; // current y
-        let current = this.grid[x][y]; // current node object
+
+        let current;
+        try {
+          current = this.grid[x][y]; // current node object
+        } catch (err) {
+          this.enableButtons();
+          continue;
+        }
 
         if (command === "curr") {
           setTimeout(function () {
@@ -377,7 +398,7 @@ export default {
           this.animations = [];
         }
       }
-      this.enableButtons();
+      // this.enableButtons()
     },
     dijkstraButton: function () {
       if (this.viz) {
@@ -399,7 +420,13 @@ export default {
         let command = this.animations[i][0]; // current command
         let x = this.animations[i][1]; // current x
         let y = this.animations[i][2]; // current y
-        let current = this.grid[x][y]; // current node object
+        let current;
+        try {
+          current = this.grid[x][y]; // current node object
+        } catch (err) {
+          this.enableButtons();
+          continue;
+        }
 
         if (command === "curr") {
           setTimeout(function () {

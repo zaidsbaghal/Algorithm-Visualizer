@@ -44,7 +44,7 @@ export default {
             }
 
             pq = []
-            animations.push(["nfound", x, y]) // not found
+            animations.push(["nfound", -1, -1]) // not found
             return animations;
         },
         // returns an array of all neighbor nodes to a node
