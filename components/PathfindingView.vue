@@ -535,7 +535,6 @@ export default {
               resolve();
             }, i * this.animSpeed);
           }).then(() => {
-            pq = [];
             this.animations = [];
             this.enableButtons();
           });

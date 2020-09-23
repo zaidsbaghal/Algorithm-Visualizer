@@ -63,7 +63,7 @@ export default {
                     break;
                 }
             }
-            data.splice(n)
+            data.splice(n, 1)
             this.enqueueStar(data, ele)
         }
     }

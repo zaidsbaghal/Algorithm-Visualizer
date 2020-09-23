@@ -67,6 +67,6 @@ export default {
   width: 25px;
   height: 25px;
   border: 1px solid $charcoal;
-  background-color: red;
+  background-color: $aqua;
 }
 </style>
