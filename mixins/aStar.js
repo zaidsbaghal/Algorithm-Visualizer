@@ -2,51 +2,69 @@ import PriorityQueue from '~/mixins/PriorityQueue'
 export default {
     mixins: [PriorityQueue],
     methods: {
-        dijkstra: function (grid, x, y, animations, pq) {
-            let current = grid[x][y]
-            this.enqueue(pq, current);
+        aStar: function (grid, x, y, endx, endy, animations) {
+            var pq = [] // Priority Queue
+            let start = grid[x][y]
+            let end = grid[endx][endy]
+            start.g = 0 // initialize g score 
 
-            while (pq.length > 0) {
-                let current = this.dequeue(pq) // get shortest distance node
-                if (current.isEnd == true) {
-                    let curr = grid[current.col][current.row].parent
-                    while (curr != null) {
-                        if (curr.isStart) {
-                            break;
-                        }
-                        animations.push(["path", curr.col, curr.row])
-                        curr = curr.parent
+            this.enqueueStar(pq, start);
+
+            // While Priority queue is not empty
+            while (!this.isEmpty(pq)) {
+                let current = this.dequeue(pq) // get node with lowest f score
+                if (current.isEnd) {
+                    // reconstruct path
+                    current = current.parent;
+                    while (!current.isStart) {
+                        animations.push(["path", current.col, current.row])
+                        current = current.parent;
                     }
-                    animations.push(["end", x, y])
-                    pq = []
                     return animations;
                 }
                 if (!current.isStart) {
                     animations.push(["visit", current.col, current.row])
                 }
+                current.closed = true // set as closed
 
                 let neighbors = this.getNeighbors(current)
                 for (let i = 0; i < neighbors.length; i++) {
+
                     let ncoords = neighbors[i];
                     let n = grid[ncoords[0]][ncoords[1]];
-                    if (document.getElementById(n.id).className === "wall") {
+                    if (n.closed || document.getElementById(n.id).className === "wall") {
                         continue;
                     }
-                    let newDist = current.ddist + 1 // set new distance
-                    // if new distance is less than the current distance
-                    if (newDist < n.ddist) {
-                        n.ddist = newDist // set new distance of neighbor
-                        n.parent = current // set the parent
-                        this.enqueue(pq, n) // add to the priority queue
+                    if (!n.isEnd) {
+                        animations.push(["fringe", n.col, n.row])
+                    }
+
+
+                    let tempG = current.g + this.getDistance(current, n);
+
+                    var beenVisited = n.visited;
+                    if (tempG < n.g || !beenVisited) {
+
+                        n.visited = true
+                        n.parent = current;
+                        n.g = tempG;
+                        n.f = n.g + this.getDistance(n, end);
+                    }
+
+                    if (!beenVisited) {
+                        this.enqueueStar(pq, n)
+                    } else {
+                        this.reorder(pq, n)
                     }
                 }
 
             }
 
-            console.log("not found")
-            pq = []
-            animations.push(["nfound", -1, -1]) // not found
             return animations;
+        },
+        getDistance: function (current, neigh) {
+            let distance = Math.abs(neigh.col - current.col) + Math.abs(neigh.row - current.row);
+            return distance;
         },
         // returns an array of all neighbor nodes to a node
         getNeighbors: function (node) {
@@ -94,6 +112,6 @@ export default {
                 result.push([col, row + 1]);
             }
             return result;
-        },
-    },
+        }
+    }
 }

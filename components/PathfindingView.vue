@@ -3,32 +3,48 @@
     <div class="function-buttons">
       <button
         class="toolbar-button"
-        style="background-color: #E76F51"
+        style="background-color: #e76f51"
         :disabled="buttonDisable"
         v-on:click="resetGrid"
-      >Reset Grid</button>
+      >
+        Reset Grid
+      </button>
       <button
         class="toolbar-button"
-        style="background-color: #E76F51"
+        style="background-color: #e76f51"
         :disabled="buttonDisable"
         v-on:click="resetVis"
-      >Reset Visualization</button>
+      >
+        Reset Visualization
+      </button>
       <button
         class="toolbar-button"
         :disabled="buttonDisable"
         v-on:click="depthFirstButton"
-      >Depth First</button>
+      >
+        Depth First
+      </button>
       <button
         class="toolbar-button"
         :disabled="buttonDisable"
         v-on:click="breadthFirstButton"
-      >Breadth First</button>
+      >
+        Breadth First
+      </button>
       <button
         class="toolbar-button"
         :disabled="buttonDisable"
         v-on:click="dijkstraButton"
-      >Dijkstra's</button>
-      <button class="toolbar-button" :disabled="buttonDisable">A*</button>
+      >
+        Dijkstra's
+      </button>
+      <button
+        class="toolbar-button"
+        :disabled="buttonDisable"
+        v-on:click="aStarButton"
+      >
+        A*
+      </button>
     </div>
     <div class="graph-action">
       <div class="col" v-for="(col, index) in this.grid" :key="index">
@@ -58,8 +74,9 @@ import Node from "~/components/GridNode.vue";
 import depthFirst from "~/mixins/depthFirst.js";
 import breadthFirst from "~/mixins/breadthFirst.js";
 import dijkstras from "~/mixins/dijkstra.js";
+import aStar from "~/mixins/aStar.js";
 export default {
-  mixins: [depthFirst, breadthFirst, dijkstras],
+  mixins: [depthFirst, breadthFirst, dijkstras, aStar],
   components: {
     Node,
   },
@@ -227,6 +244,10 @@ export default {
           id: "Node-" + col + "-" + row,
           parent: null,
           ddist: 0,
+          g: Number.POSITIVE_INFINITY,
+          h: Number.POSITIVE_INFINITY,
+          f: Number.POSITIVE_INFINITY,
+          closed: false,
         };
       } else if (col == this.endX && row == this.endY) {
         return {
@@ -239,6 +260,10 @@ export default {
           id: "Node-" + col + "-" + row,
           parent: null,
           ddist: Number.POSITIVE_INFINITY,
+          g: Number.POSITIVE_INFINITY,
+          h: Number.POSITIVE_INFINITY,
+          f: Number.POSITIVE_INFINITY,
+          closed: false,
         };
       }
       return {
@@ -251,6 +276,10 @@ export default {
         id: "Node-" + col + "-" + row,
         parent: null,
         ddist: Number.POSITIVE_INFINITY,
+        g: Number.POSITIVE_INFINITY,
+        h: Number.POSITIVE_INFINITY,
+        f: Number.POSITIVE_INFINITY,
+        closed: false,
       };
     },
     // Clears all walls from the grid
@@ -262,9 +291,13 @@ export default {
           let eleClass = document.getElementById(node.id).className;
           node.isWall = false;
           node.visited = false;
+          node.closed = false;
           node.isStart = false;
           node.isEnd = false;
           node.ddist = Number.POSITIVE_INFINITY;
+          node.f = Number.POSITIVE_INFINITY;
+          node.g = Number.POSITIVE_INFINITY;
+          node.h = Number.POSITIVE_INFINITY;
           document.getElementById(node.id).className = "box";
         }
       }
@@ -278,7 +311,11 @@ export default {
           let node = this.grid[col][row];
           let eleClass = document.getElementById(node.id).className;
           node.visited = false;
+          node.closed = false;
           node.ddist = Number.POSITIVE_INFINITY; // Reset Dijkstra Distance
+          node.f = Number.POSITIVE_INFINITY;
+          node.g = Number.POSITIVE_INFINITY;
+          node.h = Number.POSITIVE_INFINITY;
           if (eleClass === "start" || eleClass === "end") {
             if (eleClass == "start") {
               node.ddist = 0;
@@ -406,7 +443,6 @@ export default {
       }
       this.viz = true;
       this.disableButtons();
-      console.log(this.startX + " " + this.startY);
       var pq = [];
       this.animations = this.dijkstra(
         this.grid,
@@ -435,6 +471,62 @@ export default {
         } else if (command === "visit") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else if (command === "path") {
+          new Promise((resolve, reject) => {
+            setTimeout(function () {
+              document.getElementById(current.id).className = "path";
+              resolve();
+            }, i * this.animSpeed);
+          }).then(() => {
+            pq = [];
+            this.animations = [];
+            this.enableButtons();
+          });
+        } else {
+          // End command
+          i = this.animations.length;
+          pq = [];
+          this.animations = [];
+          return;
+        }
+      }
+    },
+    aStarButton: function () {
+      if (this.viz) {
+        return;
+      }
+      this.viz = true;
+      this.disableButtons();
+      var pq = [];
+
+      this.animations = this.aStar(
+        this.grid,
+        this.startX,
+        this.startY,
+        this.endX,
+        this.endY,
+        this.animations
+      );
+
+      for (let i = 0; i < this.animations.length; i++) {
+        let command = this.animations[i][0]; // current command
+        let x = this.animations[i][1]; // current x
+        let y = this.animations[i][2]; // current y
+        let current;
+        try {
+          current = this.grid[x][y]; // current node object
+        } catch (err) {
+          this.enableButtons();
+          continue;
+        }
+        if (command === "visit") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "visited";
+          }, i * this.animSpeed);
+        } else if (command === "fringe") {
+          setTimeout(function () {
+            document.getElementById(current.id).className = "fringe";
           }, i * this.animSpeed);
         } else if (command === "path") {
           new Promise((resolve, reject) => {

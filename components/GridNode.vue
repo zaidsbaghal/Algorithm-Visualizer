@@ -12,7 +12,11 @@ export default {
     visited: Boolean,
     id: String,
     parent: Object,
-    ddist: Number
+    ddist: Number,
+    g: Number,
+    h: Number,
+    f: Number,
+    closed: Boolean,
   },
 };
 </script>
@@ -57,5 +61,12 @@ export default {
   height: 25px;
   border: 1px solid $charcoal;
   background-color: $sandy-brown;
+}
+.fringe {
+  animation: fadeIn ease 1s;
+  width: 25px;
+  height: 25px;
+  border: 1px solid $charcoal;
+  background-color: red;
 }
 </style>
