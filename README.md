@@ -1,5 +1,7 @@
 # AlgorithmVisualizer
 
+View the live demo [here.](https://zaidsbaghal.github.io/Algorithm-Visualizer/)
+
 This is an interactive algorithm visualizer that allows you to see first-hand how these algorithms look step-by-step. 
 The algorithms implemented include: 
 
