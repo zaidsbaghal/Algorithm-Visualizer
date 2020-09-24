@@ -1,5 +1,22 @@
 # AlgorithmVisualizer
 
+This is an interactive algorithm visualizer that allows you to see first-hand how these algorithms look step-by-step. 
+The algorithms implemented include: 
+
+* Merge Sort
+* Quick Sort
+* Bubble Sort
+* Selection Sort
+* Insertion Sort
+* Depth First Search
+* Breadth First Search
+* Dijkstra's Shortest Path 
+* A* Search
+
+This currently does not work on mobile devices so please open on your computer.
+
+I had a lot fo fun building this project. Not only did this help me strengthen my web development knowledge, but I was able to througouhly understand many of the implemented algorithms on micro scale. My grasp on data structures and algorithms is mch stronger after building this. 
+
 ## Build Setup
 
 ```bash
