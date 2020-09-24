@@ -17,7 +17,7 @@ The algorithms implemented include:
 
 This currently does not work on mobile devices so please open on your computer.
 
-I had a lot fo fun building this project. Not only did this help me strengthen my web development knowledge, but I was able to througouhly understand many of the implemented algorithms on micro scale. My grasp on data structures and algorithms is mch stronger after building this. 
+I had a lot fo fun building this project. Not only did this help me strengthen my web development knowledge, but I was able to througouhly understand many of the implemented algorithms on a micro scale. My grasp on data structures and algorithms is much stronger due to building this. 
 
 ## Build Setup
 
