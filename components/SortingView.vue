@@ -3,49 +3,63 @@
     <div class="function-buttons">
       <button
         class="toolbar-button"
-        style="background-color: #E76F51"
+        style="background-color: #e76f51"
         v-on:click="genArray"
         :disabled="buttonDisable"
-      >Generate New</button>
+      >
+        Generate New
+      </button>
       <button
         class="toolbar-button"
-        style="background-color: #E76F51"
+        style="background-color: #e76f51"
         v-on:click="resetArray"
         :disabled="buttonDisable"
-      >Reset Array</button>
+      >
+        Reset Array
+      </button>
       <button
         class="toolbar-button"
         v-on:click="mergeSortButton"
         :disabled="buttonDisable"
-      >Merge Sort</button>
+      >
+        Merge Sort
+      </button>
       <button
         class="toolbar-button"
         v-on:click="quickSortButton"
         :disabled="buttonDisable"
-      >Quick Sort</button>
+      >
+        Quick Sort
+      </button>
       <button
         class="toolbar-button"
         v-on:click="bubbleSortButton"
         :disabled="buttonDisable"
-      >Bubble Sort</button>
+      >
+        Bubble Sort
+      </button>
       <button
         class="toolbar-button"
         v-on:click="selectionSortButton"
         :disabled="buttonDisable"
-      >Selection Sort</button>
+      >
+        Selection Sort
+      </button>
       <button
         class="toolbar-button"
         v-on:click="insertionSortButton"
         :disabled="buttonDisable"
-      >Insertion Sort</button>
+      >
+        Insertion Sort
+      </button>
     </div>
     <div class="active-window">
       <div class="array-container">
         <div
           class="array-bar"
-          v-for="(value,index) in this.array"
+          v-for="(value, index) in this.array"
           :key="index"
-          :style="{ 'height': `${value * .65}`+'px'}"
+          :style="{ height: `${value * heightFactor}` + 'px' }"
         ></div>
       </div>
     </div>
@@ -76,6 +90,18 @@ export default {
       context: this,
       buttonDisable: false, // is something running currently?
     };
+  },
+  computed: {
+    heightFactor: function () {
+      var mq = window.matchMedia(
+        "(min-device-width: 1200px) and (max-device-width: 1600px)"
+      );
+      if (mq.matches) {
+        return 0.55;
+      } else {
+        return 0.65;
+      }
+    },
   },
   mounted: function () {
     this.$nextTick(() => {
@@ -204,7 +230,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.65}px`;
+              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#264653";
               bars[idxone].style.backgroundColor = "#264653";
@@ -292,7 +318,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.65}px`;
+              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#E9C46A";
               bars[idxone].style.backgroundColor = "#E9C46A";
@@ -364,7 +390,7 @@ export default {
           let newHeight = animations[i][2];
           setTimeout(
             function () {
-              bars[idx].style.height = `${newHeight * 0.65}px`;
+              bars[idx].style.height = `${newHeight * this.heightFactor}px`;
               this.$set(this.array, idx, newHeight);
             }.bind(this),
             i * this.animSpeed
@@ -433,7 +459,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.65}px`;
+              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#E76F51";
               bars[idxone].style.backgroundColor = "#E76F51";
@@ -500,7 +526,7 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * 0.65}px`;
+              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
               this.$set(this.array, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#264653";
               bars[idxone].style.backgroundColor = "#264653";
@@ -574,5 +600,37 @@ export default {
   margin: 0;
   display: flex;
   justify-content: center;
+}
+@media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
+  .sort-container {
+    padding-left: 85px;
+    padding-right: 85px;
+  }
+
+  .toolbar-button {
+    margin: 10px;
+  }
+
+  .active-window {
+    height: 75vh;
+    padding: 1rem;
+  }
+
+  .array-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    left: 100px;
+    height: 100%;
+    transform: scaleY(-1);
+  }
+
+  .array-bar {
+    width: 10px;
+    background-color: $charcoal;
+    display: inline-block;
+    margin: 0 1px;
+  }
 }
 </style>

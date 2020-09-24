@@ -69,4 +69,35 @@ export default {
   border: 0.5px solid $charcoal;
   background-color: $aqua;
 }
+@media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
+  .box {
+    // animation: fadeIn ease 1s;
+    width: 18px;
+    height: 18px;
+  }
+  .wall {
+    width: 18px;
+    height: 18px;
+  }
+  .start {
+    width: 18px;
+    height: 18px;
+  }
+  .end {
+    width: 18px;
+    height: 18px;
+  }
+  .visited {
+    width: 18px;
+    height: 18px;
+  }
+  .path {
+    width: 18px;
+    height: 18px;
+  }
+  .fringe {
+    width: 18px;
+    height: 18px;
+  }
+}
 </style>
