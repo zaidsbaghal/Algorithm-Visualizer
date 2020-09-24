@@ -4,15 +4,12 @@ export default {
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
   */
-  mode: 'spa',
+  mode: 'universal',
   /*
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
   */
-  target: 'static',
-  router: {
-    base: '/<repository-name>/'
-  },
+ router: { base: '/Algorithm-Visualizer/' },
   /*
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
