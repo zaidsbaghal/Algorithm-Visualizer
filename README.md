@@ -1,4 +1,4 @@
-# AlgorithmVisualizer
+# Algorithm-Visualizer
 
 View the live demo [here.](https://zaidsbaghal.github.io/Algorithm-Visualizer/)
 
