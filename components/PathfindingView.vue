@@ -151,7 +151,6 @@ export default {
     },
     //function is called when the mouse is pressed down on a node
     mouseDown: function (node) {
-      console.log(node);
       if (this.viz) {
         return;
       }

@@ -17,7 +17,6 @@ export default {
                     // reconstruct path
                     current = current.parent;
                     while (!current.isStart) {
-                        console.log("found")
                         animations.push(["path", current.col, current.row])
                         current = current.parent;
                     }
@@ -25,7 +24,6 @@ export default {
                     return animations;
                 }
                 if (!current.isStart) {
-                    console.log("visit")
                     animations.push(["visit", current.col, current.row])
                 }
                 current.closed = true // set as closed
@@ -62,7 +60,6 @@ export default {
                 }
 
             }
-            console.log("nfound")
             pq = []
             animations.push(["nfound", -1, -1])
             return animations;

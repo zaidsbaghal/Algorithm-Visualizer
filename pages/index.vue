@@ -2,22 +2,27 @@
   <div class="main">
     <div class="algorithm-container">
       <div class="select-container">
-        <select v-model="AlgoCategory" class="algo-select" name="algorithms" id="algorithms">
+        <select
+          v-model="AlgoCategory"
+          class="algo-select"
+          name="algorithms"
+          id="algorithms"
+        >
           <option value="sorting" selected>Sorting</option>
           <option value="pathfinding">Pathfinding</option>
-          <option value="searching">Searching</option>
         </select>
       </div>
     </div>
     <div v-show="AlgoCategory === 'sorting'">
-      <grid-loader :loading="loaderLoading" :color="loaderColor" :size="loaderSize"></grid-loader>
+      <grid-loader
+        :loading="loaderLoading"
+        :color="loaderColor"
+        :size="loaderSize"
+      ></grid-loader>
       <SortingView></SortingView>
     </div>
     <div v-show="AlgoCategory === 'pathfinding'">
       <PathfindingView></PathfindingView>
-    </div>
-    <div v-show="AlgoCategory === 'searching'">
-      <p>Searching Component</p>
     </div>
   </div>
 </template>
@@ -78,7 +83,7 @@ select {
       color: $charcoal;
       // appearance: none;
     }
-    .down-arrow{
+    .down-arrow {
       display: flex;
       justify-content: center;
       align-items: center;

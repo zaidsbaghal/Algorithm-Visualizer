@@ -26,47 +26,47 @@ export default {
   // animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: $alabaster;
 }
 .wall {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: $charcoal;
 }
 .start {
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: #2a9d8f;
 }
 .end {
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: #e76f51;
 }
 .visited {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: $orange-yellow;
 }
 .path {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: $sandy-brown;
 }
 .fringe {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 1px solid $charcoal;
+  border: 0.5px solid $charcoal;
   background-color: $aqua;
 }
 </style>
