@@ -9,8 +9,8 @@ export default {
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
   */
-  // target: 'static',
-  // router: { base: '/Algorithm-Visualizer/' },
+  target: 'static',
+  router: { base: '/Algorithm-Visualizer/' },
   /*
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
