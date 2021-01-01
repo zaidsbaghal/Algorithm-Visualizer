@@ -159,13 +159,11 @@ export default {
 
       this.animations = [];
       this.sorted = false;
-      console.log("Reset array complete.");
     },
     // Trigger merge sort animation
     mergeSortButton: function () {
       // If array has already been sorted then return
       if (this.sorted === true) {
-        console.log("Array already sorted.");
         return;
       }
 
@@ -244,7 +242,6 @@ export default {
     quickSortButton: function () {
       // If array has already been sorted then return
       if (this.sorted === true) {
-        console.log("Array already sorted.");
         return;
       }
 
@@ -331,7 +328,6 @@ export default {
 
     bubbleSortButton() {
       if (this.sorted === true) {
-        console.log("Array already sorted.");
         return;
       }
       // Disable buttons while running
@@ -401,7 +397,6 @@ export default {
 
     selectionSortButton() {
       if (this.sorted === true) {
-        console.log("Array already sorted.");
         return;
       }
       // Disable buttons while running
@@ -472,7 +467,6 @@ export default {
 
     insertionSortButton() {
       if (this.sorted === true) {
-        console.log("Array already sorted.");
         return;
       }
       // Disable buttons while running
@@ -502,7 +496,6 @@ export default {
           let idxtwo = animations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A"; // comparisons are yellow
-            // bars[idxone].style.backgroundColor = "#E76F51"; // switch back to red
             bars[idxtwo].style.backgroundColor = "#E9C46A";
           }, i * this.animSpeed);
         } else if (command == "sorted") {
