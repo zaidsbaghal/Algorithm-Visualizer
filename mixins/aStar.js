@@ -1,116 +1,105 @@
 import PriorityQueue from "~/mixins/PriorityQueue";
+
 export default {
   mixins: [PriorityQueue],
   methods: {
-    aStar: function (grid, x, y, endx, endy, animations) {
-      var pq = []; // Priority Queue
-      let start = grid[x][y];
-      let end = grid[endx][endy];
-      start.g = 0; // initialize g score
+    aStar: function (grid, startX, startY, endX, endY, animations) {
+      var priorityQueue = []; // Priority Queue to store nodes
+      let startNode = grid[startX][startY];
+      let endNode = grid[endX][endY];
+      startNode.g = 0; // The cost of going from the start node to the start node is zero
+      startNode.f = this.getDistance(startNode, endNode); // f(n) = g(n) + h(n), here h(n) is heuristic function
 
-      this.enqueueStar(pq, start);
+      this.enqueueStar(priorityQueue, startNode);
 
-      // While Priority queue is not empty
-      while (!this.isEmpty(pq)) {
-        let current = this.dequeue(pq); // get node with lowest f score
-        if (current.isEnd) {
-          // reconstruct path
-          current = current.parent;
-          while (!current.isStart) {
-            animations.push(["path", current.col, current.row]);
-            current = current.parent;
+      // Loop until the priority queue is empty
+      while (!this.isEmpty(priorityQueue)) {
+        let currentNode = this.dequeue(priorityQueue); // Get node with the lowest f score
+        if (currentNode.isEnd) {
+          // Reconstruct the path
+          currentNode = currentNode.parent;
+          while (!currentNode.isStart) {
+            animations.push(["path", currentNode.col, currentNode.row]);
+            currentNode = currentNode.parent;
           }
-          pq = [];
+          priorityQueue = [];
           return animations;
         }
-        if (!current.isStart) {
-          animations.push(["visit", current.col, current.row]);
+
+        if (!currentNode.isStart) {
+          animations.push(["visit", currentNode.col, currentNode.row]);
         }
-        current.closed = true; // set as closed
 
-        let neighbors = this.getNeighbors(current);
+        currentNode.closed = true; // Mark the current node as closed
+
+        let neighbors = this.getNeighbors(currentNode);
         for (let i = 0; i < neighbors.length; i++) {
-          let ncoords = neighbors[i];
-          let n = grid[ncoords[0]][ncoords[1]];
-          if (n.closed || document.getElementById(n.id).className === "wall") {
-            continue;
+          let [neighborRow, neighborCol] = neighbors[i];
+          let neighborNode = grid[neighborRow][neighborCol];
+          if (
+            neighborNode.closed ||
+            document.getElementById(neighborNode.id).className === "wall"
+          ) {
+            continue; // Skip if neighbor is closed or is a wall
           }
-          if (!n.isEnd) {
-            animations.push(["fringe", n.col, n.row]);
-          }
-
-          let tempG = current.g + this.getDistance(current, n);
-
-          var beenVisited = n.visited;
-          if (tempG < n.g || !beenVisited) {
-            n.visited = true;
-            n.parent = current;
-            n.g = tempG;
-            n.f = n.g + this.getDistance(n, end);
+          if (!neighborNode.isEnd) {
+            animations.push(["fringe", neighborNode.col, neighborNode.row]);
           }
 
-          if (!beenVisited) {
-            this.enqueueStar(pq, n);
-          } else {
-            this.reorder(pq, n);
+          let tentativeGScore =
+            currentNode.g + this.getDistance(currentNode, neighborNode); // Compute temporary g score
+
+          var isNeighborVisited = neighborNode.visited;
+          if (tentativeGScore < neighborNode.g || !isNeighborVisited) {
+            neighborNode.visited = true;
+            neighborNode.parent = currentNode;
+            neighborNode.g = tentativeGScore;
+            neighborNode.f =
+              neighborNode.g + this.getDistance(neighborNode, endNode); // Update f score
+
+            if (!isNeighborVisited) {
+              this.enqueueStar(priorityQueue, neighborNode);
+            } else {
+              this.reorder(priorityQueue, neighborNode);
+            }
           }
         }
       }
-      pq = [];
+
+      // No path found
+      priorityQueue = [];
       animations.push(["nfound", -1, -1]);
       return animations;
     },
-    getDistance: function (current, neigh) {
+
+    // Function to calculate the Manhattan distance between two nodes
+    getDistance: function (currentNode, neighborNode) {
       let distance =
-        Math.abs(neigh.col - current.col) + Math.abs(neigh.row - current.row);
+        Math.abs(neighborNode.col - currentNode.col) +
+        Math.abs(neighborNode.row - currentNode.row);
       return distance;
     },
-    // returns an array of all neighbor nodes to a node
+
+    // Function to get the neighboring nodes
     getNeighbors: function (node) {
-      let result = [];
+      let neighbors = [];
       let row = node.row;
       let col = node.col;
 
-      //left
-      if (
-        row >= 0 &&
-        row < this.rowNum &&
-        col - 1 >= 0 &&
-        col - 1 < this.colNum
-      ) {
-        let id = "Node-" + col + "-" + row - 1;
-        result.push([col - 1, row]);
+      // Check all four directions (left, top, right, bottom)
+      if (col - 1 >= 0) {
+        neighbors.push([row, col - 1]);
       }
-      // top
-      if (
-        row - 1 >= 0 &&
-        row - 1 < this.rowNum &&
-        col >= 0 &&
-        col < this.colNum
-      ) {
-        let id = "Node-" + col - 1 + "-" + row;
-        result.push([col, row - 1]);
+      if (row - 1 >= 0) {
+        neighbors.push([row - 1, col]);
       }
-      // right
-      if (
-        row >= 0 &&
-        row < this.rowNum &&
-        col + 1 >= 0 &&
-        col + 1 < this.colNum
-      ) {
-        let id = "Node-" + col + "-" + row + 1;
-        result.push([col + 1, row]);
+      if (col + 1 < this.colNum) {
+        neighbors.push([row, col + 1]);
       }
-      // bottom
-      if (
-        row + 1 >= 0 &&
-        row + 1 < this.rowNum &&
-        col >= 0 &&
-        col < this.colNum
-      ) {
-        result.push([col, row + 1]);
+      if (row + 1 < this.rowNum) {
+        neighbors.push([row + 1, col]);
       }
-      return result;
+      return neighbors;
     },
   },
 };
