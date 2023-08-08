@@ -5,7 +5,7 @@
 </template>
 
 <style lang="scss">
-@import './assets/scss/colors.scss';
+@import "./assets/scss/colors.scss";
 
 html {
   font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",

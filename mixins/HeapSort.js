@@ -1,49 +1,47 @@
 export default {
-    methods: {
-        heapSort: function (array) {
-            let size = array.length
+  methods: {
+    heapSort: function (array) {
+      let size = array.length;
 
-            // build heapSort (rearrange array)
-            for (let i = Math.floor(size / 2 - 1); i >= 0; i--)
-                this.heapify(array, size, i)
+      // build heapSort (rearrange array)
+      for (let i = Math.floor(size / 2 - 1); i >= 0; i--)
+        this.heapify(array, size, i);
 
-            // one by one extract an element from heapSort
-            for (let i = size - 1; i >= 0; i--) {
-                // move current root to end
-                let temp = array[0]
-                array[0] = array[i]
-                array[i] = temp
+      // one by one extract an element from heapSort
+      for (let i = size - 1; i >= 0; i--) {
+        // move current root to end
+        let temp = array[0];
+        array[0] = array[i];
+        array[i] = temp;
 
-                // call max heapify on the reduced heapSort
-                this.heapify(array, i, 0)
-            }
-            return array;
-        },
+        // call max heapify on the reduced heapSort
+        this.heapify(array, i, 0);
+      }
+      return array;
+    },
 
-        // to heapify a subtree rooted with node i which is an index in array[]
-        heapify: function (array, size, i) {
-            let max = i // initialize max as root
-            let left = 2 * i + 1
-            let right = 2 * i + 2
+    // to heapify a subtree rooted with node i which is an index in array[]
+    heapify: function (array, size, i) {
+      let max = i; // initialize max as root
+      let left = 2 * i + 1;
+      let right = 2 * i + 2;
 
-            // if left child is larger than root
-            if (left < size && array[left] > array[max])
-                max = left
+      // if left child is larger than root
+      if (left < size && array[left] > array[max]) max = left;
 
-            // if right child is larger than max
-            if (right < size && array[right] > array[max])
-                max = right
+      // if right child is larger than max
+      if (right < size && array[right] > array[max]) max = right;
 
-            // if max is not root
-            if (max != i) {
-                // swap
-                let temp = array[i]
-                array[i] = array[max]
-                array[max] = temp
+      // if max is not root
+      if (max != i) {
+        // swap
+        let temp = array[i];
+        array[i] = array[max];
+        array[max] = temp;
 
-                // recursively heapify the affected sub-tree
-                this.heapify(array, size, max)
-            }
-        }
-    }
-}
+        // recursively heapify the affected sub-tree
+        this.heapify(array, size, max);
+      }
+    },
+  },
+};
