@@ -70,118 +70,132 @@
   </div>
 </template>
 <script>
+import { onMounted, ref } from "vue";
+
 export default {
-  mixins: [depthFirst, breadthFirst, dijkstras, aStar],
-  data: function () {
-    return {
-      rowNum: 30, // grid rows
-      colNum: 70, // grid columns
-      grid: [[]], // store the 2day array that corresponds with the grid
-      startNode: null,
-      endNode: null,
-      startX: 30, // x coordinate of start node
-      startY: 15, // y coordinate of start node
-      endX: 40, // x coordinate of end node
-      endY: 15, // y coordinate of end node
-      animations: [], // stores the animations of the current sort
-      defaultGraph: [], // stores the newly generated array in unsorted form
-      found: false, // is the current array sorted?,
-      animSpeed: 10, // animation speed
-      buttonDisable: false, // disable the action buttons of the toolbar?
-      mousePressed: false, // is the mouse currently pressed?
-      moveStart: false, // are we moving the start node?
-      moveEnd: false, // are we moving the end node?
-      prevNode: null, // Stores state of previous node when moving
-      viz: false, // is there a visualization on the board
-    };
-  },
-  mounted: function () {
-    this.initGrid();
-    this.$nextTick(function () {
-      this.setStart();
-      this.setEnd();
+  setup() {
+    const rowNum = ref(30);
+    const colNum = ref(70);
+    const grid = ref([[]]);
+    const startNode = ref(null);
+    const endNode = ref(null);
+    const startX = ref(30);
+    const startY = ref(15);
+    const endX = ref(40);
+    const endY = ref(15);
+    const animations = ref([]);
+    const defaultGraph = ref([]);
+    const found = ref(false);
+    const animSpeed = ref(10);
+    const buttonDisable = ref(false);
+    const mousePressed = ref(false);
+    const moveStart = ref(false);
+    const moveEnd = ref(false);
+    const prevNode = ref(null);
+    const viz = ref(false);
+
+    onMounted(() => {
+      initGrid();
+      setStart();
+      setEnd();
     });
-  },
-  methods: {
-    disableButtons: function () {
-      this.buttonDisable = true;
-    },
-    enableButtons: function () {
-      this.buttonDisable = false;
-    },
-    // Function is called when we enter a node
-    mouseEnter: function (node) {
-      this.prevNode = document.getElementById(node.id).className.slice();
-      if (this.moveStart == true) {
+
+    const initGrid = () => {
+      let newgrid = [];
+      for (let col = 0; col < colNum.value; col++) {
+        const currCol = [];
+        for (let row = 0; row < rowNum.value; row++) {
+          currCol.push(createNode(row, col));
+        }
+        newgrid.push(currCol);
+      }
+      grid.value = newgrid;
+    };
+
+    const disableButtons = () => {
+      buttonDisable.value = true;
+    };
+
+    const enableButtons = () => {
+      buttonDisable.value = false;
+    };
+
+    const mouseEnter = (node) => {
+      prevNode.value = document.getElementById(node.id).className.slice();
+      if (moveStart.value) {
         document.getElementById(node.id).className = "start";
       }
-      if (this.moveEnd == true) {
+      if (moveEnd.value) {
         document.getElementById(node.id).className = "end";
       }
-      if (this.mousePressed == true) {
-        this.makeWall(node);
+      if (mousePressed.value) {
+        makeWall(node);
       }
-    },
+    };
+
     // function is called when we leave a node
-    mouseOut: function (node) {
+    const mouseOut = (node) => {
       // Reset old node
-      if (this.moveStart == true) {
-        if (this.prevNode === "start") {
+      if (moveStart.value == true) {
+        if (prevNode.value === "start") {
           node.isStart = false;
           document.getElementById(node.id).className = "box";
         } else {
-          document.getElementById(node.id).className = this.prevNode;
+          document.getElementById(node.id).className = prevNode.value;
         }
-      } else if (this.moveEnd == true) {
-        if (this.prevNode === "end") {
+      } else if (moveEnd.value == true) {
+        if (prevNode.value === "end") {
           node.isEnd = false;
           document.getElementById(node.id).className = "box";
         } else {
-          document.getElementById(node.id).className = this.prevNode;
+          document.getElementById(node.id).className = prevNode.value;
         }
       }
-    },
+    };
+
     //function is called when the mouse is pressed down on a node
-    mouseDown: function (node) {
-      if (this.viz) {
+    const mouseDown = (node) => {
+      if (viz.value) {
         return;
       }
       let element = document.getElementById(node.id);
       if (element.className === "start") {
-        this.moveStart = true;
+        moveStart.value = true;
       } else if (element.className === "end") {
-        this.moveEnd = true;
+        moveEnd.value = true;
       } else {
-        this.mousePressed = true;
-        this.makeWall(node);
+        mousePressed.value = true;
+        makeWall(node);
       }
-    },
+    };
+
     // function is called when we release the mouse press on a node
-    mouseUp: function (node) {
-      if (this.moveStart == true) {
+    const mouseUp = (node) => {
+      if (moveStart.value === true) {
         node.isStart = true;
         document.getElementById(node.id).className = "start";
-        this.startY = node.row;
-        this.startX = node.col;
-        this.moveStart = false;
-      } else if (this.moveEnd == true) {
+        startY.value = node.row;
+        startX.value = node.col;
+        moveStart.value = false;
+      } else if (moveEnd.value === true) {
         node.isEnd = true;
         document.getElementById(node.id).className = "end";
-        this.endY = node.row;
-        this.endX = node.col;
-        this.moveEnd = false;
+        endY.value = node.row;
+        endX.value = node.col;
+        moveEnd.value = false;
       }
-      this.mousePressed = false;
-    },
+      mousePressed.value = false;
+    };
+
     // Stylize wall of box (Does not set the nodes isWall data yet for speed purposes)
-    makeWall: function (node) {
+    const makeWall = (node) => {
       let element = document.getElementById(node.id);
       if (
         element.className === "start" ||
         element.className === "end" ||
         element.className === "visited" ||
         element.className === "path" ||
-        this.viz
+        viz.value
       ) {
         return;
       } else {
@@ -192,39 +206,30 @@ export default {
           element.className = "wall";
         }
       }
-    },
+    };
+
     // Initialize the start node
-    setStart: function () {
-      this.startX = 30;
-      this.startY = 15;
-      let id = this.grid[30][15].id;
+    const setStart = () => {
+      startX.value = 30;
+      startY.value = 15;
+      let id = grid.value[30][15].id;
       document.getElementById(id).className = "start";
-      this.grid[30][15].isStart = true;
-      this.grid[30][15].ddist = 0;
-    },
+      grid.value[30][15].isStart = true;
+      grid.value[30][15].ddist = 0;
+    };
+
     // Initialize the end node
-    setEnd: function () {
-      this.endX = 40;
-      this.endY = 15;
-      let id = this.grid[40][15].id;
+    const setEnd = () => {
+      endX.value = 40;
+      endY.value = 15;
+      let id = grid.value[40][15].id;
       document.getElementById(id).className = "end";
-      this.grid[40][15].isEnd = true;
-    },
-    // Initialize the grid
-    initGrid: function () {
-      let newgrid = [];
-      for (let col = 0; col < this.colNum; col++) {
-        const currCol = [];
-        for (let row = 0; row < this.rowNum; row++) {
-          currCol.push(this.createNode(row, col));
-        }
-        newgrid.push(currCol);
-      }
-      this.grid = newgrid.slice();
-    },
+      grid.value[40][15].isEnd = true;
+    };
+
     // Create the node object for a cell
-    createNode: function (row, col) {
-      if (col == this.startX && row == this.startY) {
+    const createNode = (row, col) => {
+      if (col === startX.value && row === startY.value) {
         return {
           col,
           row,
@@ -240,7 +245,7 @@ export default {
           f: Number.POSITIVE_INFINITY,
           closed: false,
         };
-      } else if (col == this.endX && row == this.endY) {
+      } else if (col === endX.value && row === endY.value) {
         return {
           col,
           row,
@@ -272,13 +277,14 @@ export default {
         f: Number.POSITIVE_INFINITY,
         closed: false,
       };
-    },
+    };
+
     // Clears all walls from the grid
-    resetGrid: function () {
-      this.viz = false;
-      for (let col = 0; col < this.colNum; col++) {
-        for (let row = 0; row < this.rowNum; row++) {
-          let node = this.grid[col][row];
+    const resetGrid = () => {
+      viz.value = false;
+      for (let col = 0; col < colNum.value; col++) {
+        for (let row = 0; row < rowNum.value; row++) {
+          let node = grid.value[col][row];
           let eleClass = document.getElementById(node.id).className;
           node.isWall = false;
           node.visited = false;
@@ -292,14 +298,15 @@ export default {
           document.getElementById(node.id).className = "box";
         }
       }
-      this.setStart();
-      this.setEnd();
-    },
-    resetVis: function () {
-      this.viz = false;
-      for (let col = 0; col < this.colNum; col++) {
-        for (let row = 0; row < this.rowNum; row++) {
-          let node = this.grid[col][row];
+      setStart();
+      setEnd();
+    };
+
+    const resetVis = () => {
+      viz.value = false;
+      for (let col = 0; col < colNum.value; col++) {
+        for (let row = 0; row < rowNum.value; row++) {
+          let node = grid.value[col][row];
           let eleClass = document.getElementById(node.id).className;
           node.visited = false;
           node.closed = false;
@@ -318,226 +325,271 @@ export default {
           }
         }
       }
-    },
-    depthFirstButton: function () {
-      if (this.viz) {
+    };
+
+    const depthFirstButton = () => {
+      if (viz.value) {
         return;
       }
-      this.disableButtons();
-      this.viz = true;
+      disableButtons();
+      viz.value = true;
       try {
-        this.animations = this.dfs(
-          this.startX,
-          this.startY,
-          this.grid,
-          this.animations
+        animations.value = dfs(
+          startX.value,
+          startY.value,
+          grid.value,
+          animations.value
         );
       } catch (err) {
-        this.enableButtons();
+        enableButtons();
       }
 
-      for (let i = 0; i < this.animations.length; i++) {
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
-        let y = this.animations[i][2]; // current y
+      for (let i = 0; i < animations.value.length; i++) {
+        let command = animations.value[i][0]; // current command
+        let x = animations.value[i][1]; // current x
+        let y = animations.value[i][2]; // current y
         let current;
         try {
-          current = this.grid[x][y]; // current node object
+          current = grid.value[x][y]; // current node object
         } catch (err) {
-          this.enableButtons();
+          enableButtons();
           continue;
         }
 
         if (command === "curr") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "visit") {
           setTimeout(function () {
             document.getElementById(current.id).className = "path";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else {
           new Promise((resolve, reject) => {
             setTimeout(function () {
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           })
             .then(() => {
-              this.animations = [];
-              this.enableButtons();
+              animations.value = [];
+              enableButtons();
             })
             .catch(() => {
-              this.enableButtons();
+              enableButtons();
             });
           break;
         }
       }
-    },
-    breadthFirstButton: function () {
-      if (this.viz) {
+    };
+
+    const breadthFirstButton = () => {
+      if (viz.value) {
         return;
       }
-      this.viz = true;
-      this.disableButtons();
-      this.animations = this.bfs(
-        this.startX,
-        this.startY,
-        this.grid,
-        this.animations
+      viz.value = true;
+      disableButtons();
+      animations.value = bfs(
+        startX.value,
+        startY.value,
+        grid.value,
+        animations.value
       );
-      for (let i = 0; i < this.animations.length; i++) {
-        if (this.animations[i] == null || this.animations[i] === "undefined") {
+      for (let i = 0; i < animations.value.length; i++) {
+        if (
+          animations.value[i] == null ||
+          animations.value[i] === "undefined"
+        ) {
           continue;
         }
-        let command = this.animations[i][0]; // cOkaurrent command
-        let x = this.animations[i][1]; // currePOnt x
-        let y = this.animations[i][2]; // current y
+        let command = animations.value[i][0]; // current command
+        let x = animations.value[i][1]; // current x
+        let y = animations.value[i][2]; // current y
 
         let current;
         try {
-          current = this.grid[x][y]; // current node object
+          current = grid.value[x][y]; // current node object
         } catch (err) {
-          this.enableButtons();
+          enableButtons();
           continue;
         }
 
         if (command === "curr") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "visit") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "path") {
           new Promise((resolve, reject) => {
             setTimeout(function () {
               document.getElementById(current.id).className = "path";
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            i = this.animations.length;
+            animations.value = [];
+            enableButtons();
+            i = animations.value.length;
           });
         } else {
           // End command
-          i = this.animations.length;
-          this.animations = [];
+          i = animations.value.length;
+          animations.value = [];
         }
       }
-      // this.enableButtons()
-    },
-    dijkstraButton: function () {
-      if (this.viz) {
+    };
+
+    const dijkstraButton = () => {
+      if (viz.value) {
         return;
       }
-      this.viz = true;
-      this.disableButtons();
+      viz.value = true;
+      disableButtons();
       var pq = [];
-      this.animations = this.dijkstra(
-        this.grid,
-        this.startX,
-        this.startY,
-        this.animations,
+      animations.value = dijkstra(
+        grid.value,
+        startX.value,
+        startY.value,
+        animations.value,
         pq
       );
 
-      for (let i = 0; i < this.animations.length; i++) {
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
-        let y = this.animations[i][2]; // current y
+      for (let i = 0; i < animations.value.length; i++) {
+        let command = animations.value[i][0]; // current command
+        let x = animations.value[i][1]; // current x
+        let y = animations.value[i][2]; // current y
         let current;
         try {
-          current = this.grid[x][y]; // current node object
+          current = grid.value[x][y]; // current node object
         } catch (err) {
-          this.enableButtons();
+          enableButtons();
           continue;
         }
 
         if (command === "curr") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "visit") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "path") {
           new Promise((resolve, reject) => {
             setTimeout(function () {
               document.getElementById(current.id).className = "path";
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
             pq = [];
-            this.animations = [];
-            this.enableButtons();
+            animations.value = [];
+            enableButtons();
           });
         } else {
           // End command
-          i = this.animations.length;
+          i = animations.value.length;
           pq = [];
-          this.animations = [];
+          animations.value = [];
           return;
         }
       }
-    },
-    aStarButton: function () {
-      if (this.viz) {
+    };
+
+    const aStarButton = () => {
+      if (viz.value) {
         return;
       }
-      this.viz = true;
-      this.disableButtons();
+      viz.value = true;
+      disableButtons();
       var pq = [];
 
-      this.animations = this.aStar(
-        this.grid,
-        this.startX,
-        this.startY,
-        this.endX,
-        this.endY,
-        this.animations
+      animations.value = aStar(
+        grid.value,
+        startX.value,
+        startY.value,
+        endX.value,
+        endY.value,
+        animations.value
       );
 
-      for (let i = 0; i < this.animations.length; i++) {
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
-        let y = this.animations[i][2]; // current y
+      for (let i = 0; i < animations.value.length; i++) {
+        let command = animations.value[i][0]; // current command
+        let x = animations.value[i][1]; // current x
+        let y = animations.value[i][2]; // current y
         let current;
         try {
-          current = this.grid[x][y]; // current node object
+          current = grid.value[x][y]; // current node object
         } catch (err) {
-          this.enableButtons();
+          enableButtons();
           continue;
         }
         if (command === "visit") {
           setTimeout(function () {
             document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "fringe") {
           setTimeout(function () {
             document.getElementById(current.id).className = "fringe";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command === "path") {
           new Promise((resolve, reject) => {
             setTimeout(function () {
               document.getElementById(current.id).className = "path";
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
+            animations.value = [];
+            enableButtons();
           });
         } else {
           // End command
-          i = this.animations.length;
+          i = animations.value.length;
           pq = [];
-          this.animations = [];
+          animations.value = [];
           return;
         }
       }
-    },
+    };
+
+    return {
+      rowNum,
+      colNum,
+      grid,
+      startNode,
+      endNode,
+      startX,
+      startY,
+      endX,
+      endY,
+      animations,
+      defaultGraph,
+      found,
+      animSpeed,
+      buttonDisable,
+      mousePressed,
+      moveStart,
+      moveEnd,
+      prevNode,
+      viz,
+      initGrid,
+      disableButtons,
+      enableButtons,
+      mouseEnter,
+      mouseOut,
+      mouseDown,
+      mouseUp,
+      makeWall,
+      setStart,
+      setEnd,
+      createNode,
+      resetGrid,
+      resetVis,
+      depthFirstButton,
+      breadthFirstButton,
+      dijkstraButton,
+      aStarButton,
+    };
   },
 };
 </script>

@@ -699,9 +699,9 @@
     untyped "^1.3.2"
 
 "@nuxt/telemetry@^2.3.0":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@nuxt/telemetry/-/telemetry-2.3.2.tgz#083a199c112a62843f2e4f84678b6e59408dc97d"
-  integrity sha512-S2sF4hLQWS48lWPpRT8xqVUFuwFGTgeKvojp8vL/iP79fWxudua2DWXR15T8C2zpauYwNgEpEWJmy6vxY2ZQeg==
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@nuxt/telemetry/-/telemetry-2.4.1.tgz#b5fbaf190e199038a5d155eff3773825c0241f17"
+  integrity sha512-Cj+4sXjO5pZNW2sX7Y+djYpf4pZwgYF3rV/YHLWIOq9nAjo2UcDXjh1z7qnhkoUkvJN3lHnvhnCNhfAioe6k/A==
   dependencies:
     "@nuxt/kit" "^3.6.5"
     chalk "^5.3.0"
@@ -720,6 +720,7 @@
     node-fetch "^3.3.1"
     ofetch "^1.1.1"
     parse-git-config "^3.0.0"
+    pathe "^1.1.1"
     rc9 "^2.1.1"
     std-env "^3.3.3"
 
@@ -2157,9 +2158,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.4.477:
-  version "1.4.489"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.489.tgz#840ebe32def1ab7b3a49e876ff84c070f76154ed"
-  integrity sha512-QNx+cirm4ENixfdSk9rp/3HKpjlxHFsmDoHtU1IiXdkJcpkKrd/o20LT5h1f3Qz+yfTMb4Ji3YDT/IvJkNfEkA==
+  version "1.4.490"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.490.tgz#d99286f6e915667fa18ea4554def1aa60eb4d5f1"
+  integrity sha512-6s7NVJz+sATdYnIwhdshx/N/9O6rvMxmhVoDSDFdj6iA45gHR8EQje70+RYsF4GeB+k0IeNSBnP7yG9ZXJFr7A==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -3323,9 +3324,9 @@ longest-streak@^3.0.0:
   integrity sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==
 
 lru-cache@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.0.0.tgz#b9e2a6a72a129d81ab317202d93c7691df727e61"
-  integrity sha512-svTf/fzsKHffP42sujkO/Rjs37BCIsQVRCeNYIm9WN8rgT7ffoUnRtZCqU+6BqcSBdv8gwJeTz8knJpgACeQMw==
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.0.1.tgz#0a3be479df549cca0e5d693ac402ff19537a6b7a"
+  integrity sha512-IJ4uwUTi2qCccrioU6g9g/5rvvVl13bsdczUUcqbciD9iLr095yj8DQKdObriEvuNSx325N1rV1O0sJFszx75g==
 
 lru-cache@^5.1.1:
   version "5.1.1"
@@ -4264,9 +4265,9 @@ ofetch@^1.1.1:
     ufo "^1.1.2"
 
 ohash@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/ohash/-/ohash-1.1.2.tgz#902dd01484f5573ef941d8f9e81105a2e13fd9ba"
-  integrity sha512-9CIOSq5945rI045GFtcO3uudyOkYVY1nyfFxVQp+9BRgslr8jPNiSSrsFGg/BNTUFOLqx0P5tng6G32brIPw0w==
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/ohash/-/ohash-1.1.3.tgz#f12c3c50bfe7271ce3fd1097d42568122ccdcf07"
+  integrity sha512-zuHHiGTYTA1sYJ/wZN+t5HKZaH23i4yI1HMwbuXm24Nid7Dv0KcuRlKoNKS9UNfAVSBlnGLcuQrnOKWOZoEGaw==
 
 on-finished@2.4.1:
   version "2.4.1"
@@ -4306,9 +4307,9 @@ open@^8.4.0:
     is-wsl "^2.2.0"
 
 openapi-typescript@^6.2.8:
-  version "6.4.4"
-  resolved "https://registry.yarnpkg.com/openapi-typescript/-/openapi-typescript-6.4.4.tgz#34f6b09ba59a7995aaff6deb74898c7be24098b5"
-  integrity sha512-M3sLGPTTYIrbruNGRlc2lg78OVhYsr/QATB7Uay0M9GV6ea3i58u168hBhjb/FFKvK8Jftjr37K4xP6uXYr8DA==
+  version "6.4.5"
+  resolved "https://registry.yarnpkg.com/openapi-typescript/-/openapi-typescript-6.4.5.tgz#a6478ee68b18536f5efb0b5bbe22c874cc41d8be"
+  integrity sha512-fH2p241Fm0M0K5+DfGS0pSkyEHOzwK+HxfQZaN52FbUBigszI2eNwPZAdBZcT1BD0PO80qBPSzpFAoAy+JTxMQ==
   dependencies:
     ansi-colors "^4.1.3"
     fast-glob "^3.3.1"

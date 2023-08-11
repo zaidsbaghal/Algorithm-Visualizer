@@ -1,7 +1,4 @@
-import PriorityQueue from "~/mixins/PriorityQueue";
-
 export default {
-  mixins: [PriorityQueue],
   methods: {
     aStar: function (grid, startX, startY, endX, endY, animations) {
       var priorityQueue = []; // Priority Queue to store nodes

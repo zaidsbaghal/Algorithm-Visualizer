@@ -2,23 +2,60 @@
   <div class="box" v-bind:id="this.id"></div>
 </template>
 <script>
-export default {
-  props: {
-    row: Number,
-    col: Number,
-    isWall: Boolean,
-    isStart: Boolean,
-    isEnd: Boolean,
-    visited: Boolean,
-    id: String,
-    parent: Object,
-    ddist: Number,
-    g: Number,
-    h: Number,
-    f: Number,
-    closed: Boolean,
+defineProps({
+  row: {
+    type: Number,
+    default: 0, // Default value, change as needed
   },
-};
+  col: {
+    type: Number,
+    default: 0, // Default value, change as needed
+  },
+  isWall: {
+    type: Boolean,
+    default: false,
+  },
+  isStart: {
+    type: Boolean,
+    default: false,
+  },
+  isEnd: {
+    type: Boolean,
+    default: false,
+  },
+  visited: {
+    type: Boolean,
+    default: false,
+  },
+  id: {
+    type: String,
+    default: "", // Default value, change as needed
+  },
+  parent: {
+    type: Object,
+    default: null, // Default value, change as needed
+  },
+  ddist: {
+    type: Number,
+    default: 0, // Default value, change as needed
+  },
+  g: {
+    type: Number,
+    default: 0, // Default value, change as needed
+  },
+  h: {
+    type: Number,
+    default: 0, // Default value, change as needed
+  },
+  f: {
+    type: Number,
+    default: 0, // Default value, change as needed
+  },
+  closed: {
+    type: Boolean,
+    default: false,
+  },
+});
 </script>
 <style lang="scss">
 @import "./assets/scss/colors.scss";

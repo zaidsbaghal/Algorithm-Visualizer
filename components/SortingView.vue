@@ -67,19 +67,7 @@
 </template>
 
 <script>
-import mergeSortJS from "~/mixins/MergeSort.js";
-import quickSortJS from "~/mixins/QuickSort.js";
-import bubbleSortJS from "~/mixins/BubbleSort.js";
-import selectionSortJS from "~/mixins/SelectionSort.js";
-import insertionSortJS from "~/mixins/InsertionSort.js";
 export default {
-  mixins: [
-    mergeSortJS,
-    quickSortJS,
-    bubbleSortJS,
-    selectionSortJS,
-    insertionSortJS,
-  ],
   data: function () {
     return {
       array: [], // stores the currently displayed array on screen
