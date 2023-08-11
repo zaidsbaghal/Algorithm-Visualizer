@@ -534,7 +534,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .sort-container {
   padding-left: 150px;
   padding-right: 150px;

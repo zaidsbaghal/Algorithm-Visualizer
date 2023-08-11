@@ -1,26 +1,29 @@
 {
-  "name": "AlgorithmVisualizer",
-  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start",
+    "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup"
-  },
-  "dependencies": {
-    "node": "^14.8.0",
-    "nuxt": "^2.14.0",
-    "sass": "^1.26.10",
-    "vue": "^2.6.12",
-    "vue-spinner": "^1.0.4"
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxtjs/style-resources": "^1.0.0",
-    "node-sass": "^7.0.0",
-    "nuxt": "^2.14.0",
-    "push-dir": "^0.4.1",
-    "sass-loader": "^9.0.3"
+    "@nuxt/content": "^2.7.0",
+    "@nuxt/image": "^1.0.0-rc.1",
+    "nuxt": "^3.6.1",
+    "sass": "^1.56.2",
+    "sass-loader": "^13.2.0"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.4.11",
+    "@types/node": "^20.3.3",
+    "node": "^20.3.1",
+    "pinia": "^2.1.6",
+    "remark-html": "^15.0.1",
+    "vue": "^3.3.4",
+    "vue-gtag": "^2.0.1",
+    "vue-masonry-css": "^1.0.3",
+    "vue-typer": "^1.2.0",
+    "webpack": "^5.88.1"
   }
 }

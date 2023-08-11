@@ -1,11 +1,11 @@
 <template>
   <div>
-    <Nuxt />
+    <slot />
   </div>
 </template>
 
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 
 html {
   font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",

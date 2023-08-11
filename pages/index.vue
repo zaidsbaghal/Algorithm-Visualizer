@@ -39,15 +39,7 @@
 
 <script>
 import vue from "vue";
-import SortingView from "~/components/SortingView.vue";
-import PathfindingView from "~/components/PathfindingView.vue";
-import GridLoader from "vue-spinner/src/GridLoader.vue";
 export default {
-  components: {
-    SortingView,
-    PathfindingView,
-    GridLoader,
-  },
   computed: {
     isMobile: function () {
       if (
@@ -73,7 +65,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .mobile-view {
   height: 100vh;
   display: flex;

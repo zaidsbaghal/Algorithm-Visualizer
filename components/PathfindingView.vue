@@ -60,26 +60,18 @@
           :visited="node.visited"
           :parent="node.parent"
           :ddist="node.ddist"
-          v-on:mousedown.native="mouseDown(node)"
-          v-on:mouseup.native="mouseUp(node)"
-          v-on:mouseenter.native="mouseEnter(node)"
-          v-on:mouseout.native="mouseOut(node)"
+          v-on:mousedown="mouseDown(node)"
+          v-on:mouseup="mouseUp(node)"
+          v-on:mouseenter="mouseEnter(node)"
+          v-on:mouseout="mouseOut(node)"
         ></Node>
       </div>
     </div>
   </div>
 </template>
 <script>
-import Node from "~/components/GridNode.vue";
-import depthFirst from "~/mixins/depthFirst.js";
-import breadthFirst from "~/mixins/breadthFirst.js";
-import dijkstras from "~/mixins/dijkstra.js";
-import aStar from "~/mixins/aStar.js";
 export default {
   mixins: [depthFirst, breadthFirst, dijkstras, aStar],
-  components: {
-    Node,
-  },
   data: function () {
     return {
       rowNum: 30, // grid rows
@@ -550,7 +542,7 @@ export default {
 };
 </script>
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .path-container {
   display: flex;
   flex-direction: column;
