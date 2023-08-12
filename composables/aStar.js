@@ -1,6 +1,6 @@
 export default {
-  methods: {
-    aStar: function (grid, startX, startY, endX, endY, animations) {
+  setup() {
+    const aStar = (grid, startX, startY, endX, endY, animations) => {
       var priorityQueue = []; // Priority Queue to store nodes
       let startNode = grid[startX][startY];
       let endNode = grid[endX][endY];
@@ -67,18 +67,18 @@ export default {
       priorityQueue = [];
       animations.push(["nfound", -1, -1]);
       return animations;
-    },
+    };
 
     // Function to calculate the Manhattan distance between two nodes
-    getDistance: function (currentNode, neighborNode) {
+    const getDistance = (currentNode, neighborNode) => {
       let distance =
         Math.abs(neighborNode.col - currentNode.col) +
         Math.abs(neighborNode.row - currentNode.row);
       return distance;
-    },
+    };
 
     // Function to get the neighboring nodes
-    getNeighbors: function (node) {
+    const getNeighbors = (node) => {
       let neighbors = [];
       let row = node.row;
       let col = node.col;
@@ -97,6 +97,7 @@ export default {
         neighbors.push([row + 1, col]);
       }
       return neighbors;
-    },
+    };
+    return { aStar, getNeighbors, getDistance };
   },
 };
