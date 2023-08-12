@@ -38,27 +38,29 @@
 </template>
 
 <script>
-import vue from "vue";
+import { ref, computed } from "vue";
+
 export default {
-  computed: {
-    isMobile: function () {
-      if (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-  },
-  data: function () {
+  setup() {
+    // Computed property
+    const isMobile = computed(() => {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    });
+
+    // Data properties
+    const AlgoCategory = ref("sorting");
+    const loaderLoading = ref(true);
+    const loaderColor = ref("#264653");
+    const loaderSize = ref("300");
+
     return {
-      AlgoCategory: "sorting",
-      loaderLoading: true,
-      loaderColor: "#264653",
-      loaderSize: "300",
+      isMobile,
+      AlgoCategory,
+      loaderLoading,
+      loaderColor,
+      loaderSize,
     };
   },
 };
