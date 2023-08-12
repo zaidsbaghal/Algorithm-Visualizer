@@ -1,11 +1,11 @@
 export default {
-  methods: {
-    heapSort: function (array) {
+  setup() {
+    const heapSort = (array) => {
       let size = array.length;
 
       // build heapSort (rearrange array)
       for (let i = Math.floor(size / 2 - 1); i >= 0; i--)
-        this.heapify(array, size, i);
+        heapify(array, size, i);
 
       // one by one extract an element from heapSort
       for (let i = size - 1; i >= 0; i--) {
@@ -15,13 +15,13 @@ export default {
         array[i] = temp;
 
         // call max heapify on the reduced heapSort
-        this.heapify(array, i, 0);
+        heapify(array, i, 0);
       }
       return array;
-    },
+    };
 
     // to heapify a subtree rooted with node i which is an index in array[]
-    heapify: function (array, size, i) {
+    const heapify = (array, size, i) => {
       let max = i; // initialize max as root
       let left = 2 * i + 1;
       let right = 2 * i + 2;
@@ -40,8 +40,12 @@ export default {
         array[max] = temp;
 
         // recursively heapify the affected sub-tree
-        this.heapify(array, size, max);
+        heapify(array, size, max);
       }
-    },
+    };
+    return {
+      heapSort,
+      heapify,
+    };
   },
 };

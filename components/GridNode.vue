@@ -1,5 +1,5 @@
 <template>
-  <div class="box" v-bind:id="this.id"></div>
+  <div class="box" v-bind:id="id"></div>
 </template>
 <script>
 defineProps({

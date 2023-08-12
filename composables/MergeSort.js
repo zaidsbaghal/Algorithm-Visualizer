@@ -1,10 +1,10 @@
 export default {
-  methods: {
-    mergeSort: function (mainArray, animations) {
+  setup() {
+    const mergeSort = (mainArray, animations) => {
       if (mainArray.length <= 1) return mainArray;
 
       const auxillaryArray = mainArray.slice();
-      this.mergeSortHelper(
+      mergeSortHelper(
         mainArray,
         0,
         mainArray.length - 1,
@@ -15,43 +15,31 @@ export default {
       animations.push(["sorted", mainArray.length - 1]);
 
       return [mainArray, animations];
-    },
+    };
     // Merge helper function
-    mergeSortHelper: function (
+    const mergeSortHelper = (
       mainArray,
       start,
       end,
       auxillaryArray,
       animations
-    ) {
+    ) => {
       if (start === end) return;
       const middle = Math.floor((start + end) / 2);
       animations.push(["curr", middle]);
       animations.push(["clear", middle]);
-      this.mergeSortHelper(
-        auxillaryArray,
-        start,
-        middle,
-        mainArray,
-        animations
-      ); // split array in half
-      this.mergeSortHelper(
-        auxillaryArray,
-        middle + 1,
-        end,
-        mainArray,
-        animations
-      ); // split array in half
-      this.doMerge(mainArray, start, middle, end, auxillaryArray, animations);
-    },
-    doMerge: function (
+      mergeSortHelper(auxillaryArray, start, middle, mainArray, animations); // split array in half
+      mergeSortHelper(auxillaryArray, middle + 1, end, mainArray, animations); // split array in half
+      doMerge(mainArray, start, middle, end, auxillaryArray, animations);
+    };
+    const doMerge = (
       mainArray,
       start,
       middle,
       end,
       auxillaryArray,
       animations
-    ) {
+    ) => {
       let k = start;
       let i = start;
       let j = middle + 1;
@@ -86,6 +74,8 @@ export default {
         j += 1;
         k += 1;
       }
-    },
+    };
+
+    return { mergeSort, mergeSortHelper, doMerge };
   },
 };

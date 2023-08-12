@@ -1,8 +1,8 @@
 export default {
-  methods: {
+  setup() {
     // for use with dikstras algorithm
-    enqueue: function (data, element) {
-      if (this.isEmpty(data)) {
+    const enqueue = (data, element) => {
+      if (isEmpty(data)) {
         data.push(element);
       } else {
         let added = false; // Was the queue shifted?
@@ -18,10 +18,10 @@ export default {
           data.push(element);
         }
       }
-    },
+    };
     // For use with astar algorithm
-    enqueueStar: function (data, element) {
-      if (this.isEmpty(data)) {
+    const enqueueStar = (data, element) => {
+      if (isEmpty(data)) {
         data.push(element);
       } else {
         let added = false; // Was the queue shifted?
@@ -37,15 +37,15 @@ export default {
           data.push(element);
         }
       }
-    },
-    dequeue: function (data) {
+    };
+    const dequeue = (data) => {
       let element = data.shift();
       return element;
-    },
-    isEmpty: function (data) {
+    };
+    const isEmpty = (data) => {
       return data.length === 0;
-    },
-    exists: function (data, ele) {
+    };
+    const exists = (data, ele) => {
       for (let i = 0; i < data.length; i++) {
         let node = data[i];
         if (node.col == ele.col && node.row == ele.row) {
@@ -53,8 +53,8 @@ export default {
         }
       }
       return false;
-    },
-    reorder: function (data, ele) {
+    };
+    const reorder = (data, ele) => {
       var n;
       for (let i = 0; i < data.length; i++) {
         let node = data[i];
@@ -64,7 +64,8 @@ export default {
         }
       }
       data.splice(n, 1);
-      this.enqueueStar(data, ele);
-    },
+      enqueueStar(data, ele);
+    };
+    return { enqueue, dequeue, isEmpty, exists, reorder, enqueueStar };
   },
 };

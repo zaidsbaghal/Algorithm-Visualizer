@@ -1,6 +1,12 @@
 export default {
-  methods: {
-    selectionSort: function (array, animations) {
+  setup() {
+    const swap = (i, j, array) => {
+      let temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    };
+
+    const selectionSort = (array, animations) => {
       let currentIdx = 0;
       while (currentIdx < array.length) {
         animations.push(["curr", currentIdx]);
@@ -18,17 +24,17 @@ export default {
           animations.push(["clear", smallest]); // set last element sorted color
         }
 
-        this.swap(currentIdx, smallest, array);
+        swap(currentIdx, smallest, array);
 
         currentIdx += 1;
       }
       animations.push(["sorted", array.length - 1]);
       return [array, animations];
-    },
-    swap: function (i, j, array) {
-      let temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    },
+    };
+
+    return {
+      selectionSort,
+      swap,
+    };
   },
 };

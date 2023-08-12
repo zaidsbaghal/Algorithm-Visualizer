@@ -1,11 +1,11 @@
 export default {
-  methods: {
-    bfs: function (x, y, grid, animations) {
-      this.bfsHelper(x, y, grid, animations);
+  setup() {
+    const bfs = (x, y, grid, animations) => {
+      bfsHelper(x, y, grid, animations);
       animations.push(["nfound", -1, -1]); // not found
       return animations;
-    },
-    bfsHelper: function (x, y, grid, animations) {
+    };
+    const bfsHelper = (x, y, grid, animations) => {
       let current = grid[x][y];
       let currStyle = document.getElementById(current.id).className;
       let q = [];
@@ -29,7 +29,7 @@ export default {
           q = [];
           break;
         }
-        let neighbors = this.getNeighbors(v);
+        let neighbors = getNeighbors(v);
         for (let i = 0; i < neighbors.length; i++) {
           let ncoords = neighbors[i];
           let n = grid[ncoords[0]][ncoords[1]];
@@ -50,8 +50,8 @@ export default {
         }
       }
       return;
-    },
-    getNeighbors: function (node) {
+    };
+    const getNeighbors = (node) => {
       let result = [];
       let row = node.row;
       let col = node.col;
@@ -59,9 +59,9 @@ export default {
       //left
       if (
         row >= 0 &&
-        row < this.rowNum &&
+        row < rowNum.value &&
         col - 1 >= 0 &&
-        col - 1 < this.colNum
+        col - 1 < colNum.value
       ) {
         let id = "Node-" + col + "-" + row - 1;
         result.push([col - 1, row]);
@@ -69,9 +69,9 @@ export default {
       // top
       if (
         row - 1 >= 0 &&
-        row - 1 < this.rowNum &&
+        row - 1 < rowNum.value &&
         col >= 0 &&
-        col < this.colNum
+        col < colNum.value
       ) {
         let id = "Node-" + col - 1 + "-" + row;
         result.push([col, row - 1]);
@@ -79,9 +79,9 @@ export default {
       // right
       if (
         row >= 0 &&
-        row < this.rowNum &&
+        row < rowNum.value &&
         col + 1 >= 0 &&
-        col + 1 < this.colNum
+        col + 1 < colNum.value
       ) {
         let id = "Node-" + col + "-" + row + 1;
         result.push([col + 1, row]);
@@ -89,13 +89,18 @@ export default {
       // bottom
       if (
         row + 1 >= 0 &&
-        row + 1 < this.rowNum &&
+        row + 1 < rowNum.value &&
         col >= 0 &&
-        col < this.colNum
+        col < colNum.value
       ) {
         result.push([col, row + 1]);
       }
       return result;
-    },
+    };
+    return {
+      bfs,
+      bfsHelper,
+      getNeighbors,
+    };
   },
 };

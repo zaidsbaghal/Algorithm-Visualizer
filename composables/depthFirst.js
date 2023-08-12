@@ -1,59 +1,13 @@
-export default {
-  methods: {
-    dfs: function (x, y, grid, animations) {
-      this.dfsHelper(x, y, grid, animations, false);
-      animations.push(["nfound"]); // not found
-      return animations;
-    },
-    // returns an array of all neighbor nodes to a node
-    getNeighbors: function (node) {
-      let result = [];
-      let row = node.row;
-      let col = node.col;
+import { ref } from "vue";
 
-      //left
-      if (
-        row >= 0 &&
-        row < this.rowNum &&
-        col - 1 >= 0 &&
-        col - 1 < this.colNum
-      ) {
-        let id = "Node-" + col + "-" + row - 1;
-        result.push([col - 1, row]);
-      }
-      // top
-      if (
-        row - 1 >= 0 &&
-        row - 1 < this.rowNum &&
-        col >= 0 &&
-        col < this.colNum
-      ) {
-        let id = "Node-" + col - 1 + "-" + row;
-        result.push([col, row - 1]);
-      }
-      // right
-      if (
-        row >= 0 &&
-        row < this.rowNum &&
-        col + 1 >= 0 &&
-        col + 1 < this.colNum
-      ) {
-        let id = "Node-" + col + "-" + row + 1;
-        result.push([col + 1, row]);
-      }
-      // bottom
-      if (
-        row + 1 >= 0 &&
-        row + 1 < this.rowNum &&
-        col >= 0 &&
-        col < this.colNum
-      ) {
-        result.push([col, row + 1]);
-      }
-      return result;
-    },
-    dfsHelper: function (x, y, grid, animations, found) {
-      if (found == true) {
+export default {
+  setup() {
+    // Assuming rowNum and colNum are properties of the component or computed values
+    const rowNum = ref(0); // You should define the correct initial value
+    const colNum = ref(0); // You should define the correct initial value
+
+    const dfsHelper = (x, y, grid, animations, found) => {
+      if (found.value === true) {
         return;
       }
       let current = grid[x][y];
@@ -70,7 +24,7 @@ export default {
         current.visited = true;
       }
 
-      let neighbors = this.getNeighbors(current);
+      let neighbors = getNeighbors(current);
       for (let i = 0; i < neighbors.length; i++) {
         let ncoords = neighbors[i];
         let n = grid[ncoords[0]][ncoords[1]];
@@ -78,20 +32,80 @@ export default {
           if (document.getElementById(n.id).className === "wall") {
             continue; // skip walls
           }
-          found = this.dfsHelper(
+          found.value = dfsHelper(
             ncoords[0],
             ncoords[1],
             grid,
             animations,
             found
           );
-          if (found == true) {
+          if (found.value === true) {
             return;
           }
         }
       }
 
       return;
-    },
+    };
+
+    const getNeighbors = (node) => {
+      let result = [];
+      let row = node.row;
+      let col = node.col;
+
+      //left
+      if (
+        row >= 0 &&
+        row < rowNum.value &&
+        col - 1 >= 0 &&
+        col - 1 < colNum.value
+      ) {
+        let id = "Node-" + col + "-" + (row - 1); // Fixed the expression
+        result.push([col - 1, row]);
+      }
+      // top
+      if (
+        row - 1 >= 0 &&
+        row - 1 < rowNum.value &&
+        col >= 0 &&
+        col < colNum.value
+      ) {
+        let id = "Node-" + (col - 1) + "-" + row; // Fixed the expression
+        result.push([col, row - 1]);
+      }
+      // right
+      if (
+        row >= 0 &&
+        row < rowNum.value &&
+        col + 1 >= 0 &&
+        col + 1 < colNum.value
+      ) {
+        let id = "Node-" + col + "-" + (row + 1); // Fixed the expression
+        result.push([col + 1, row]);
+      }
+      // bottom
+      if (
+        row + 1 >= 0 &&
+        row + 1 < rowNum.value &&
+        col >= 0 &&
+        col < colNum.value
+      ) {
+        result.push([col, row + 1]);
+      }
+      return result;
+    };
+
+    const dfs = (x, y, grid, animations) => {
+      let found = ref(false); // Using ref to make found reactive
+      dfsHelper(x, y, grid, animations, found);
+      animations.push(["nfound"]); // not found
+      return animations;
+    };
+
+    return {
+      dfs,
+      getNeighbors,
+      dfsHelper,
+    };
   },
 };
