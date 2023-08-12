@@ -57,7 +57,7 @@
       <div class="array-container">
         <div
           class="array-bar"
-          v-for="(value, index) in this.array"
+          v-for="(value, index) in array.value"
           :key="index"
           :style="{ height: `${value * heightFactor}` + 'px' }"
         ></div>
@@ -67,98 +67,90 @@
 </template>
 
 <script>
+import { ref, computed, onMounted, onBeforeMount } from "vue";
+
 export default {
-  data: function () {
-    return {
-      array: [], // stores the currently displayed array on screen
-      animations: [], // stores the animations of the current sort
-      defaultArr: [], // stores the newly generated array in unsorted form
-      sorted: false, // is the current array sorted?,
-      animSpeed: 1, // animation speed
-      context: this,
-      buttonDisable: false, // is something running currently?
+  setup() {
+    const array = ref([]);
+    const animations = ref([]);
+    const defaultArr = ref([]);
+    const sorted = ref(false);
+    const animSpeed = ref(1);
+    const buttonDisable = ref(false);
+
+    const genArray = () => {
+      // Check if something is running
+
+      colorReset();
+      newArray();
     };
-  },
-  computed: {
-    heightFactor: function () {
+
+    const resetArray = () => {
+      // Check if something is running
+      colorReset();
+      array.value = defaultArr.value.slice(0);
+
+      animations.value = [];
+      sorted.value = false;
+    };
+
+    const disableButtons = () => {
+      buttonDisable.value = true;
+    };
+
+    const enableButtons = () => {
+      buttonDisable.value = false;
+    };
+
+    const randomIntFromInterval = (min, max) => {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    };
+
+    const colorReset = () => {
+      const bars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < array.value.length; i++) {
+        bars[i].style.backgroundColor = "#264653";
+      }
+    };
+
+    const newArray = () => {
+      sorted.value = false;
+      array.value = [];
+
+      for (let i = 0; i < 80; i++) {
+        array.value[i] = randomIntFromInterval(50, 999);
+      }
+
+      defaultArr.value = array.value.slice(0); // set default array
+    };
+
+    const heightFactor = computed(() => {
       var mq = window.matchMedia(
         "(min-device-width: 1200px) and (max-device-width: 1600px)"
       );
-      if (mq.matches) {
-        return 0.55;
-      } else {
-        return 0.65;
-      }
-    },
-  },
-  mounted: function () {
-    this.$nextTick(() => {
-      this.$nuxt.$loading.start();
-
-      setTimeout(() => this.$nuxt.$loading.finish(), 1000);
+      return mq.matches ? 0.55 : 0.65;
     });
-  },
-  beforeMount: function () {
-    this.$nextTick(function () {
-      this.newArray();
+
+    onBeforeMount(() => {
+      newArray(); // Assuming newArray is defined within the component
     });
-  },
-  methods: {
-    disableButtons: function () {
-      this.buttonDisable = true;
-    },
-    enableButtons: function () {
-      this.buttonDisable = false;
-    },
-    // Function that gets a random number between min and max
-    randomIntFromInterval(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    },
-    // Resets the color of the array to default
-    colorReset: function () {
-      const bars = document.getElementsByClassName("array-bar");
-      for (let i = 0; i < this.array.length; i++) {
-        bars[i].style.backgroundColor = "#264653";
-      }
-    },
-    // Resets the array to randomized integers to be sorted
-    newArray: function () {
-      this.sorted = false;
-      this.array = [];
 
-      for (let i = 0; i < 80; i++) {
-        this.$set(this.array, i, this.randomIntFromInterval(50, 999));
-      }
+    onMounted(async () => {
+      await $nuxt.$loading.start(); // assuming $nuxt.$loading is defined
+      setTimeout(() => $nuxt.$loading.finish(), 1000);
+    });
 
-      this.defaultArr = this.array.slice(0); // set default array
-    },
-    // Resets the array to randomized integers to be sorted
-    genArray: function () {
-      // Check if something is running
-
-      this.colorReset();
-      this.newArray();
-    },
-    // Resets array to the unsorted version
-    resetArray: function () {
-      // Check if something is running
-      this.colorReset();
-      this.array = this.defaultArr.slice(0);
-
-      this.animations = [];
-      this.sorted = false;
-    },
     // Trigger merge sort animation
-    mergeSortButton: function () {
+    const mergeSortButton = () => {
       // If array has already been sorted then return
-      if (this.sorted === true) {
+      if (sorted.value === true) {
         return;
       }
 
       // Disable buttons while running
-      this.disableButtons();
+      disableButtons();
 
-      const result = this.mergeSort(this.array.slice(), this.animations);
+      const result = mergeSort(array.value.slice(), animations.value);
       // let sortedarray = result[0];
       let animations = result[1];
 
@@ -175,26 +167,26 @@ export default {
             try {
               bars[idxone].style.backgroundColor = "#2A9D8F";
             } catch (error) {}
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A";
             bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "clear") {
           let idx = animations[i][1];
           setTimeout(function () {
             try {
               bars[idx].style.backgroundColor = "#264653";
             } catch (err) {}
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "done") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "sorted") {
           let idx = animations[i][1];
           new Promise((resolve, reject) => {
@@ -203,11 +195,11 @@ export default {
                 bars[j].style.backgroundColor = "#E76F51";
               }
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
+            animations.value = [];
+            enableButtons();
+            sorted.value = true; // Set the array to sorted
           });
         } else {
           // swap command
@@ -216,31 +208,31 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+              this.$set(array.value, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#264653";
               bars[idxone].style.backgroundColor = "#264653";
             }.bind(this),
-            i * this.animSpeed
+            i * animSpeed.value
           );
         }
       }
-    },
+    };
 
-    quickSortButton: function () {
+    const quickSortButton = () => {
       // If array has already been sorted then return
-      if (this.sorted === true) {
+      if (sorted.value === true) {
         return;
       }
 
       // Disable buttons while running
-      this.disableButtons();
+      disableButtons();
 
-      const result = this.quickSort(
-        this.array.slice(),
+      const result = quickSort(
+        array.value.slice(),
         0,
-        this.array.length - 1,
-        this.animations
+        array.value.length - 1,
+        animations.value
       );
       let animations = result[1];
 
@@ -257,31 +249,31 @@ export default {
             try {
               bars[idxone].style.backgroundColor = "#2A9D8F";
             } catch (error) {}
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A";
             bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "clear") {
           let idx = animations[i][1];
           setTimeout(function () {
             try {
               bars[idx].style.backgroundColor = "#264653";
             } catch (error) {}
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "left") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#F4A261";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "right") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "sorted") {
           let idx = animations[i][1];
           new Promise((resolve, reject) => {
@@ -290,11 +282,11 @@ export default {
                 bars[j].style.backgroundColor = "#E76F51";
               }
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
+            animations.value = [];
+            enableButtons();
+            sorted.value = true; // Set the array to sorted
           });
         } else {
           // swap command
@@ -303,25 +295,25 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+              this.$set(array.value, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#E9C46A";
               bars[idxone].style.backgroundColor = "#E9C46A";
             }.bind(this),
-            i * this.animSpeed
+            i * animSpeed.value
           );
         }
       }
-    },
+    };
 
-    bubbleSortButton() {
-      if (this.sorted === true) {
+    const bubbleSortButton = () => {
+      if (sorted.value === true) {
         return;
       }
       // Disable buttons while running
-      this.disableButtons();
+      disableButtons();
 
-      const result = this.bubbleSort(this.array.slice(), this.animations);
+      const result = bubbleSort(array.value.slice(), animations.value);
       // let sortedarray = result[0];
       let animations = result[1];
 
@@ -336,24 +328,24 @@ export default {
           let idxone = animations[i][1];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#2A9D8F";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A";
             bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "clear") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#264653";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "done") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "sorted") {
           let idx = animations[i][1];
           new Promise((resolve, reject) => {
@@ -362,11 +354,11 @@ export default {
                 bars[j].style.backgroundColor = "#E76F51";
               }
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
+            animations.value = [];
+            enableButtons();
+            sorted.value = true; // Set the array to sorted
           });
         } else {
           // swap command
@@ -374,22 +366,22 @@ export default {
           let newHeight = animations[i][2];
           setTimeout(
             function () {
-              bars[idx].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idx, newHeight);
+              bars[idx].style.height = `${newHeight * heightFactor.value}px`;
+              this.$set(array.value, idx, newHeight);
             }.bind(this),
-            i * this.animSpeed
+            i * animSpeed.value
           );
         }
       }
-    },
+    };
 
-    selectionSortButton() {
-      if (this.sorted === true) {
+    const selectionSortButton = () => {
+      if (sorted.value === true) {
         return;
       }
       // Disable buttons while running
-      this.disableButtons();
-      const result = this.selectionSort(this.array.slice(), this.animations);
+      disableButtons();
+      const result = selectionSort(array.value.slice(), animations.value);
 
       let animations = result[1];
       // Display animations
@@ -403,24 +395,24 @@ export default {
           let idxone = animations[i][1];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#2A9D8F";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A";
             bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "clear") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#264653";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "done") {
           let idx = animations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "sorted") {
           let idx = animations[i][1];
           new Promise((resolve, reject) => {
@@ -429,11 +421,11 @@ export default {
                 bars[j].style.backgroundColor = "#E76F51";
               }
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
+            animations.value = [];
+            enableButtons();
+            sorted.value = true; // Set the array to sorted
           });
         } else {
           // swap command
@@ -442,24 +434,24 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+              this.$set(array.value, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#E76F51";
               bars[idxone].style.backgroundColor = "#E76F51";
             }.bind(this),
-            i * this.animSpeed
+            i * animSpeed.value
           );
         }
       }
-    },
+    };
 
-    insertionSortButton() {
-      if (this.sorted === true) {
+    const insertionSortButton = () => {
+      if (sorted.value === true) {
         return;
       }
       // Disable buttons while running
-      this.disableButtons();
-      const result = this.insertionSort(this.array.slice(), this.animations);
+      disableButtons();
+      const result = insertionSort(array.value.slice(), animations.value);
       // let sortedarray = result[0];
       let animations = result[1];
 
@@ -473,19 +465,19 @@ export default {
           let idxone = animations[i][1];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#2A9D8F"; // green
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "init") {
           let idxone = animations[i][1];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E76F51"; // red for sorted list
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "comp") {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A"; // comparisons are yellow
             bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
+          }, i * animSpeed.value);
         } else if (command == "sorted") {
           let idx = animations[i][1];
           new Promise((resolve, reject) => {
@@ -494,11 +486,11 @@ export default {
                 bars[j].style.backgroundColor = "#E76F51";
               }
               resolve();
-            }, i * this.animSpeed);
+            }, i * animSpeed.value);
           }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
+            animations.value = [];
+            enableButtons();
+            sorted.value = true; // Set the array to sorted
           });
         } else {
           // swap command
@@ -507,16 +499,29 @@ export default {
           let newHeight = animations[i][3];
           setTimeout(
             function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
+              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+              this.$set(array.value, idxone, newHeight);
               bars[idxone].style.backgroundColor = "#264653";
               bars[idxone].style.backgroundColor = "#264653";
             }.bind(this),
-            i * this.animSpeed
+            i * animSpeed.value
           );
         }
       }
-    },
+    };
+
+    return {
+      array,
+      animations,
+      genArray,
+      resetArray,
+      mergeSortButton,
+      quickSortButton,
+      bubbleSortButton,
+      selectionSortButton,
+      insertionSortButton,
+      buttonDisable,
+    };
   },
 };
 </script>
