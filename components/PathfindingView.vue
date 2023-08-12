@@ -47,7 +47,7 @@
       </button>
     </div>
     <div class="graph-action">
-      <div class="col" v-for="(col, index) in this.grid" :key="index">
+      <div class="col" v-for="(col, index) in grid" :key="index">
         <Node
           v-for="node in col"
           :key="node.id"

@@ -57,7 +57,7 @@
       <div class="array-container">
         <div
           class="array-bar"
-          v-for="(value, index) in array.value"
+          v-for="(value, index) in array"
           :key="index"
           :style="{ height: `${value * heightFactor}` + 'px' }"
         ></div>
@@ -206,15 +206,11 @@ export default {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
-              this.$set(array.value, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#264653";
-              bars[idxone].style.backgroundColor = "#264653";
-            }.bind(this),
-            i * animSpeed.value
-          );
+          setTimeout(() => {
+            bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+            array.value[idxone] = newHeight; // Replacing the $set call
+            bars[idxone].style.backgroundColor = "#264653";
+          }, i * animSpeed.value);
         }
       }
     };
@@ -293,15 +289,11 @@ export default {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
-              this.$set(array.value, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#E9C46A";
-              bars[idxone].style.backgroundColor = "#E9C46A";
-            }.bind(this),
-            i * animSpeed.value
-          );
+          setTimeout(() => {
+            bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+            array.value[idxone] = newHeight; // Replacing the $set call
+            bars[idxone].style.backgroundColor = "#E9C46A";
+          }, i * animSpeed.value);
         }
       }
     };
@@ -364,13 +356,10 @@ export default {
           // swap command
           let idx = animations[i][1];
           let newHeight = animations[i][2];
-          setTimeout(
-            function () {
-              bars[idx].style.height = `${newHeight * heightFactor.value}px`;
-              this.$set(array.value, idx, newHeight);
-            }.bind(this),
-            i * animSpeed.value
-          );
+          setTimeout(() => {
+            bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+            array.value[idxone] = newHeight; // Replacing the $set call
+          }, i * animSpeed.value);
         }
       }
     };
@@ -432,15 +421,11 @@ export default {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
-              this.$set(array.value, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#E76F51";
-              bars[idxone].style.backgroundColor = "#E76F51";
-            }.bind(this),
-            i * animSpeed.value
-          );
+          setTimeout(() => {
+            bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+            array.value[idxone] = newHeight; // Replacing the $set call
+            bars[idxone].style.backgroundColor = "#E76F51";
+          }, i * animSpeed.value);
         }
       }
     };
@@ -497,15 +482,11 @@ export default {
           let idxone = animations[i][1];
           let idxtwo = animations[i][2];
           let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
-              this.$set(array.value, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#264653";
-              bars[idxone].style.backgroundColor = "#264653";
-            }.bind(this),
-            i * animSpeed.value
-          );
+          setTimeout(() => {
+            bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+            array.value[idxone] = newHeight; // Replacing the $set call
+            bars[idxone].style.backgroundColor = "#264653";
+          }, i * animSpeed.value);
         }
       }
     };
