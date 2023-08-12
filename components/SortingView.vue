@@ -68,6 +68,7 @@
 
 <script>
 import { ref, computed, onMounted, onBeforeMount } from "vue";
+import { mergeSort } from "~/composables/MergeSort.js";
 
 export default {
   setup() {
@@ -77,6 +78,8 @@ export default {
     const sorted = ref(false);
     const animSpeed = ref(1);
     const buttonDisable = ref(false);
+    const nuxtApp = useNuxtApp();
+    const loading = ref(false);
 
     const genArray = () => {
       // Check if something is running
@@ -89,6 +92,13 @@ export default {
       // Check if something is running
       colorReset();
       array.value = defaultArr.value.slice(0);
+
+      // Update the heights of the bars in the DOM
+      const bars = document.getElementsByClassName("array-bar");
+      const factor = heightFactor.value; // Assuming heightFactor is a computed property
+      for (let i = 0; i < array.value.length; i++) {
+        bars[i].style.height = `${array.value[i] * factor}px`; // Adjust the height value using the factor
+      }
 
       animations.value = [];
       sorted.value = false;
@@ -128,7 +138,8 @@ export default {
       var mq = window.matchMedia(
         "(min-device-width: 1200px) and (max-device-width: 1600px)"
       );
-      return mq.matches ? 0.55 : 0.65;
+      const factor = mq.matches ? 0.55 : 0.65;
+      return factor;
     });
 
     onBeforeMount(() => {
@@ -136,8 +147,13 @@ export default {
     });
 
     onMounted(async () => {
-      await $nuxt.$loading.start(); // assuming $nuxt.$loading is defined
-      setTimeout(() => $nuxt.$loading.finish(), 1000);
+      setTimeout(
+        () =>
+          nuxtApp.hook("page:finish", () => {
+            loading.value = false;
+          }),
+        1000
+      );
     });
 
     // Trigger merge sort animation
@@ -152,43 +168,43 @@ export default {
 
       const result = mergeSort(array.value.slice(), animations.value);
       // let sortedarray = result[0];
-      let animations = result[1];
+      let mergeAnimations = result[1];
 
       // Display animations
-      for (let i = 0; i < animations.length; i++) {
+      for (let i = 0; i < mergeAnimations.length; i++) {
         // Get animation variables
-        let command = animations[i][0];
+        let command = mergeAnimations[i][0];
         const bars = document.getElementsByClassName("array-bar");
 
         // If we are comparing two elements change their color
         if (command == "curr") {
-          let idxone = animations[i][1];
+          let idxone = mergeAnimations[i][1];
           setTimeout(function () {
             try {
               bars[idxone].style.backgroundColor = "#2A9D8F";
             } catch (error) {}
           }, i * animSpeed.value);
         } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
+          let idxone = mergeAnimations[i][1];
+          let idxtwo = mergeAnimations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A";
             bars[idxtwo].style.backgroundColor = "#E9C46A";
           }, i * animSpeed.value);
         } else if (command == "clear") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           setTimeout(function () {
             try {
               bars[idx].style.backgroundColor = "#264653";
             } catch (err) {}
           }, i * animSpeed.value);
         } else if (command == "done") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#E76F51";
           }, i * animSpeed.value);
         } else if (command == "sorted") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           new Promise((resolve, reject) => {
             setTimeout(function () {
               for (let j = 0; j <= idx; j++) {
@@ -203,9 +219,9 @@ export default {
           });
         } else {
           // swap command
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          let newHeight = animations[i][3];
+          let idxone = mergeAnimations[i][1];
+          let idxtwo = mergeAnimations[i][2];
+          let newHeight = mergeAnimations[i][3];
           setTimeout(() => {
             bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
             array.value[idxone] = newHeight; // Replacing the $set call
@@ -502,6 +518,7 @@ export default {
       selectionSortButton,
       insertionSortButton,
       buttonDisable,
+      heightFactor,
     };
   },
 };
