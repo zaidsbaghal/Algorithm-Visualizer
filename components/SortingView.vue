@@ -510,8 +510,7 @@ export default {
 <style lang="scss">
 @import "./assets/colors.scss";
 .sort-container {
-  padding-left: 150px;
-  padding-right: 150px;
+  padding: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -570,8 +569,7 @@ export default {
 }
 @media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
   .sort-container {
-    padding-left: 85px;
-    padding-right: 85px;
+    padding: 0;
   }
 
   .toolbar-button {
