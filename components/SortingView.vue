@@ -69,6 +69,7 @@
 <script>
 import { ref, computed, onMounted, onBeforeMount } from "vue";
 import { mergeSort } from "~/composables/MergeSort.js";
+import { quickSort } from "~/composables/QuickSort.js";
 
 export default {
   setup() {
@@ -83,9 +84,13 @@ export default {
 
     const genArray = () => {
       // Check if something is running
-
       colorReset();
       newArray();
+      const bars = document.getElementsByClassName("array-bar");
+      const factor = heightFactor.value; // Assuming heightFactor is a computed property
+      for (let i = 0; i < array.value.length; i++) {
+        bars[i].style.height = `${array.value[i] * factor}px`; // Adjust the height value using the factor
+      }
     };
 
     const resetArray = () => {
@@ -131,6 +136,7 @@ export default {
         array.value[i] = randomIntFromInterval(50, 999);
       }
 
+      animations.value = [];
       defaultArr.value = array.value.slice(0); // set default array
     };
 
@@ -246,48 +252,48 @@ export default {
         array.value.length - 1,
         animations.value
       );
-      let animations = result[1];
+      let mergeAnimations = result[1];
 
       // Display animations
-      for (let i = 0; i < animations.length; i++) {
+      for (let i = 0; i < mergeAnimations.length; i++) {
         // Get animation variables
-        let command = animations[i][0];
+        let command = mergeAnimations[i][0];
         const bars = document.getElementsByClassName("array-bar");
 
         // If we are comparing two elements change their color
         if (command == "curr") {
-          let idxone = animations[i][1];
+          let idxone = mergeAnimations[i][1];
           setTimeout(function () {
             try {
               bars[idxone].style.backgroundColor = "#2A9D8F";
             } catch (error) {}
           }, i * animSpeed.value);
         } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
+          let idxone = mergeAnimations[i][1];
+          let idxtwo = mergeAnimations[i][2];
           setTimeout(function () {
             bars[idxone].style.backgroundColor = "#E9C46A";
             bars[idxtwo].style.backgroundColor = "#E9C46A";
           }, i * animSpeed.value);
         } else if (command == "clear") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           setTimeout(function () {
             try {
               bars[idx].style.backgroundColor = "#264653";
             } catch (error) {}
           }, i * animSpeed.value);
         } else if (command == "left") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#F4A261";
           }, i * animSpeed.value);
         } else if (command == "right") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           setTimeout(function () {
             bars[idx].style.backgroundColor = "#E76F51";
           }, i * animSpeed.value);
         } else if (command == "sorted") {
-          let idx = animations[i][1];
+          let idx = mergeAnimations[i][1];
           new Promise((resolve, reject) => {
             setTimeout(function () {
               for (let j = 0; j <= idx; j++) {
@@ -296,15 +302,15 @@ export default {
               resolve();
             }, i * animSpeed.value);
           }).then(() => {
-            animations.value = [];
+            mergeAnimations.value = [];
             enableButtons();
             sorted.value = true; // Set the array to sorted
           });
         } else {
           // swap command
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          let newHeight = animations[i][3];
+          let idxone = mergeAnimations[i][1];
+          let idxtwo = mergeAnimations[i][2];
+          let newHeight = mergeAnimations[i][3];
           setTimeout(() => {
             bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
             array.value[idxone] = newHeight; // Replacing the $set call
