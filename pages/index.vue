@@ -37,33 +37,21 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from "vue";
 
-export default {
-  setup() {
-    // Computed property
-    const isMobile = computed(() => {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-    });
+// Computed property
+const isMobile = computed(() => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+});
 
-    // Data properties
-    const AlgoCategory = ref("sorting");
-    const loaderLoading = ref(true);
-    const loaderColor = ref("#264653");
-    const loaderSize = ref("300");
-
-    return {
-      isMobile,
-      AlgoCategory,
-      loaderLoading,
-      loaderColor,
-      loaderSize,
-    };
-  },
-};
+// Data properties
+const AlgoCategory = ref("sorting");
+const loaderLoading = ref(true);
+const loaderColor = ref("#264653");
+const loaderSize = ref("300");
 </script>
 
 <style lang="scss">

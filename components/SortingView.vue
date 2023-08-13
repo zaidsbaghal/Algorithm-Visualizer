@@ -84,6 +84,9 @@ const nuxtApp = useNuxtApp();
 const loading = ref(false);
 
 const genArray = () => {
+  if (buttonDisable.value === true) {
+    return;
+  }
   // Check if something is running
   colorReset();
   newArray();
@@ -95,6 +98,9 @@ const genArray = () => {
 };
 
 const resetArray = () => {
+  if (buttonDisable.value === true) {
+    return;
+  }
   // Check if something is running
   colorReset();
   array.value = defaultArr.value.slice(0);
@@ -166,7 +172,7 @@ onMounted(async () => {
 // Trigger merge sort animation
 const mergeSortButton = () => {
   // If array has already been sorted then return
-  if (sorted.value === true) {
+  if (sorted.value === true || buttonDisable.value === true) {
     return;
   }
 
@@ -240,7 +246,7 @@ const mergeSortButton = () => {
 
 const quickSortButton = () => {
   // If array has already been sorted then return
-  if (sorted.value === true) {
+  if (sorted.value === true || buttonDisable.value === true) {
     return;
   }
 
@@ -322,7 +328,7 @@ const quickSortButton = () => {
 };
 
 const bubbleSortButton = () => {
-  if (sorted.value === true) {
+  if (sorted.value === true || buttonDisable.value === true) {
     return;
   }
   // Disable buttons while running
@@ -388,7 +394,7 @@ const bubbleSortButton = () => {
 };
 
 const selectionSortButton = () => {
-  if (sorted.value === true) {
+  if (sorted.value === true || buttonDisable.value === true) {
     return;
   }
   // Disable buttons while running
@@ -454,7 +460,7 @@ const selectionSortButton = () => {
 };
 
 const insertionSortButton = () => {
-  if (sorted.value === true) {
+  if (sorted.value === true || buttonDisable.value === true) {
     return;
   }
   // Disable buttons while running
