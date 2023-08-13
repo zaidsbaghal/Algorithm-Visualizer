@@ -1,7 +1,7 @@
 <template>
   <div class="box" v-bind:id="id"></div>
 </template>
-<script>
+<script setup>
 defineProps({
   row: {
     type: Number,
@@ -58,7 +58,7 @@ defineProps({
 });
 </script>
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .box {
   // animation: fadeIn ease 1s;
   width: 25px;
