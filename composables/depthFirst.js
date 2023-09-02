@@ -1,19 +1,47 @@
-import { ref } from "vue";
+export const dfs = (x, y, grid, animations, rowNum, colNum) => {
+  const state = { found: false }; // Using an object to maintain state
+  dfsHelper(x, y, grid, animations, state, rowNum, colNum);
+  if (!state.found) {
+    animations.push(["nfound"]); // not found
+  }
+  return animations;
+};
+// returns an array of all neighbor nodes to a node
+const getNeighbors = (node, rowNum, colNum) => {
+  let result = [];
+  let row = node.row;
+  let col = node.col;
 
-const dfsHelper = (x, y, grid, animations, found, rowNum, colNum) => {
-  if (found.value === true) {
+  //left
+  if (row >= 0 && row < rowNum && col - 1 >= 0 && col - 1 < colNum) {
+    result.push([col - 1, row]);
+  }
+  // top
+  if (row - 1 >= 0 && row - 1 < rowNum && col >= 0 && col < colNum) {
+    result.push([col, row - 1]);
+  }
+  // right
+  if (row >= 0 && row < rowNum && col + 1 >= 0 && col + 1 < colNum) {
+    result.push([col + 1, row]);
+  }
+  // bottom
+  if (row + 1 >= 0 && row + 1 < rowNum && col >= 0 && col < colNum) {
+    result.push([col, row + 1]);
+  }
+  return result;
+};
+const dfsHelper = (x, y, grid, animations, state, rowNum, colNum) => {
+  if (state.found) {
     return;
   }
   let current = grid[x][y];
-  let currStyle = document.getElementById(current.id).className;
 
-  // Conditions
-  if (currStyle === "end") {
+  // Check the type of the node from the grid structure
+  if (current.isEnd) {
     animations.push(["end", x, y]);
-    return true;
-  } else if (currStyle === "start") {
-    // do nothing
-  } else {
+    state.found = true;
+    return;
+  } else if (!current.isStart) {
     animations.push(["visit", x, y]);
     current.visited = true;
   }
@@ -22,47 +50,21 @@ const dfsHelper = (x, y, grid, animations, found, rowNum, colNum) => {
   for (let i = 0; i < neighbors.length; i++) {
     let ncoords = neighbors[i];
     let n = grid[ncoords[0]][ncoords[1]];
-    if (n.visited != true) {
-      if (document.getElementById(n.id).className === "wall") {
-        continue; // skip walls
-      }
-      found.value = dfsHelper(ncoords[0], ncoords[1], grid, animations, found);
-      if (found.value === true) {
+
+    // Check if the node is a wall using the grid structure
+    if (!n.visited && !n.isWall) {
+      dfsHelper(
+        ncoords[0],
+        ncoords[1],
+        grid,
+        animations,
+        state,
+        rowNum,
+        colNum
+      );
+      if (state.found) {
         return;
       }
     }
   }
-
-  return;
-};
-
-const getNeighbors = (node, rowNum, colNum) => {
-  let result = [];
-  let row = node.row;
-  let col = node.col;
-
-  // left
-  if (col - 1 >= 0) {
-    result.push([row, col - 1]);
-  }
-  // top
-  if (row - 1 >= 0) {
-    result.push([row - 1, col]);
-  }
-  // right
-  if (col + 1 < colNum) {
-    result.push([row, col + 1]);
-  }
-  // bottom
-  if (row + 1 < rowNum) {
-    result.push([row + 1, col]);
-  }
-  return result;
-};
-
-export const dfs = (x, y, grid, animations, rowNum, colNum) => {
-  let found = ref(false); // Using ref to make found reactive
-  dfsHelper(x, y, grid, animations, found, rowNum, colNum);
-  animations.push(["nfound"]); // not found
-  return animations;
 };
