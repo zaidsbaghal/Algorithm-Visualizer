@@ -7,7 +7,7 @@
           on your computer!
         </h1>
       </div>
-      <div>
+      <div v-else>
         <div class="algorithm-container">
           <div class="select-container">
             <select
@@ -100,13 +100,6 @@ select {
       background-color: $alabaster;
       border: none;
       color: $charcoal;
-      // appearance: none;
-    }
-    .down-arrow {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
     }
   }
 }
