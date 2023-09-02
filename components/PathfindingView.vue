@@ -1,556 +1,586 @@
 <template>
-  <div class="path-container fade-in">
-    <div class="function-buttons">
-      <button
-        class="toolbar-button"
-        style="background-color: #e76f51"
-        :disabled="buttonDisable"
-        v-on:click="resetGrid"
-      >
-        Reset Grid
-      </button>
-      <button
-        class="toolbar-button"
-        style="background-color: #e76f51"
-        :disabled="buttonDisable"
-        v-on:click="resetVis"
-      >
-        Reset Visualization
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="depthFirstButton"
-      >
-        Depth First
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="breadthFirstButton"
-      >
-        Breadth First
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="dijkstraButton"
-      >
-        Dijkstra's
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="aStarButton"
-      >
-        A*
-      </button>
-    </div>
-    <div class="graph-action">
-      <div class="col" v-for="(col, index) in this.grid" :key="index">
-        <Node
-          v-for="node in col"
-          :key="node.id"
-          :id="node.id"
-          :row="node.row"
-          :col="node.col"
-          :isWall="node.isWall"
-          :isStart="node.isStart"
-          :isEnd="node.isEnd"
-          :visited="node.visited"
-          :parent="node.parent"
-          :ddist="node.ddist"
-          v-on:mousedown.native="mouseDown(node)"
-          v-on:mouseup.native="mouseUp(node)"
-          v-on:mouseenter.native="mouseEnter(node)"
-          v-on:mouseout.native="mouseOut(node)"
-        ></Node>
+  <ClientOnly>
+    <div class="path-container fade-in">
+      <div class="function-buttons">
+        <button
+          class="toolbar-button"
+          style="background-color: #e76f51"
+          :disabled="buttonDisable"
+          v-on:click="resetGrid"
+        >
+          Reset Grid
+        </button>
+        <button
+          class="toolbar-button"
+          style="background-color: #e76f51"
+          :disabled="buttonDisable"
+          v-on:click="resetVis"
+        >
+          Reset Visualization
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="depthFirstButton"
+        >
+          Depth First
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="breadthFirstButton"
+        >
+          Breadth First
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="dijkstraButton"
+        >
+          Dijkstra's
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="aStarButton"
+        >
+          A*
+        </button>
+      </div>
+      <div class="graph-action">
+        <div class="col" v-for="(col, index) in grid" :key="index">
+          <GridNode
+            v-for="node in col"
+            :key="node.id"
+            :id="node.id"
+            :ref="node.ref"
+            :row="node.row"
+            :col="node.col"
+            :isWall="node.isWall"
+            :isStart="node.isStart"
+            :isEnd="node.isEnd"
+            :visited="node.visited"
+            :parent="node.parent"
+            :ddist="node.ddist"
+            v-on:mousedown="mouseDown(node)"
+            v-on:mouseup="mouseUp(node)"
+            v-on:mouseenter="mouseEnter(node)"
+            v-on:mouseout="mouseOut(node)"
+          ></GridNode>
+        </div>
       </div>
     </div>
-  </div>
+  </ClientOnly>
 </template>
-<script>
-import Node from "~/components/GridNode.vue";
-import depthFirst from "~/mixins/depthFirst.js";
-import breadthFirst from "~/mixins/breadthFirst.js";
-import dijkstras from "~/mixins/dijkstra.js";
-import aStar from "~/mixins/aStar.js";
-export default {
-  mixins: [depthFirst, breadthFirst, dijkstras, aStar],
-  components: {
-    Node,
-  },
-  data: function () {
+<script setup>
+import { onMounted, ref, nextTick } from "vue";
+import GridNode from "~/components/GridNode.vue";
+
+const rowNum = ref(30);
+const colNum = ref(70);
+const grid = ref([[]]);
+const startNode = ref(null);
+const endNode = ref(null);
+const startX = ref(30);
+const startY = ref(15);
+const endX = ref(40);
+const endY = ref(15);
+const animations = ref([]);
+const defaultGraph = ref([]);
+const found = ref(false);
+const animSpeed = ref(10);
+const buttonDisable = ref(false);
+const mousePressed = ref(false);
+const moveStart = ref(false);
+const moveEnd = ref(false);
+const prevNode = ref(null);
+const viz = ref(false);
+
+onMounted(() => {
+  initGrid();
+});
+
+const initGrid = () => {
+  let newgrid = [];
+  for (let col = 0; col < colNum.value; col++) {
+    const currCol = [];
+    for (let row = 0; row < rowNum.value; row++) {
+      currCol.push(createNode(row, col));
+    }
+    newgrid.push(currCol);
+  }
+  grid.value = newgrid;
+};
+
+nextTick(() => {
+  setStart();
+  setEnd();
+});
+
+const disableButtons = () => {
+  buttonDisable.value = true;
+};
+
+const enableButtons = () => {
+  buttonDisable.value = false;
+};
+
+const mouseEnter = (node) => {
+  prevNode.value = document.getElementById(node.id).className.slice();
+  if (moveStart.value) {
+    document.getElementById(node.id).className = "start";
+  }
+  if (moveEnd.value) {
+    document.getElementById(node.id).className = "end";
+  }
+  if (mousePressed.value) {
+    makeWall(node);
+  }
+};
+
+// function is called when we leave a node
+const mouseOut = (node) => {
+  // Reset old node
+  if (moveStart.value == true) {
+    if (prevNode.value === "start") {
+      node.isStart = false;
+      document.getElementById(node.id).className = "box";
+    } else {
+      document.getElementById(node.id).className = prevNode.value;
+    }
+  } else if (moveEnd.value == true) {
+    if (prevNode.value === "end") {
+      node.isEnd = false;
+      document.getElementById(node.id).className = "box";
+    } else {
+      document.getElementById(node.id).className = prevNode.value;
+    }
+  }
+};
+
+//function is called when the mouse is pressed down on a node
+const mouseDown = (node) => {
+  if (viz.value) {
+    return;
+  }
+  let element = document.getElementById(node.id);
+  if (element.className === "start") {
+    moveStart.value = true;
+  } else if (element.className === "end") {
+    moveEnd.value = true;
+  } else {
+    mousePressed.value = true;
+    makeWall(node);
+  }
+};
+
+// function is called when we release the mouse press on a node
+const mouseUp = (node) => {
+  if (moveStart.value === true) {
+    node.isStart = true;
+    document.getElementById(node.id).className = "start";
+    startY.value = node.row;
+    startX.value = node.col;
+    moveStart.value = false;
+  } else if (moveEnd.value === true) {
+    node.isEnd = true;
+    document.getElementById(node.id).className = "end";
+    endY.value = node.row;
+    endX.value = node.col;
+    moveEnd.value = false;
+  }
+  mousePressed.value = false;
+};
+
+// Stylize wall of box (Does not set the nodes isWall data yet for speed purposes)
+const makeWall = (node) => {
+  let element = document.getElementById(node.id);
+  if (
+    element.className === "start" ||
+    element.className === "end" ||
+    element.className === "visited" ||
+    element.className === "path" ||
+    viz.value
+  ) {
+    return;
+  } else {
+    let element = document.getElementById(node.id);
+    if (element.className === "wall") {
+      element.className = "box";
+    } else {
+      element.className = "wall";
+    }
+  }
+};
+
+// Initialize the start node
+const setStart = () => {
+  startX.value = 30;
+  startY.value = 15;
+  let id = grid.value[30][15].id;
+  grid.value[30][15].isStart = true;
+  grid.value[30][15].ddist = 0;
+  const element = document.getElementById(id);
+  if (element) {
+    element.className = "start";
+  } else {
+    console.error(`Element with ID ${id} not found`);
+  }
+};
+
+// Initialize the end node
+const setEnd = () => {
+  endX.value = 40;
+  endY.value = 15;
+  let id = grid.value[40][15].id;
+  grid.value[40][15].isEnd = true;
+  const element = document.getElementById(id);
+  if (element) {
+    element.className = "end";
+  } else {
+    console.error(`Element with ID ${id} not found`);
+  }
+};
+
+// Create the node object for a cell
+const createNode = (row, col) => {
+  if (col === startX.value && row === startY.value) {
     return {
-      rowNum: 30, // grid rows
-      colNum: 70, // grid columns
-      grid: [[]], // store the 2day array that corresponds with the grid
-      startNode: null,
-      endNode: null,
-      startX: 30, // x coordinate of start node
-      startY: 15, // y coordinate of start node
-      endX: 40, // x coordinate of end node
-      endY: 15, // y coordinate of end node
-      animations: [], // stores the animations of the current sort
-      defaultGraph: [], // stores the newly generated array in unsorted form
-      found: false, // is the current array sorted?,
-      animSpeed: 10, // animation speed
-      buttonDisable: false, // disable the action buttons of the toolbar?
-      mousePressed: false, // is the mouse currently pressed?
-      moveStart: false, // are we moving the start node?
-      moveEnd: false, // are we moving the end node?
-      prevNode: null, // Stores state of previous node when moving
-      viz: false, // is there a visualization on the board
+      col,
+      row,
+      isStart: true,
+      isEnd: false,
+      isWall: false,
+      visited: false,
+      ref: "Node-" + col + "-" + row,
+      id: "Node-" + col + "-" + row,
+      parent: null,
+      ddist: 0,
+      g: Number.POSITIVE_INFINITY,
+      h: Number.POSITIVE_INFINITY,
+      f: Number.POSITIVE_INFINITY,
+      closed: false,
     };
-  },
-  mounted: function () {
-    this.initGrid();
-    this.$nextTick(function () {
-      this.setStart();
-      this.setEnd();
-    });
-  },
-  methods: {
-    disableButtons: function () {
-      this.buttonDisable = true;
-    },
-    enableButtons: function () {
-      this.buttonDisable = false;
-    },
-    // Function is called when we enter a node
-    mouseEnter: function (node) {
-      this.prevNode = document.getElementById(node.id).className.slice();
-      if (this.moveStart == true) {
-        document.getElementById(node.id).className = "start";
-      }
-      if (this.moveEnd == true) {
-        document.getElementById(node.id).className = "end";
-      }
-      if (this.mousePressed == true) {
-        this.makeWall(node);
-      }
-    },
-    // function is called when we leave a node
-    mouseOut: function (node) {
-      // Reset old node
-      if (this.moveStart == true) {
-        if (this.prevNode === "start") {
-          node.isStart = false;
-          document.getElementById(node.id).className = "box";
-        } else {
-          document.getElementById(node.id).className = this.prevNode;
-        }
-      } else if (this.moveEnd == true) {
-        if (this.prevNode === "end") {
-          node.isEnd = false;
-          document.getElementById(node.id).className = "box";
-        } else {
-          document.getElementById(node.id).className = this.prevNode;
-        }
-      }
-    },
-    //function is called when the mouse is pressed down on a node
-    mouseDown: function (node) {
-      if (this.viz) {
-        return;
-      }
-      let element = document.getElementById(node.id);
-      if (element.className === "start") {
-        this.moveStart = true;
-      } else if (element.className === "end") {
-        this.moveEnd = true;
-      } else {
-        this.mousePressed = true;
-        this.makeWall(node);
-      }
-    },
-    // function is called when we release the mouse press on a node
-    mouseUp: function (node) {
-      if (this.moveStart == true) {
-        node.isStart = true;
-        document.getElementById(node.id).className = "start";
-        this.startY = node.row;
-        this.startX = node.col;
-        this.moveStart = false;
-      } else if (this.moveEnd == true) {
-        node.isEnd = true;
-        document.getElementById(node.id).className = "end";
-        this.endY = node.row;
-        this.endX = node.col;
-        this.moveEnd = false;
-      }
-      this.mousePressed = false;
-    },
-    // Stylize wall of box (Does not set the nodes isWall data yet for speed purposes)
-    makeWall: function (node) {
-      let element = document.getElementById(node.id);
-      if (
-        element.className === "start" ||
-        element.className === "end" ||
-        element.className === "visited" ||
-        element.className === "path" ||
-        this.viz
-      ) {
-        return;
-      } else {
-        let element = document.getElementById(node.id);
-        if (element.className === "wall") {
-          element.className = "box";
-        } else {
-          element.className = "wall";
-        }
-      }
-    },
-    // Initialize the start node
-    setStart: function () {
-      this.startX = 30;
-      this.startY = 15;
-      let id = this.grid[30][15].id;
-      document.getElementById(id).className = "start";
-      this.grid[30][15].isStart = true;
-      this.grid[30][15].ddist = 0;
-    },
-    // Initialize the end node
-    setEnd: function () {
-      this.endX = 40;
-      this.endY = 15;
-      let id = this.grid[40][15].id;
-      document.getElementById(id).className = "end";
-      this.grid[40][15].isEnd = true;
-    },
-    // Initialize the grid
-    initGrid: function () {
-      let newgrid = [];
-      for (let col = 0; col < this.colNum; col++) {
-        const currCol = [];
-        for (let row = 0; row < this.rowNum; row++) {
-          currCol.push(this.createNode(row, col));
-        }
-        newgrid.push(currCol);
-      }
-      this.grid = newgrid.slice();
-    },
-    // Create the node object for a cell
-    createNode: function (row, col) {
-      if (col == this.startX && row == this.startY) {
-        return {
-          col,
-          row,
-          isStart: true,
-          isEnd: false,
-          isWall: false,
-          visited: false,
-          id: "Node-" + col + "-" + row,
-          parent: null,
-          ddist: 0,
-          g: Number.POSITIVE_INFINITY,
-          h: Number.POSITIVE_INFINITY,
-          f: Number.POSITIVE_INFINITY,
-          closed: false,
-        };
-      } else if (col == this.endX && row == this.endY) {
-        return {
-          col,
-          row,
-          isStart: false,
-          isEnd: true,
-          isWall: false,
-          visited: false,
-          id: "Node-" + col + "-" + row,
-          parent: null,
-          ddist: Number.POSITIVE_INFINITY,
-          g: Number.POSITIVE_INFINITY,
-          h: Number.POSITIVE_INFINITY,
-          f: Number.POSITIVE_INFINITY,
-          closed: false,
-        };
-      }
-      return {
-        col,
-        row,
-        isStart: false,
-        isEnd: false,
-        isWall: false,
-        visited: false,
-        id: "Node-" + col + "-" + row,
-        parent: null,
-        ddist: Number.POSITIVE_INFINITY,
-        g: Number.POSITIVE_INFINITY,
-        h: Number.POSITIVE_INFINITY,
-        f: Number.POSITIVE_INFINITY,
-        closed: false,
-      };
-    },
-    // Clears all walls from the grid
-    resetGrid: function () {
-      this.viz = false;
-      for (let col = 0; col < this.colNum; col++) {
-        for (let row = 0; row < this.rowNum; row++) {
-          let node = this.grid[col][row];
-          let eleClass = document.getElementById(node.id).className;
-          node.isWall = false;
-          node.visited = false;
-          node.closed = false;
-          node.isStart = false;
-          node.isEnd = false;
-          node.ddist = Number.POSITIVE_INFINITY;
-          node.f = Number.POSITIVE_INFINITY;
-          node.g = Number.POSITIVE_INFINITY;
-          node.h = Number.POSITIVE_INFINITY;
-          document.getElementById(node.id).className = "box";
-        }
-      }
-      this.setStart();
-      this.setEnd();
-    },
-    resetVis: function () {
-      this.viz = false;
-      for (let col = 0; col < this.colNum; col++) {
-        for (let row = 0; row < this.rowNum; row++) {
-          let node = this.grid[col][row];
-          let eleClass = document.getElementById(node.id).className;
-          node.visited = false;
-          node.closed = false;
-          node.ddist = Number.POSITIVE_INFINITY; // Reset Dijkstra Distance
-          node.f = Number.POSITIVE_INFINITY;
-          node.g = Number.POSITIVE_INFINITY;
-          node.h = Number.POSITIVE_INFINITY;
-          if (eleClass === "start" || eleClass === "end") {
-            if (eleClass == "start") {
-              node.ddist = 0;
-            }
-            continue;
-          }
-          if (eleClass != "wall") {
-            document.getElementById(node.id).className = "box";
-          }
-        }
-      }
-    },
-    depthFirstButton: function () {
-      if (this.viz) {
-        return;
-      }
-      this.disableButtons();
-      this.viz = true;
-      try {
-        this.animations = this.dfs(
-          this.startX,
-          this.startY,
-          this.grid,
-          this.animations
-        );
-      } catch (err) {
-        this.enableButtons();
-      }
+  } else if (col === endX.value && row === endY.value) {
+    return {
+      col,
+      row,
+      isStart: false,
+      isEnd: true,
+      isWall: false,
+      visited: false,
+      ref: "Node-" + col + "-" + row,
+      id: "Node-" + col + "-" + row,
+      parent: null,
+      ddist: Number.POSITIVE_INFINITY,
+      g: Number.POSITIVE_INFINITY,
+      h: Number.POSITIVE_INFINITY,
+      f: Number.POSITIVE_INFINITY,
+      closed: false,
+    };
+  }
+  return {
+    col,
+    row,
+    isStart: false,
+    isEnd: false,
+    isWall: false,
+    visited: false,
+    ref: "Node-" + col + "-" + row,
+    id: "Node-" + col + "-" + row,
+    parent: null,
+    ddist: Number.POSITIVE_INFINITY,
+    g: Number.POSITIVE_INFINITY,
+    h: Number.POSITIVE_INFINITY,
+    f: Number.POSITIVE_INFINITY,
+    closed: false,
+  };
+};
 
-      for (let i = 0; i < this.animations.length; i++) {
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
-        let y = this.animations[i][2]; // current y
-        let current;
-        try {
-          current = this.grid[x][y]; // current node object
-        } catch (err) {
-          this.enableButtons();
-          continue;
-        }
+// Clears all walls from the grid
+const resetGrid = () => {
+  viz.value = false;
+  for (let col = 0; col < colNum.value; col++) {
+    for (let row = 0; row < rowNum.value; row++) {
+      let node = grid.value[col][row];
+      let eleClass = document.getElementById(node.id).className;
+      node.isWall = false;
+      node.visited = false;
+      node.closed = false;
+      node.isStart = false;
+      node.isEnd = false;
+      node.ddist = Number.POSITIVE_INFINITY;
+      node.f = Number.POSITIVE_INFINITY;
+      node.g = Number.POSITIVE_INFINITY;
+      node.h = Number.POSITIVE_INFINITY;
+      document.getElementById(node.id).className = "box";
+    }
+  }
+  setStart();
+  setEnd();
+};
 
-        if (command === "curr") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
-        } else if (command === "visit") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "path";
-          }, i * this.animSpeed);
-        } else {
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              resolve();
-            }, i * this.animSpeed);
-          })
-            .then(() => {
-              this.animations = [];
-              this.enableButtons();
-            })
-            .catch(() => {
-              this.enableButtons();
-            });
-          break;
+const resetVis = () => {
+  viz.value = false;
+  for (let col = 0; col < colNum.value; col++) {
+    for (let row = 0; row < rowNum.value; row++) {
+      let node = grid.value[col][row];
+      let eleClass = document.getElementById(node.id).className;
+      node.visited = false;
+      node.closed = false;
+      node.ddist = Number.POSITIVE_INFINITY; // Reset Dijkstra Distance
+      node.f = Number.POSITIVE_INFINITY;
+      node.g = Number.POSITIVE_INFINITY;
+      node.h = Number.POSITIVE_INFINITY;
+      if (eleClass === "start" || eleClass === "end") {
+        if (eleClass == "start") {
+          node.ddist = 0;
         }
+        continue;
       }
-    },
-    breadthFirstButton: function () {
-      if (this.viz) {
-        return;
+      if (eleClass != "wall") {
+        document.getElementById(node.id).className = "box";
       }
-      this.viz = true;
-      this.disableButtons();
-      this.animations = this.bfs(
-        this.startX,
-        this.startY,
-        this.grid,
-        this.animations
-      );
-      for (let i = 0; i < this.animations.length; i++) {
-        if (this.animations[i] == null || this.animations[i] === "undefined") {
-          continue;
-        }
-        let command = this.animations[i][0]; // cOkaurrent command
-        let x = this.animations[i][1]; // currePOnt x
-        let y = this.animations[i][2]; // current y
+    }
+  }
+};
 
-        let current;
-        try {
-          current = this.grid[x][y]; // current node object
-        } catch (err) {
-          this.enableButtons();
-          continue;
-        }
+const depthFirstButton = () => {
+  if (viz.value) {
+    return;
+  }
+  disableButtons();
+  viz.value = true;
+  try {
+    animations.value = dfs(
+      startX.value,
+      startY.value,
+      grid.value,
+      animations.value,
+      rowNum.value,
+      colNum.value
+    );
+  } catch (err) {
+    enableButtons();
+  }
 
-        if (command === "curr") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
-        } else if (command === "visit") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
-        } else if (command === "path") {
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              document.getElementById(current.id).className = "path";
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            i = this.animations.length;
-          });
-        } else {
-          // End command
-          i = this.animations.length;
-          this.animations = [];
-        }
-      }
-      // this.enableButtons()
-    },
-    dijkstraButton: function () {
-      if (this.viz) {
-        return;
-      }
-      this.viz = true;
-      this.disableButtons();
-      var pq = [];
-      this.animations = this.dijkstra(
-        this.grid,
-        this.startX,
-        this.startY,
-        this.animations,
-        pq
-      );
+  for (let i = 0; i < animations.value.length; i++) {
+    let command = animations.value[i][0]; // current command
+    let x = animations.value[i][1]; // current x
+    let y = animations.value[i][2]; // current y
+    let current;
+    try {
+      current = grid.value[x][y]; // current node object
+    } catch (err) {
+      enableButtons();
+      continue;
+    }
 
-      for (let i = 0; i < this.animations.length; i++) {
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
-        let y = this.animations[i][2]; // current y
-        let current;
-        try {
-          current = this.grid[x][y]; // current node object
-        } catch (err) {
-          this.enableButtons();
-          continue;
-        }
+    if (command === "curr") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "visited";
+      }, i * animSpeed.value);
+    } else if (command === "visit") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "path";
+      }, i * animSpeed.value);
+    } else {
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          resolve();
+        }, i * animSpeed.value);
+      })
+        .then(() => {
+          animations.value = [];
+          enableButtons();
+        })
+        .catch(() => {
+          enableButtons();
+        });
+      break;
+    }
+  }
+};
 
-        if (command === "curr") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
-        } else if (command === "visit") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
-        } else if (command === "path") {
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              document.getElementById(current.id).className = "path";
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            pq = [];
-            this.animations = [];
-            this.enableButtons();
-          });
-        } else {
-          // End command
-          i = this.animations.length;
-          pq = [];
-          this.animations = [];
-          return;
-        }
-      }
-    },
-    aStarButton: function () {
-      if (this.viz) {
-        return;
-      }
-      this.viz = true;
-      this.disableButtons();
-      var pq = [];
+const breadthFirstButton = () => {
+  if (viz.value) {
+    return;
+  }
+  viz.value = true;
+  disableButtons();
+  animations.value = bfs(
+    startX.value,
+    startY.value,
+    grid.value,
+    animations.value,
+    rowNum.value,
+    colNum.value
+  );
+  for (let i = 0; i < animations.value.length; i++) {
+    if (animations.value[i] == null || animations.value[i] === "undefined") {
+      continue;
+    }
+    let command = animations.value[i][0]; // current command
+    let x = animations.value[i][1]; // current x
+    let y = animations.value[i][2]; // current y
 
-      this.animations = this.aStar(
-        this.grid,
-        this.startX,
-        this.startY,
-        this.endX,
-        this.endY,
-        this.animations
-      );
+    let current;
+    try {
+      current = grid.value[x][y]; // current node object
+    } catch (err) {
+      enableButtons();
+      continue;
+    }
 
-      for (let i = 0; i < this.animations.length; i++) {
-        let command = this.animations[i][0]; // current command
-        let x = this.animations[i][1]; // current x
-        let y = this.animations[i][2]; // current y
-        let current;
-        try {
-          current = this.grid[x][y]; // current node object
-        } catch (err) {
-          this.enableButtons();
-          continue;
-        }
-        if (command === "visit") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "visited";
-          }, i * this.animSpeed);
-        } else if (command === "fringe") {
-          setTimeout(function () {
-            document.getElementById(current.id).className = "fringe";
-          }, i * this.animSpeed);
-        } else if (command === "path") {
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              document.getElementById(current.id).className = "path";
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-          });
-        } else {
-          // End command
-          i = this.animations.length;
-          pq = [];
-          this.animations = [];
-          return;
-        }
-      }
-    },
-  },
+    if (command === "curr") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "visited";
+      }, i * animSpeed.value);
+    } else if (command === "visit") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "visited";
+      }, i * animSpeed.value);
+    } else if (command === "path") {
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          document.getElementById(current.id).className = "path";
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        animations.value = [];
+        enableButtons();
+        i = animations.value.length;
+      });
+    } else {
+      // End command
+      i = animations.value.length;
+      animations.value = [];
+    }
+  }
+};
+
+const dijkstraButton = () => {
+  if (viz.value) {
+    return;
+  }
+  viz.value = true;
+  disableButtons();
+  var pq = [];
+  animations.value = dijkstra(
+    grid.value,
+    startX.value,
+    startY.value,
+    animations.value,
+    pq,
+    rowNum.value,
+    colNum.value
+  );
+
+  for (let i = 0; i < animations.value.length; i++) {
+    let command = animations.value[i][0]; // current command
+    let x = animations.value[i][1]; // current x
+    let y = animations.value[i][2]; // current y
+    let current;
+    try {
+      current = grid.value[x][y]; // current node object
+    } catch (err) {
+      enableButtons();
+      continue;
+    }
+
+    if (command === "curr") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "visited";
+      }, i * animSpeed.value);
+    } else if (command === "visit") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "visited";
+      }, i * animSpeed.value);
+    } else if (command === "path") {
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          document.getElementById(current.id).className = "path";
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        pq = [];
+        animations.value = [];
+        enableButtons();
+      });
+    } else {
+      // End command
+      i = animations.value.length;
+      pq = [];
+      animations.value = [];
+      return;
+    }
+  }
+};
+
+const aStarButton = () => {
+  console.log("a star");
+  if (viz.value) {
+    console.log("not run");
+    return;
+  }
+  viz.value = true;
+  disableButtons();
+  var pq = [];
+
+  animations.value = aStar(
+    grid.value,
+    startX.value,
+    startY.value,
+    endX.value,
+    endY.value,
+    animations.value,
+    rowNum.value,
+    colNum.value
+  );
+  console.log(animations.value);
+
+  for (let i = 0; i < animations.value.length; i++) {
+    let command = animations.value[i][0]; // current command
+    console.log(command);
+    let x = animations.value[i][1]; // current x
+    let y = animations.value[i][2]; // current y
+    let current;
+    try {
+      current = grid.value[x][y]; // current node object
+    } catch (err) {
+      enableButtons();
+      continue;
+    }
+    if (command === "visit") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "visited";
+      }, i * animSpeed.value);
+    } else if (command === "fringe") {
+      setTimeout(function () {
+        document.getElementById(current.id).className = "fringe";
+      }, i * animSpeed.value);
+    } else if (command === "path") {
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          document.getElementById(current.id).className = "path";
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        animations.value = [];
+        enableButtons();
+      });
+    } else {
+      // End command
+      i = animations.value.length;
+      pq = [];
+      animations.value = [];
+      return;
+    }
+  }
 };
 </script>
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .path-container {
   display: flex;
   flex-direction: column;

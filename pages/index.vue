@@ -3,11 +3,11 @@
     <client-only>
       <div v-if="isMobile" class="mobile-view">
         <h1 class="mobile-text">
-          This site is not currently supported on mobile :( Try visiting on your
-          computer!
+          This site is not currently supported on mobile. Please, try visiting
+          on your computer!
         </h1>
       </div>
-      <div v-else>
+      <div>
         <div class="algorithm-container">
           <div class="select-container">
             <select
@@ -37,43 +37,25 @@
   </div>
 </template>
 
-<script>
-import vue from "vue";
-import SortingView from "~/components/SortingView.vue";
-import PathfindingView from "~/components/PathfindingView.vue";
-import GridLoader from "vue-spinner/src/GridLoader.vue";
-export default {
-  components: {
-    SortingView,
-    PathfindingView,
-    GridLoader,
-  },
-  computed: {
-    isMobile: function () {
-      if (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-  },
-  data: function () {
-    return {
-      AlgoCategory: "sorting",
-      loaderLoading: true,
-      loaderColor: "#264653",
-      loaderSize: "300",
-    };
-  },
-};
+<script setup>
+import { ref, computed } from "vue";
+
+// Computed property
+const isMobile = computed(() => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+});
+
+// Data properties
+const AlgoCategory = ref("sorting");
+const loaderLoading = ref(true);
+const loaderColor = ref("#264653");
+const loaderSize = ref("300");
 </script>
 
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .mobile-view {
   height: 100vh;
   display: flex;
@@ -125,6 +107,17 @@ select {
       justify-content: center;
       align-items: center;
       padding: 10px;
+    }
+  }
+}
+
+@media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
+  .main {
+    .algorithm-container {
+      .algo-select {
+      }
+      .down-arrow {
+      }
     }
   }
 }

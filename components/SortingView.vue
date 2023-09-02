@@ -57,7 +57,7 @@
       <div class="array-container">
         <div
           class="array-bar"
-          v-for="(value, index) in this.array"
+          v-for="(value, index) in array"
           :key="index"
           :style="{ height: `${value * heightFactor}` + 'px' }"
         ></div>
@@ -66,478 +66,465 @@
   </div>
 </template>
 
-<script>
-import mergeSortJS from "~/mixins/MergeSort.js";
-import quickSortJS from "~/mixins/QuickSort.js";
-import bubbleSortJS from "~/mixins/BubbleSort.js";
-import selectionSortJS from "~/mixins/SelectionSort.js";
-import insertionSortJS from "~/mixins/InsertionSort.js";
-export default {
-  mixins: [
-    mergeSortJS,
-    quickSortJS,
-    bubbleSortJS,
-    selectionSortJS,
-    insertionSortJS,
-  ],
-  data: function () {
-    return {
-      array: [], // stores the currently displayed array on screen
-      animations: [], // stores the animations of the current sort
-      defaultArr: [], // stores the newly generated array in unsorted form
-      sorted: false, // is the current array sorted?,
-      animSpeed: 1, // animation speed
-      context: this,
-      buttonDisable: false, // is something running currently?
-    };
-  },
-  computed: {
-    heightFactor: function () {
-      var mq = window.matchMedia(
-        "(min-device-width: 1200px) and (max-device-width: 1600px)"
-      );
-      if (mq.matches) {
-        return 0.55;
-      } else {
-        return 0.65;
-      }
-    },
-  },
-  mounted: function () {
-    this.$nextTick(() => {
-      this.$nuxt.$loading.start();
+<script setup>
+import { ref, computed, onMounted, onBeforeMount } from "vue";
+import { mergeSort } from "~/composables/MergeSort.js";
+import { quickSort } from "~/composables/QuickSort.js";
+import { bubbleSort } from "~/composables/BubbleSort.js";
+import { selectionSort } from "~/composables/SelectionSort.js";
+import { insertionSort } from "~/composables/InsertionSort.js";
 
-      setTimeout(() => this.$nuxt.$loading.finish(), 1000);
-    });
-  },
-  beforeMount: function () {
-    this.$nextTick(function () {
-      this.newArray();
-    });
-  },
-  methods: {
-    disableButtons: function () {
-      this.buttonDisable = true;
-    },
-    enableButtons: function () {
-      this.buttonDisable = false;
-    },
-    // Function that gets a random number between min and max
-    randomIntFromInterval(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    },
-    // Resets the color of the array to default
-    colorReset: function () {
-      const bars = document.getElementsByClassName("array-bar");
-      for (let i = 0; i < this.array.length; i++) {
-        bars[i].style.backgroundColor = "#264653";
-      }
-    },
-    // Resets the array to randomized integers to be sorted
-    newArray: function () {
-      this.sorted = false;
-      this.array = [];
+const array = ref([]);
+const animations = ref([]);
+const defaultArr = ref([]);
+const sorted = ref(false);
+const animSpeed = ref(1);
+const buttonDisable = ref(false);
+const nuxtApp = useNuxtApp();
+const loading = ref(false);
 
-      for (let i = 0; i < 80; i++) {
-        this.$set(this.array, i, this.randomIntFromInterval(50, 999));
-      }
+const genArray = () => {
+  if (buttonDisable.value === true) {
+    return;
+  }
+  // Check if something is running
+  colorReset();
+  newArray();
+  const bars = document.getElementsByClassName("array-bar");
+  const factor = heightFactor.value; // Assuming heightFactor is a computed property
+  for (let i = 0; i < array.value.length; i++) {
+    bars[i].style.height = `${array.value[i] * factor}px`; // Adjust the height value using the factor
+  }
+};
 
-      this.defaultArr = this.array.slice(0); // set default array
-    },
-    // Resets the array to randomized integers to be sorted
-    genArray: function () {
-      // Check if something is running
+const resetArray = () => {
+  if (buttonDisable.value === true) {
+    return;
+  }
+  // Check if something is running
+  colorReset();
+  array.value = defaultArr.value.slice(0);
 
-      this.colorReset();
-      this.newArray();
-    },
-    // Resets array to the unsorted version
-    resetArray: function () {
-      // Check if something is running
-      this.colorReset();
-      this.array = this.defaultArr.slice(0);
+  // Update the heights of the bars in the DOM
+  const bars = document.getElementsByClassName("array-bar");
+  const factor = heightFactor.value; // Assuming heightFactor is a computed property
+  for (let i = 0; i < array.value.length; i++) {
+    bars[i].style.height = `${array.value[i] * factor}px`; // Adjust the height value using the factor
+  }
 
-      this.animations = [];
-      this.sorted = false;
-    },
-    // Trigger merge sort animation
-    mergeSortButton: function () {
-      // If array has already been sorted then return
-      if (this.sorted === true) {
-        return;
-      }
+  animations.value = [];
+  sorted.value = false;
+};
 
-      // Disable buttons while running
-      this.disableButtons();
+const disableButtons = () => {
+  buttonDisable.value = true;
+};
 
-      const result = this.mergeSort(this.array.slice(), this.animations);
-      // let sortedarray = result[0];
-      let animations = result[1];
+const enableButtons = () => {
+  buttonDisable.value = false;
+};
 
-      // Display animations
-      for (let i = 0; i < animations.length; i++) {
-        // Get animation variables
-        let command = animations[i][0];
-        const bars = document.getElementsByClassName("array-bar");
+const randomIntFromInterval = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
 
-        // If we are comparing two elements change their color
-        if (command == "curr") {
-          let idxone = animations[i][1];
-          setTimeout(function () {
-            try {
-              bars[idxone].style.backgroundColor = "#2A9D8F";
-            } catch (error) {}
-          }, i * this.animSpeed);
-        } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E9C46A";
-            bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
-        } else if (command == "clear") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            try {
-              bars[idx].style.backgroundColor = "#264653";
-            } catch (err) {}
-          }, i * this.animSpeed);
-        } else if (command == "done") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
-        } else if (command == "sorted") {
-          let idx = animations[i][1];
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              for (let j = 0; j <= idx; j++) {
-                bars[j].style.backgroundColor = "#E76F51";
-              }
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
-          });
-        } else {
-          // swap command
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#264653";
-              bars[idxone].style.backgroundColor = "#264653";
-            }.bind(this),
-            i * this.animSpeed
-          );
-        }
-      }
-    },
+const colorReset = () => {
+  const bars = document.getElementsByClassName("array-bar");
+  for (let i = 0; i < array.value.length; i++) {
+    bars[i].style.backgroundColor = "#264653";
+  }
+};
 
-    quickSortButton: function () {
-      // If array has already been sorted then return
-      if (this.sorted === true) {
-        return;
-      }
+const newArray = () => {
+  sorted.value = false;
+  array.value = [];
 
-      // Disable buttons while running
-      this.disableButtons();
+  for (let i = 0; i < 80; i++) {
+    array.value[i] = randomIntFromInterval(50, 999);
+  }
 
-      const result = this.quickSort(
-        this.array.slice(),
-        0,
-        this.array.length - 1,
-        this.animations
-      );
-      let animations = result[1];
+  animations.value = [];
+  defaultArr.value = array.value.slice(0); // set default array
+};
 
-      // Display animations
-      for (let i = 0; i < animations.length; i++) {
-        // Get animation variables
-        let command = animations[i][0];
-        const bars = document.getElementsByClassName("array-bar");
+const heightFactor = computed(() => {
+  var mq = window.matchMedia(
+    "(min-device-width: 1200px) and (max-device-width: 1600px)"
+  );
+  const factor = mq.matches ? 0.55 : 0.65;
+  return factor;
+});
 
-        // If we are comparing two elements change their color
-        if (command == "curr") {
-          let idxone = animations[i][1];
-          setTimeout(function () {
-            try {
-              bars[idxone].style.backgroundColor = "#2A9D8F";
-            } catch (error) {}
-          }, i * this.animSpeed);
-        } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E9C46A";
-            bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
-        } else if (command == "clear") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            try {
-              bars[idx].style.backgroundColor = "#264653";
-            } catch (error) {}
-          }, i * this.animSpeed);
-        } else if (command == "left") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#F4A261";
-          }, i * this.animSpeed);
-        } else if (command == "right") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
-        } else if (command == "sorted") {
-          let idx = animations[i][1];
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              for (let j = 0; j <= idx; j++) {
-                bars[j].style.backgroundColor = "#E76F51";
-              }
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
-          });
-        } else {
-          // swap command
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#E9C46A";
-              bars[idxone].style.backgroundColor = "#E9C46A";
-            }.bind(this),
-            i * this.animSpeed
-          );
-        }
-      }
-    },
+onBeforeMount(() => {
+  newArray(); // Assuming newArray is defined within the component
+});
 
-    bubbleSortButton() {
-      if (this.sorted === true) {
-        return;
-      }
-      // Disable buttons while running
-      this.disableButtons();
+onMounted(async () => {
+  setTimeout(
+    () =>
+      nuxtApp.hook("page:finish", () => {
+        loading.value = false;
+      }),
+    1000
+  );
+});
 
-      const result = this.bubbleSort(this.array.slice(), this.animations);
-      // let sortedarray = result[0];
-      let animations = result[1];
+// Trigger merge sort animation
+const mergeSortButton = () => {
+  // If array has already been sorted then return
+  if (sorted.value === true || buttonDisable.value === true) {
+    return;
+  }
 
-      // Display animations
-      for (let i = 0; i < animations.length; i++) {
-        // Get animation variables
-        let command = animations[i][0];
-        const bars = document.getElementsByClassName("array-bar");
+  // Disable buttons while running
+  disableButtons();
 
-        // If we are comparing two elements change their color
-        if (command == "curr") {
-          let idxone = animations[i][1];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#2A9D8F";
-          }, i * this.animSpeed);
-        } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E9C46A";
-            bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
-        } else if (command == "clear") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#264653";
-          }, i * this.animSpeed);
-        } else if (command == "done") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
-        } else if (command == "sorted") {
-          let idx = animations[i][1];
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              for (let j = 0; j <= idx; j++) {
-                bars[j].style.backgroundColor = "#E76F51";
-              }
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
-          });
-        } else {
-          // swap command
-          let idx = animations[i][1];
-          let newHeight = animations[i][2];
-          setTimeout(
-            function () {
-              bars[idx].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idx, newHeight);
-            }.bind(this),
-            i * this.animSpeed
-          );
-        }
-      }
-    },
+  const result = mergeSort(array.value.slice(), animations.value);
+  // let sortedarray = result[0];
+  let mergeAnimations = result[1];
 
-    selectionSortButton() {
-      if (this.sorted === true) {
-        return;
-      }
-      // Disable buttons while running
-      this.disableButtons();
-      const result = this.selectionSort(this.array.slice(), this.animations);
+  // Display animations
+  for (let i = 0; i < mergeAnimations.length; i++) {
+    // Get animation variables
+    let command = mergeAnimations[i][0];
+    const bars = document.getElementsByClassName("array-bar");
 
-      let animations = result[1];
-      // Display animations
-      for (let i = 0; i < animations.length; i++) {
-        // Get animation variables
-        let command = animations[i][0];
-        const bars = document.getElementsByClassName("array-bar");
+    // If we are comparing two elements change their color
+    if (command == "curr") {
+      let idxone = mergeAnimations[i][1];
+      setTimeout(function () {
+        try {
+          bars[idxone].style.backgroundColor = "#2A9D8F";
+        } catch (error) {}
+      }, i * animSpeed.value);
+    } else if (command == "comp") {
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#E9C46A";
+        bars[idxtwo].style.backgroundColor = "#E9C46A";
+      }, i * animSpeed.value);
+    } else if (command == "clear") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        try {
+          bars[idx].style.backgroundColor = "#264653";
+        } catch (err) {}
+      }, i * animSpeed.value);
+    } else if (command == "done") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#E76F51";
+      }, i * animSpeed.value);
+    } else if (command == "sorted") {
+      let idx = mergeAnimations[i][1];
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          for (let j = 0; j <= idx; j++) {
+            bars[j].style.backgroundColor = "#E76F51";
+          }
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        animations.value = [];
+        enableButtons();
+        sorted.value = true; // Set the array to sorted
+      });
+    } else {
+      // swap command
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      let newHeight = mergeAnimations[i][3];
+      setTimeout(() => {
+        bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+        array.value[idxone] = newHeight; // Replacing the $set call
+        bars[idxone].style.backgroundColor = "#264653";
+      }, i * animSpeed.value);
+    }
+  }
+};
 
-        // If we are comparing two elements change their color
-        if (command == "curr") {
-          let idxone = animations[i][1];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#2A9D8F";
-          }, i * this.animSpeed);
-        } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E9C46A";
-            bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
-        } else if (command == "clear") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#264653";
-          }, i * this.animSpeed);
-        } else if (command == "done") {
-          let idx = animations[i][1];
-          setTimeout(function () {
-            bars[idx].style.backgroundColor = "#E76F51";
-          }, i * this.animSpeed);
-        } else if (command == "sorted") {
-          let idx = animations[i][1];
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              for (let j = 0; j <= idx; j++) {
-                bars[j].style.backgroundColor = "#E76F51";
-              }
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
-          });
-        } else {
-          // swap command
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#E76F51";
-              bars[idxone].style.backgroundColor = "#E76F51";
-            }.bind(this),
-            i * this.animSpeed
-          );
-        }
-      }
-    },
+const quickSortButton = () => {
+  // If array has already been sorted then return
+  if (sorted.value === true || buttonDisable.value === true) {
+    return;
+  }
 
-    insertionSortButton() {
-      if (this.sorted === true) {
-        return;
-      }
-      // Disable buttons while running
-      this.disableButtons();
-      const result = this.insertionSort(this.array.slice(), this.animations);
-      // let sortedarray = result[0];
-      let animations = result[1];
+  // Disable buttons while running
+  disableButtons();
 
-      // Display animations
-      for (let i = 0; i < animations.length; i++) {
-        // Get animation variables
-        let command = animations[i][0];
-        const bars = document.getElementsByClassName("array-bar");
+  const result = quickSort(
+    array.value.slice(),
+    0,
+    array.value.length - 1,
+    animations.value
+  );
+  let mergeAnimations = result[1];
 
-        if (command == "curr") {
-          let idxone = animations[i][1];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#2A9D8F"; // green
-          }, i * this.animSpeed);
-        } else if (command == "init") {
-          let idxone = animations[i][1];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E76F51"; // red for sorted list
-          }, i * this.animSpeed);
-        } else if (command == "comp") {
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          setTimeout(function () {
-            bars[idxone].style.backgroundColor = "#E9C46A"; // comparisons are yellow
-            bars[idxtwo].style.backgroundColor = "#E9C46A";
-          }, i * this.animSpeed);
-        } else if (command == "sorted") {
-          let idx = animations[i][1];
-          new Promise((resolve, reject) => {
-            setTimeout(function () {
-              for (let j = 0; j <= idx; j++) {
-                bars[j].style.backgroundColor = "#E76F51";
-              }
-              resolve();
-            }, i * this.animSpeed);
-          }).then(() => {
-            this.animations = [];
-            this.enableButtons();
-            this.sorted = true; // Set the array to sorted
-          });
-        } else {
-          // swap command
-          let idxone = animations[i][1];
-          let idxtwo = animations[i][2];
-          let newHeight = animations[i][3];
-          setTimeout(
-            function () {
-              bars[idxone].style.height = `${newHeight * this.heightFactor}px`;
-              this.$set(this.array, idxone, newHeight);
-              bars[idxone].style.backgroundColor = "#264653";
-              bars[idxone].style.backgroundColor = "#264653";
-            }.bind(this),
-            i * this.animSpeed
-          );
-        }
-      }
-    },
-  },
+  // Display animations
+  for (let i = 0; i < mergeAnimations.length; i++) {
+    // Get animation variables
+    let command = mergeAnimations[i][0];
+    const bars = document.getElementsByClassName("array-bar");
+
+    // If we are comparing two elements change their color
+    if (command == "curr") {
+      let idxone = mergeAnimations[i][1];
+      setTimeout(function () {
+        try {
+          bars[idxone].style.backgroundColor = "#2A9D8F";
+        } catch (error) {}
+      }, i * animSpeed.value);
+    } else if (command == "comp") {
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#E9C46A";
+        bars[idxtwo].style.backgroundColor = "#E9C46A";
+      }, i * animSpeed.value);
+    } else if (command == "clear") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        try {
+          bars[idx].style.backgroundColor = "#264653";
+        } catch (error) {}
+      }, i * animSpeed.value);
+    } else if (command == "left") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#F4A261";
+      }, i * animSpeed.value);
+    } else if (command == "right") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#E76F51";
+      }, i * animSpeed.value);
+    } else if (command == "sorted") {
+      let idx = mergeAnimations[i][1];
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          for (let j = 0; j <= idx; j++) {
+            bars[j].style.backgroundColor = "#E76F51";
+          }
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        mergeAnimations.value = [];
+        enableButtons();
+        sorted.value = true; // Set the array to sorted
+      });
+    } else {
+      // swap command
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      let newHeight = mergeAnimations[i][3];
+      setTimeout(() => {
+        bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+        array.value[idxone] = newHeight; // Replacing the $set call
+        bars[idxone].style.backgroundColor = "#E9C46A";
+      }, i * animSpeed.value);
+    }
+  }
+};
+
+const bubbleSortButton = () => {
+  if (sorted.value === true || buttonDisable.value === true) {
+    return;
+  }
+  // Disable buttons while running
+  disableButtons();
+
+  const result = bubbleSort(array.value.slice(), animations.value);
+  // let sortedarray = result[0];
+  let mergeAnimations = result[1];
+
+  // Display animations
+  for (let i = 0; i < mergeAnimations.length; i++) {
+    // Get animation variables
+    let command = mergeAnimations[i][0];
+    const bars = document.getElementsByClassName("array-bar");
+
+    // If we are comparing two elements change their color
+    if (command == "curr") {
+      let idxone = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#2A9D8F";
+      }, i * animSpeed.value);
+    } else if (command == "comp") {
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#E9C46A";
+        bars[idxtwo].style.backgroundColor = "#E9C46A";
+      }, i * animSpeed.value);
+    } else if (command == "clear") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#264653";
+      }, i * animSpeed.value);
+    } else if (command == "done") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#E76F51";
+      }, i * animSpeed.value);
+    } else if (command == "sorted") {
+      let idx = mergeAnimations[i][1];
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          for (let j = 0; j <= idx; j++) {
+            bars[j].style.backgroundColor = "#E76F51";
+          }
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        mergeAnimations.value = [];
+        enableButtons();
+        sorted.value = true; // Set the array to sorted
+      });
+    } else {
+      // swap command
+      let idx = mergeAnimations[i][1];
+      let newHeight = mergeAnimations[i][2];
+      setTimeout(() => {
+        bars[idx].style.height = `${newHeight * heightFactor.value}px`;
+        array.value[idx] = newHeight; // Replacing the $set call
+      }, i * animSpeed.value);
+    }
+  }
+};
+
+const selectionSortButton = () => {
+  if (sorted.value === true || buttonDisable.value === true) {
+    return;
+  }
+  // Disable buttons while running
+  disableButtons();
+  const result = selectionSort(array.value.slice(), animations.value);
+
+  let mergeAnimations = result[1];
+  // Display animations
+  for (let i = 0; i < mergeAnimations.length; i++) {
+    // Get animation variables
+    let command = mergeAnimations[i][0];
+    const bars = document.getElementsByClassName("array-bar");
+
+    // If we are comparing two elements change their color
+    if (command == "curr") {
+      let idxone = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#2A9D8F";
+      }, i * animSpeed.value);
+    } else if (command == "comp") {
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#E9C46A";
+        bars[idxtwo].style.backgroundColor = "#E9C46A";
+      }, i * animSpeed.value);
+    } else if (command == "clear") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#264653";
+      }, i * animSpeed.value);
+    } else if (command == "done") {
+      let idx = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idx].style.backgroundColor = "#E76F51";
+      }, i * animSpeed.value);
+    } else if (command == "sorted") {
+      let idx = mergeAnimations[i][1];
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          for (let j = 0; j <= idx; j++) {
+            bars[j].style.backgroundColor = "#E76F51";
+          }
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        mergeAnimations.value = [];
+        enableButtons();
+        sorted.value = true; // Set the array to sorted
+      });
+    } else {
+      // swap command
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      let newHeight = mergeAnimations[i][3];
+      setTimeout(() => {
+        bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+        array.value[idxone] = newHeight; // Replacing the $set call
+        bars[idxone].style.backgroundColor = "#E76F51";
+      }, i * animSpeed.value);
+    }
+  }
+};
+
+const insertionSortButton = () => {
+  if (sorted.value === true || buttonDisable.value === true) {
+    return;
+  }
+  // Disable buttons while running
+  disableButtons();
+  const result = insertionSort(array.value.slice(), animations.value);
+  // let sortedarray = result[0];
+  let mergeAnimations = result[1];
+
+  // Display animations
+  for (let i = 0; i < mergeAnimations.length; i++) {
+    // Get animation variables
+    let command = mergeAnimations[i][0];
+    const bars = document.getElementsByClassName("array-bar");
+
+    if (command == "curr") {
+      let idxone = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#2A9D8F"; // green
+      }, i * animSpeed.value);
+    } else if (command == "init") {
+      let idxone = mergeAnimations[i][1];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#E76F51"; // red for sorted list
+      }, i * animSpeed.value);
+    } else if (command == "comp") {
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      setTimeout(function () {
+        bars[idxone].style.backgroundColor = "#E9C46A"; // comparisons are yellow
+        bars[idxtwo].style.backgroundColor = "#E9C46A";
+      }, i * animSpeed.value);
+    } else if (command == "sorted") {
+      let idx = mergeAnimations[i][1];
+      new Promise((resolve, reject) => {
+        setTimeout(function () {
+          for (let j = 0; j <= idx; j++) {
+            bars[j].style.backgroundColor = "#E76F51";
+          }
+          resolve();
+        }, i * animSpeed.value);
+      }).then(() => {
+        mergeAnimations.value = [];
+        enableButtons();
+        sorted.value = true; // Set the array to sorted
+      });
+    } else {
+      // swap command
+      let idxone = mergeAnimations[i][1];
+      let idxtwo = mergeAnimations[i][2];
+      let newHeight = mergeAnimations[i][3];
+      setTimeout(() => {
+        bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
+        array.value[idxone] = newHeight; // Replacing the $set call
+        bars[idxone].style.backgroundColor = "#264653";
+      }, i * animSpeed.value);
+    }
+  }
 };
 </script>
 
 <style lang="scss">
-@import "./assets/scss/colors.scss";
+@import "./assets/colors.scss";
 .sort-container {
-  padding-left: 150px;
-  padding-right: 150px;
+  padding: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -596,8 +583,7 @@ export default {
 }
 @media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
   .sort-container {
-    padding-left: 85px;
-    padding-right: 85px;
+    padding: 0;
   }
 
   .toolbar-button {
