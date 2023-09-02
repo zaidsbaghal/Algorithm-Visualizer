@@ -50,7 +50,9 @@ const dfsHelper = (x, y, grid, animations, state, rowNum, colNum) => {
   for (let i = 0; i < neighbors.length; i++) {
     let ncoords = neighbors[i];
     let n = grid[ncoords[0]][ncoords[1]];
-
+    if (document.getElementById(n.id).className === "wall") {
+      continue; // skip walls
+    }
     // Check if the node is a wall using the grid structure
     if (!n.visited && !n.isWall) {
       dfsHelper(

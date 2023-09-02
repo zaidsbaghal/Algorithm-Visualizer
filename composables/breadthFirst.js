@@ -56,17 +56,14 @@ const getNeighbors = (node, rowNum, colNum) => {
 
   //left
   if (row >= 0 && row < rowNum && col - 1 >= 0 && col - 1 < colNum) {
-    let id = "Node-" + col + "-" + (row - 1); // Fixed the expression
     result.push([col - 1, row]);
   }
   // top
   if (row - 1 >= 0 && row - 1 < rowNum && col >= 0 && col < colNum) {
-    let id = "Node-" + (col - 1) + "-" + row; // Fixed the expression
     result.push([col, row - 1]);
   }
   // right
   if (row >= 0 && row < rowNum && col + 1 >= 0 && col + 1 < colNum) {
-    let id = "Node-" + col + "-" + (row + 1); // Fixed the expression
     result.push([col + 1, row]);
   }
   // bottom

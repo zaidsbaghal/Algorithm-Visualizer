@@ -1,4 +1,13 @@
-export const aStar = (grid, startX, startY, endX, endY, animations) => {
+export const aStar = (
+  grid,
+  startX,
+  startY,
+  endX,
+  endY,
+  animations,
+  rowNum,
+  colNum
+) => {
   var priorityQueue = []; // Priority Queue to store nodes
   let startNode = grid[startX][startY];
   let endNode = grid[endX][endY];
@@ -27,10 +36,11 @@ export const aStar = (grid, startX, startY, endX, endY, animations) => {
 
     currentNode.closed = true; // Mark the current node as closed
 
-    let neighbors = getNeighbors(currentNode);
+    let neighbors = getNeighbors(currentNode, rowNum, colNum);
     for (let i = 0; i < neighbors.length; i++) {
       let [neighborRow, neighborCol] = neighbors[i];
       let neighborNode = grid[neighborRow][neighborCol];
+      console.log(neighborNode);
       if (
         neighborNode.closed ||
         document.getElementById(neighborNode.id).className === "wall"
@@ -74,24 +84,26 @@ const getDistance = (currentNode, neighborNode) => {
   return distance;
 };
 
-// Function to get the neighboring nodes
-const getNeighbors = (node) => {
-  let neighbors = [];
+const getNeighbors = (node, rowNum, colNum) => {
+  let result = [];
   let row = node.row;
   let col = node.col;
 
-  // Check all four directions (left, top, right, bottom)
-  if (col - 1 >= 0) {
-    neighbors.push([row, col - 1]);
+  //left
+  if (row >= 0 && row < rowNum && col - 1 >= 0 && col - 1 < colNum) {
+    result.push([col - 1, row]);
   }
-  if (row - 1 >= 0) {
-    neighbors.push([row - 1, col]);
+  // top
+  if (row - 1 >= 0 && row - 1 < rowNum && col >= 0 && col < colNum) {
+    result.push([col, row - 1]);
   }
-  if (col + 1 < colNum.value) {
-    neighbors.push([row, col + 1]);
+  // right
+  if (row >= 0 && row < rowNum && col + 1 >= 0 && col + 1 < colNum) {
+    result.push([col + 1, row]);
   }
-  if (row + 1 < rowNum.value) {
-    neighbors.push([row + 1, col]);
+  // bottom
+  if (row + 1 >= 0 && row + 1 < rowNum && col >= 0 && col < colNum) {
+    result.push([col, row + 1]);
   }
-  return neighbors;
+  return result;
 };

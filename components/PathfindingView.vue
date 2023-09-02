@@ -41,7 +41,7 @@
         </button>
         <button
           class="toolbar-button"
-          disabled="buttonDisable"
+          :disabled="buttonDisable"
           v-on:click="aStarButton"
         >
           A*
@@ -518,7 +518,9 @@ const dijkstraButton = () => {
 };
 
 const aStarButton = () => {
+  console.log("a star");
   if (viz.value) {
+    console.log("not run");
     return;
   }
   viz.value = true;
@@ -531,11 +533,15 @@ const aStarButton = () => {
     startY.value,
     endX.value,
     endY.value,
-    animations.value
+    animations.value,
+    rowNum.value,
+    colNum.value
   );
+  console.log(animations.value);
 
   for (let i = 0; i < animations.value.length; i++) {
     let command = animations.value[i][0]; // current command
+    console.log(command);
     let x = animations.value[i][1]; // current x
     let y = animations.value[i][2]; // current y
     let current;
