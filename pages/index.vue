@@ -3,11 +3,11 @@
     <client-only>
       <div v-if="isMobile" class="mobile-view">
         <h1 class="mobile-text">
-          This site is not currently supported on mobile :( Try visiting on your
-          computer!
+          This site is not currently supported on mobile. Please, try visiting
+          on your computer!
         </h1>
       </div>
-      <div v-else>
+      <div>
         <div class="algorithm-container">
           <div class="select-container">
             <select
@@ -107,6 +107,17 @@ select {
       justify-content: center;
       align-items: center;
       padding: 10px;
+    }
+  }
+}
+
+@media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
+  .main {
+    .algorithm-container {
+      .algo-select {
+      }
+      .down-arrow {
+      }
     }
   }
 }
