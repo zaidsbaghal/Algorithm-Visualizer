@@ -1,57 +1,33 @@
 import { ref } from "vue";
 
-// Assuming rowNum and colNum are properties of the component or computed values
-const rowNum = ref(0); // Define the correct initial value
-const colNum = ref(0); // Define the correct initial value
-
-const getNeighbors = (node) => {
+const getNeighbors = (node, rowNum, colNum) => {
   let result = [];
   let row = node.row;
   let col = node.col;
 
   //left
-  if (
-    row >= 0 &&
-    row < rowNum.value &&
-    col - 1 >= 0 &&
-    col - 1 < colNum.value
-  ) {
+  if (row >= 0 && row < rowNum && col - 1 >= 0 && col - 1 < colNum) {
     let id = "Node-" + col + "-" + (row - 1);
     result.push([col - 1, row]);
   }
   // top
-  if (
-    row - 1 >= 0 &&
-    row - 1 < rowNum.value &&
-    col >= 0 &&
-    col < colNum.value
-  ) {
+  if (row - 1 >= 0 && row - 1 < rowNum && col >= 0 && col < colNum) {
     let id = "Node-" + (col - 1) + "-" + row;
     result.push([col, row - 1]);
   }
   // right
-  if (
-    row >= 0 &&
-    row < rowNum.value &&
-    col + 1 >= 0 &&
-    col + 1 < colNum.value
-  ) {
+  if (row >= 0 && row < rowNum && col + 1 >= 0 && col + 1 < colNum) {
     let id = "Node-" + col + "-" + (row + 1);
     result.push([col + 1, row]);
   }
   // bottom
-  if (
-    row + 1 >= 0 &&
-    row + 1 < rowNum.value &&
-    col >= 0 &&
-    col < colNum.value
-  ) {
+  if (row + 1 >= 0 && row + 1 < rowNum && col >= 0 && col < colNum) {
     result.push([col, row + 1]);
   }
   return result;
 };
 
-export const dijkstra = (grid, x, y, animations, pq) => {
+export const dijkstra = (grid, x, y, animations, pq, rowNum, colNum) => {
   let current = grid[x][y];
   enqueue(pq, current); // Replace with your enqueue method
 
@@ -74,7 +50,7 @@ export const dijkstra = (grid, x, y, animations, pq) => {
       animations.push(["visit", current.col, current.row]);
     }
 
-    let neighbors = getNeighbors(current);
+    let neighbors = getNeighbors(current, rowNum, colNum);
     for (let i = 0; i < neighbors.length; i++) {
       let ncoords = neighbors[i];
       let n = grid[ncoords[0]][ncoords[1]];

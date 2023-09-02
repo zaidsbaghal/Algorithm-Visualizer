@@ -1,77 +1,80 @@
 <template>
-  <div class="path-container fade-in">
-    <div class="function-buttons">
-      <button
-        class="toolbar-button"
-        style="background-color: #e76f51"
-        :disabled="buttonDisable"
-        v-on:click="resetGrid"
-      >
-        Reset Grid
-      </button>
-      <button
-        class="toolbar-button"
-        style="background-color: #e76f51"
-        :disabled="buttonDisable"
-        v-on:click="resetVis"
-      >
-        Reset Visualization
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="depthFirstButton"
-      >
-        Depth First
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="breadthFirstButton"
-      >
-        Breadth First
-      </button>
-      <button
-        class="toolbar-button"
-        :disabled="buttonDisable"
-        v-on:click="dijkstraButton"
-      >
-        Dijkstra's
-      </button>
-      <button
-        class="toolbar-button"
-        disabled="buttonDisable"
-        v-on:click="aStarButton"
-      >
-        A*
-      </button>
-    </div>
-    <div class="graph-action">
-      <div class="col" v-for="(col, index) in grid" :key="index">
-        <Node
-          v-for="node in col"
-          :key="node.id"
-          :id="node.id"
-          :row="node.row"
-          :col="node.col"
-          :isWall="node.isWall"
-          :isStart="node.isStart"
-          :isEnd="node.isEnd"
-          :visited="node.visited"
-          :parent="node.parent"
-          :ddist="node.ddist"
-          v-on:mousedown="mouseDown(node)"
-          v-on:mouseup="mouseUp(node)"
-          v-on:mouseenter="mouseEnter(node)"
-          v-on:mouseout="mouseOut(node)"
-        ></Node>
+  <ClientOnly>
+    <div class="path-container fade-in">
+      <div class="function-buttons">
+        <button
+          class="toolbar-button"
+          style="background-color: #e76f51"
+          :disabled="buttonDisable"
+          v-on:click="resetGrid"
+        >
+          Reset Grid
+        </button>
+        <button
+          class="toolbar-button"
+          style="background-color: #e76f51"
+          :disabled="buttonDisable"
+          v-on:click="resetVis"
+        >
+          Reset Visualization
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="depthFirstButton"
+        >
+          Depth First
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="breadthFirstButton"
+        >
+          Breadth First
+        </button>
+        <button
+          class="toolbar-button"
+          :disabled="buttonDisable"
+          v-on:click="dijkstraButton"
+        >
+          Dijkstra's
+        </button>
+        <button
+          class="toolbar-button"
+          disabled="buttonDisable"
+          v-on:click="aStarButton"
+        >
+          A*
+        </button>
+      </div>
+      <div class="graph-action">
+        <div class="col" v-for="(col, index) in grid" :key="index">
+          <GridNode
+            v-for="node in col"
+            :key="node.id"
+            :id="node.id"
+            :ref="node.ref"
+            :row="node.row"
+            :col="node.col"
+            :isWall="node.isWall"
+            :isStart="node.isStart"
+            :isEnd="node.isEnd"
+            :visited="node.visited"
+            :parent="node.parent"
+            :ddist="node.ddist"
+            v-on:mousedown="mouseDown(node)"
+            v-on:mouseup="mouseUp(node)"
+            v-on:mouseenter="mouseEnter(node)"
+            v-on:mouseout="mouseOut(node)"
+          ></GridNode>
+        </div>
       </div>
     </div>
-  </div>
+  </ClientOnly>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
-// import { GridNode } from "~/components/GridNode.vue";
+import { onMounted, ref, nextTick } from "vue";
+import GridNode from "~/components/GridNode.vue";
 
 const rowNum = ref(30);
 const colNum = ref(70);
@@ -95,8 +98,6 @@ const viz = ref(false);
 
 onMounted(() => {
   initGrid();
-  setStart();
-  setEnd();
 });
 
 const initGrid = () => {
@@ -110,6 +111,11 @@ const initGrid = () => {
   }
   grid.value = newgrid;
 };
+
+nextTick(() => {
+  setStart();
+  setEnd();
+});
 
 const disableButtons = () => {
   buttonDisable.value = true;
@@ -212,10 +218,14 @@ const setStart = () => {
   startX.value = 30;
   startY.value = 15;
   let id = grid.value[30][15].id;
-  console.log(document);
-  document.getElementById(id).className = "start";
   grid.value[30][15].isStart = true;
   grid.value[30][15].ddist = 0;
+  const element = document.getElementById(id);
+  if (element) {
+    element.className = "start";
+  } else {
+    console.error(`Element with ID ${id} not found`);
+  }
 };
 
 // Initialize the end node
@@ -223,8 +233,13 @@ const setEnd = () => {
   endX.value = 40;
   endY.value = 15;
   let id = grid.value[40][15].id;
-  document.getElementById(id).className = "end";
   grid.value[40][15].isEnd = true;
+  const element = document.getElementById(id);
+  if (element) {
+    element.className = "end";
+  } else {
+    console.error(`Element with ID ${id} not found`);
+  }
 };
 
 // Create the node object for a cell
@@ -237,6 +252,7 @@ const createNode = (row, col) => {
       isEnd: false,
       isWall: false,
       visited: false,
+      ref: "Node-" + col + "-" + row,
       id: "Node-" + col + "-" + row,
       parent: null,
       ddist: 0,
@@ -253,6 +269,7 @@ const createNode = (row, col) => {
       isEnd: true,
       isWall: false,
       visited: false,
+      ref: "Node-" + col + "-" + row,
       id: "Node-" + col + "-" + row,
       parent: null,
       ddist: Number.POSITIVE_INFINITY,
@@ -269,6 +286,7 @@ const createNode = (row, col) => {
     isEnd: false,
     isWall: false,
     visited: false,
+    ref: "Node-" + col + "-" + row,
     id: "Node-" + col + "-" + row,
     parent: null,
     ddist: Number.POSITIVE_INFINITY,
@@ -338,7 +356,9 @@ const depthFirstButton = () => {
       startX.value,
       startY.value,
       grid.value,
-      animations.value
+      animations.value,
+      rowNum.value,
+      colNum.value
     );
   } catch (err) {
     enableButtons();
@@ -392,7 +412,9 @@ const breadthFirstButton = () => {
     startX.value,
     startY.value,
     grid.value,
-    animations.value
+    animations.value,
+    rowNum.value,
+    colNum.value
   );
   for (let i = 0; i < animations.value.length; i++) {
     if (animations.value[i] == null || animations.value[i] === "undefined") {
@@ -449,7 +471,9 @@ const dijkstraButton = () => {
     startX.value,
     startY.value,
     animations.value,
-    pq
+    pq,
+    rowNum.value,
+    colNum.value
   );
 
   for (let i = 0; i < animations.value.length; i++) {

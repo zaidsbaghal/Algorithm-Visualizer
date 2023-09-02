@@ -1,8 +1,8 @@
 <template>
-  <div class="box" v-bind:id="id"></div>
+  <div class="box" :id="id" :ref="ref"></div>
 </template>
 <script setup>
-defineProps({
+const props = defineProps({
   row: {
     type: Number,
     default: 0, // Default value, change as needed
@@ -31,6 +31,10 @@ defineProps({
     type: String,
     default: "", // Default value, change as needed
   },
+  ref: {
+    type: String,
+    default: "",
+  },
   parent: {
     type: Object,
     default: null, // Default value, change as needed
@@ -56,6 +60,7 @@ defineProps({
     default: false,
   },
 });
+const divRef = ref(props.ref);
 </script>
 <style lang="scss">
 @import "./assets/colors.scss";
@@ -65,7 +70,14 @@ defineProps({
   height: 25px;
   border: 0.5px solid $charcoal;
   background-color: $alabaster;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
 }
+
 .wall {
   animation: fadeIn ease 1s;
   width: 25px;

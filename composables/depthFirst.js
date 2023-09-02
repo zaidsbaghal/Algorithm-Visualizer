@@ -1,10 +1,6 @@
 import { ref } from "vue";
 
-// Assuming rowNum and colNum are properties of the component or computed values
-const rowNum = ref(0); // You should define the correct initial value
-const colNum = ref(0); // You should define the correct initial value
-
-const dfsHelper = (x, y, grid, animations, found) => {
+const dfsHelper = (x, y, grid, animations, found, rowNum, colNum) => {
   if (found.value === true) {
     return;
   }
@@ -22,7 +18,7 @@ const dfsHelper = (x, y, grid, animations, found) => {
     current.visited = true;
   }
 
-  let neighbors = getNeighbors(current);
+  let neighbors = getNeighbors(current, rowNum, colNum);
   for (let i = 0; i < neighbors.length; i++) {
     let ncoords = neighbors[i];
     let n = grid[ncoords[0]][ncoords[1]];
@@ -40,56 +36,33 @@ const dfsHelper = (x, y, grid, animations, found) => {
   return;
 };
 
-const getNeighbors = (node) => {
+const getNeighbors = (node, rowNum, colNum) => {
   let result = [];
   let row = node.row;
   let col = node.col;
 
-  //left
-  if (
-    row >= 0 &&
-    row < rowNum.value &&
-    col - 1 >= 0 &&
-    col - 1 < colNum.value
-  ) {
-    let id = "Node-" + col + "-" + (row - 1); // Fixed the expression
-    result.push([col - 1, row]);
+  // left
+  if (col - 1 >= 0) {
+    result.push([row, col - 1]);
   }
   // top
-  if (
-    row - 1 >= 0 &&
-    row - 1 < rowNum.value &&
-    col >= 0 &&
-    col < colNum.value
-  ) {
-    let id = "Node-" + (col - 1) + "-" + row; // Fixed the expression
-    result.push([col, row - 1]);
+  if (row - 1 >= 0) {
+    result.push([row - 1, col]);
   }
   // right
-  if (
-    row >= 0 &&
-    row < rowNum.value &&
-    col + 1 >= 0 &&
-    col + 1 < colNum.value
-  ) {
-    let id = "Node-" + col + "-" + (row + 1); // Fixed the expression
-    result.push([col + 1, row]);
+  if (col + 1 < colNum) {
+    result.push([row, col + 1]);
   }
   // bottom
-  if (
-    row + 1 >= 0 &&
-    row + 1 < rowNum.value &&
-    col >= 0 &&
-    col < colNum.value
-  ) {
-    result.push([col, row + 1]);
+  if (row + 1 < rowNum) {
+    result.push([row + 1, col]);
   }
   return result;
 };
 
-export const dfs = (x, y, grid, animations) => {
+export const dfs = (x, y, grid, animations, rowNum, colNum) => {
   let found = ref(false); // Using ref to make found reactive
-  dfsHelper(x, y, grid, animations, found);
+  dfsHelper(x, y, grid, animations, found, rowNum, colNum);
   animations.push(["nfound"]); // not found
   return animations;
 };

@@ -1,9 +1,9 @@
-export const bfs = (x, y, grid, animations) => {
-  bfsHelper(x, y, grid, animations);
+export const bfs = (x, y, grid, animations, rowNum, colNum) => {
+  bfsHelper(x, y, grid, animations, rowNum, colNum);
   animations.push(["nfound", -1, -1]); // not found
   return animations;
 };
-const bfsHelper = (x, y, grid, animations) => {
+const bfsHelper = (x, y, grid, animations, rowNum, colNum) => {
   let current = grid[x][y];
   let currStyle = document.getElementById(current.id).className;
   let q = [];
@@ -27,7 +27,7 @@ const bfsHelper = (x, y, grid, animations) => {
       q = [];
       break;
     }
-    let neighbors = getNeighbors(v);
+    let neighbors = getNeighbors(v, rowNum, colNum);
     for (let i = 0; i < neighbors.length; i++) {
       let ncoords = neighbors[i];
       let n = grid[ncoords[0]][ncoords[1]];
@@ -49,48 +49,28 @@ const bfsHelper = (x, y, grid, animations) => {
   }
   return;
 };
-const getNeighbors = (node) => {
+const getNeighbors = (node, rowNum, colNum) => {
   let result = [];
   let row = node.row;
   let col = node.col;
 
   //left
-  if (
-    row >= 0 &&
-    row < rowNum.value &&
-    col - 1 >= 0 &&
-    col - 1 < colNum.value
-  ) {
-    let id = "Node-" + col + "-" + row - 1;
+  if (row >= 0 && row < rowNum && col - 1 >= 0 && col - 1 < colNum) {
+    let id = "Node-" + col + "-" + (row - 1); // Fixed the expression
     result.push([col - 1, row]);
   }
   // top
-  if (
-    row - 1 >= 0 &&
-    row - 1 < rowNum.value &&
-    col >= 0 &&
-    col < colNum.value
-  ) {
-    let id = "Node-" + col - 1 + "-" + row;
+  if (row - 1 >= 0 && row - 1 < rowNum && col >= 0 && col < colNum) {
+    let id = "Node-" + (col - 1) + "-" + row; // Fixed the expression
     result.push([col, row - 1]);
   }
   // right
-  if (
-    row >= 0 &&
-    row < rowNum.value &&
-    col + 1 >= 0 &&
-    col + 1 < colNum.value
-  ) {
-    let id = "Node-" + col + "-" + row + 1;
+  if (row >= 0 && row < rowNum && col + 1 >= 0 && col + 1 < colNum) {
+    let id = "Node-" + col + "-" + (row + 1); // Fixed the expression
     result.push([col + 1, row]);
   }
   // bottom
-  if (
-    row + 1 >= 0 &&
-    row + 1 < rowNum.value &&
-    col >= 0 &&
-    col < colNum.value
-  ) {
+  if (row + 1 >= 0 && row + 1 < rowNum && col >= 0 && col < colNum) {
     result.push([col, row + 1]);
   }
   return result;
