@@ -24,6 +24,6 @@
     "vue-gtag": "^2.0.1",
     "vue-masonry-css": "^1.0.3",
     "vue-typer": "^1.2.0",
-    "webpack": "^5.88.1"
+    "webpack": "^5.94.0"
   }
 }
