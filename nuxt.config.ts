@@ -17,8 +17,10 @@ export default defineNuxtConfig({
       ],
     },
   },
-  css: ["~/assets/colors.scss"],
+
+  css: ["~/assets/main.scss"],
   plugins: [],
   modules: ["@pinia/nuxt"],
   build: {},
+  compatibilityDate: "2025-01-13",
 });

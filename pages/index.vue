@@ -55,7 +55,7 @@ const loaderSize = ref("300");
 </script>
 
 <style lang="scss">
-@import "./assets/colors.scss";
+@use "./assets/main.scss" as *;
 .mobile-view {
   height: 100vh;
   display: flex;
@@ -67,7 +67,7 @@ const loaderSize = ref("300");
   justify-content: center;
   text-align: center;
   word-wrap: break-word;
-  color: $charcoal;
+  color: $gunmetal;
 }
 
 select {
@@ -97,9 +97,9 @@ select {
       font-size: 45px;
       font-weight: bold;
       cursor: pointer;
-      background-color: $alabaster;
+      background-color: $white-smoke;
       border: none;
-      color: $charcoal;
+      color: $gunmetal;
     }
   }
 }

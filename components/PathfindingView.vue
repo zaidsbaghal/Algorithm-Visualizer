@@ -580,7 +580,7 @@ const aStarButton = () => {
 };
 </script>
 <style lang="scss">
-@import "./assets/colors.scss";
+@use "./assets/main.scss" as *;
 .path-container {
   display: flex;
   flex-direction: column;
@@ -597,5 +597,23 @@ const aStarButton = () => {
     align-items: center;
     transform: rotateX(180deg);
   }
+}
+
+.array-bar {
+  width: 15px;
+  background-color: $gunmetal;
+  display: inline-block;
+  margin: 0 2px;
+}
+
+.toolbar-button {
+  margin: 15px;
+  background-color: $gunmetal;
+  border: none;
+  color: $white-smoke;
+  padding: 10px 16px;
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
 }
 </style>

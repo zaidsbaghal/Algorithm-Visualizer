@@ -3,7 +3,7 @@
     <div class="function-buttons">
       <button
         class="toolbar-button"
-        style="background-color: #e76f51"
+        style="background-color: #984334"
         v-on:click="genArray"
         :disabled="buttonDisable"
       >
@@ -11,7 +11,7 @@
       </button>
       <button
         class="toolbar-button"
-        style="background-color: #e76f51"
+        style="background-color: #984334"
         v-on:click="resetArray"
         :disabled="buttonDisable"
       >
@@ -194,15 +194,15 @@ const mergeSortButton = () => {
       let idxone = mergeAnimations[i][1];
       setTimeout(function () {
         try {
-          bars[idxone].style.backgroundColor = "#2A9D8F";
+          bars[idxone].style.backgroundColor = "#22333b";
         } catch (error) {}
       }, i * animSpeed.value);
     } else if (command == "comp") {
       let idxone = mergeAnimations[i][1];
       let idxtwo = mergeAnimations[i][2];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#E9C46A";
-        bars[idxtwo].style.backgroundColor = "#E9C46A";
+        bars[idxone].style.backgroundColor = "#db9d47";
+        bars[idxtwo].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     } else if (command == "clear") {
       let idx = mergeAnimations[i][1];
@@ -214,14 +214,14 @@ const mergeSortButton = () => {
     } else if (command == "done") {
       let idx = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idx].style.backgroundColor = "#E76F51";
+        bars[idx].style.backgroundColor = "#984334";
       }, i * animSpeed.value);
     } else if (command == "sorted") {
       let idx = mergeAnimations[i][1];
       new Promise((resolve, reject) => {
         setTimeout(function () {
           for (let j = 0; j <= idx; j++) {
-            bars[j].style.backgroundColor = "#E76F51";
+            bars[j].style.backgroundColor = "#984334";
           }
           resolve();
         }, i * animSpeed.value);
@@ -272,15 +272,15 @@ const quickSortButton = () => {
       let idxone = mergeAnimations[i][1];
       setTimeout(function () {
         try {
-          bars[idxone].style.backgroundColor = "#2A9D8F";
+          bars[idxone].style.backgroundColor = "#22333b";
         } catch (error) {}
       }, i * animSpeed.value);
     } else if (command == "comp") {
       let idxone = mergeAnimations[i][1];
       let idxtwo = mergeAnimations[i][2];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#E9C46A";
-        bars[idxtwo].style.backgroundColor = "#E9C46A";
+        bars[idxone].style.backgroundColor = "#db9d47";
+        bars[idxtwo].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     } else if (command == "clear") {
       let idx = mergeAnimations[i][1];
@@ -292,19 +292,19 @@ const quickSortButton = () => {
     } else if (command == "left") {
       let idx = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idx].style.backgroundColor = "#F4A261";
+        bars[idx].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     } else if (command == "right") {
       let idx = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idx].style.backgroundColor = "#E76F51";
+        bars[idx].style.backgroundColor = "#984334";
       }, i * animSpeed.value);
     } else if (command == "sorted") {
       let idx = mergeAnimations[i][1];
       new Promise((resolve, reject) => {
         setTimeout(function () {
           for (let j = 0; j <= idx; j++) {
-            bars[j].style.backgroundColor = "#E76F51";
+            bars[j].style.backgroundColor = "#984334";
           }
           resolve();
         }, i * animSpeed.value);
@@ -321,7 +321,7 @@ const quickSortButton = () => {
       setTimeout(() => {
         bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
         array.value[idxone] = newHeight; // Replacing the $set call
-        bars[idxone].style.backgroundColor = "#E9C46A";
+        bars[idxone].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     }
   }
@@ -348,14 +348,14 @@ const bubbleSortButton = () => {
     if (command == "curr") {
       let idxone = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#2A9D8F";
+        bars[idxone].style.backgroundColor = "#22333b";
       }, i * animSpeed.value);
     } else if (command == "comp") {
       let idxone = mergeAnimations[i][1];
       let idxtwo = mergeAnimations[i][2];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#E9C46A";
-        bars[idxtwo].style.backgroundColor = "#E9C46A";
+        bars[idxone].style.backgroundColor = "#db9d47";
+        bars[idxtwo].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     } else if (command == "clear") {
       let idx = mergeAnimations[i][1];
@@ -365,14 +365,14 @@ const bubbleSortButton = () => {
     } else if (command == "done") {
       let idx = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idx].style.backgroundColor = "#E76F51";
+        bars[idx].style.backgroundColor = "#984334";
       }, i * animSpeed.value);
     } else if (command == "sorted") {
       let idx = mergeAnimations[i][1];
       new Promise((resolve, reject) => {
         setTimeout(function () {
           for (let j = 0; j <= idx; j++) {
-            bars[j].style.backgroundColor = "#E76F51";
+            bars[j].style.backgroundColor = "#984334";
           }
           resolve();
         }, i * animSpeed.value);
@@ -412,14 +412,14 @@ const selectionSortButton = () => {
     if (command == "curr") {
       let idxone = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#2A9D8F";
+        bars[idxone].style.backgroundColor = "#22333b";
       }, i * animSpeed.value);
     } else if (command == "comp") {
       let idxone = mergeAnimations[i][1];
       let idxtwo = mergeAnimations[i][2];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#E9C46A";
-        bars[idxtwo].style.backgroundColor = "#E9C46A";
+        bars[idxone].style.backgroundColor = "#db9d47";
+        bars[idxtwo].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     } else if (command == "clear") {
       let idx = mergeAnimations[i][1];
@@ -429,14 +429,14 @@ const selectionSortButton = () => {
     } else if (command == "done") {
       let idx = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idx].style.backgroundColor = "#E76F51";
+        bars[idx].style.backgroundColor = "#984334";
       }, i * animSpeed.value);
     } else if (command == "sorted") {
       let idx = mergeAnimations[i][1];
       new Promise((resolve, reject) => {
         setTimeout(function () {
           for (let j = 0; j <= idx; j++) {
-            bars[j].style.backgroundColor = "#E76F51";
+            bars[j].style.backgroundColor = "#984334";
           }
           resolve();
         }, i * animSpeed.value);
@@ -453,7 +453,7 @@ const selectionSortButton = () => {
       setTimeout(() => {
         bars[idxone].style.height = `${newHeight * heightFactor.value}px`;
         array.value[idxone] = newHeight; // Replacing the $set call
-        bars[idxone].style.backgroundColor = "#E76F51";
+        bars[idxone].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     }
   }
@@ -478,26 +478,26 @@ const insertionSortButton = () => {
     if (command == "curr") {
       let idxone = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#2A9D8F"; // green
+        bars[idxone].style.backgroundColor = "#22333b"; // green
       }, i * animSpeed.value);
     } else if (command == "init") {
       let idxone = mergeAnimations[i][1];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#E76F51"; // red for sorted list
+        bars[idxone].style.backgroundColor = "#984334"; // red for sorted list
       }, i * animSpeed.value);
     } else if (command == "comp") {
       let idxone = mergeAnimations[i][1];
       let idxtwo = mergeAnimations[i][2];
       setTimeout(function () {
-        bars[idxone].style.backgroundColor = "#E9C46A"; // comparisons are yellow
-        bars[idxtwo].style.backgroundColor = "#E9C46A";
+        bars[idxone].style.backgroundColor = "#db9d47"; // comparisons are yellow
+        bars[idxtwo].style.backgroundColor = "#db9d47";
       }, i * animSpeed.value);
     } else if (command == "sorted") {
       let idx = mergeAnimations[i][1];
       new Promise((resolve, reject) => {
         setTimeout(function () {
           for (let j = 0; j <= idx; j++) {
-            bars[j].style.backgroundColor = "#E76F51";
+            bars[j].style.backgroundColor = "#984334";
           }
           resolve();
         }, i * animSpeed.value);
@@ -522,7 +522,7 @@ const insertionSortButton = () => {
 </script>
 
 <style lang="scss">
-@import "./assets/colors.scss";
+@use "./assets/main.scss" as *;
 .sort-container {
   padding: 0;
   width: 100%;
@@ -534,9 +534,9 @@ const insertionSortButton = () => {
 
 .toolbar-button {
   margin: 15px;
-  background-color: $charcoal;
+  background-color: $gunmetal;
   border: none;
-  color: $alabaster;
+  color: $white-smoke;
   padding: 10px 16px;
   text-align: center;
   display: inline-block;
@@ -568,14 +568,14 @@ const insertionSortButton = () => {
 
 .array-bar {
   width: 15px;
-  background-color: $charcoal;
+  background-color: $gunmetal;
   display: inline-block;
   margin: 0 2px;
 }
 
 .array-bar-value {
   font-size: 8px;
-  color: $alabaster;
+  color: $white-smoke;
   transform: scaleY(-1);
   margin: 0;
   display: flex;
@@ -607,7 +607,7 @@ const insertionSortButton = () => {
 
   .array-bar {
     width: 10px;
-    background-color: $charcoal;
+    background-color: $gunmetal;
     display: inline-block;
     margin: 0 1px;
   }

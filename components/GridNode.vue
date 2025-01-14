@@ -63,13 +63,14 @@ const props = defineProps({
 const divRef = ref(props.ref);
 </script>
 <style lang="scss">
-@import "./assets/colors.scss";
+@use "./assets/main.scss" as *;
+
 .box {
   // animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: $alabaster;
+  border: 0.5px solid $gunmetal;
+  background-color: $white-smoke;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
@@ -82,41 +83,41 @@ const divRef = ref(props.ref);
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: $charcoal;
+  border: 0.5px solid $gunmetal;
+  background-color: $gunmetal;
 }
 .start {
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: #2a9d8f;
+  border: 0.5px solid $gunmetal;
+  background-color: $blue-munsell;
 }
 .end {
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: #e76f51;
+  border: 0.5px solid $gunmetal;
+  background-color: $chestnut;
 }
 .visited {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: $orange-yellow;
+  border: 0.5px solid $gunmetal;
+  background-color: $earth-yellow;
 }
 .path {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: $sandy-brown;
+  border: 0.5px solid $gunmetal;
+  background-color: $earth-yellow;
 }
 .fringe {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
-  border: 0.5px solid $charcoal;
-  background-color: $aqua;
+  border: 0.5px solid $gunmetal;
+  background-color: $mantis;
 }
 @media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
   .box {
