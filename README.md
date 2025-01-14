@@ -1,6 +1,6 @@
 # Algorithm-Visualizer
 
-View the live demo [here.](https://zaidsbaghal-algorithm-visualizer.netlify.app/)
+View the live demo [here.](https://algocanvas.netlify.app)
 
 This is an interactive algorithm visualizer that allows you to see first-hand how these algorithms look step-by-step. 
 The algorithms implemented include: 
