@@ -91,12 +91,14 @@ const divRef = ref(props.ref);
   height: 25px;
   border: 0.5px solid $gunmetal;
   background-color: $blue-munsell;
+  cursor: pointer;
 }
 .end {
   width: 25px;
   height: 25px;
   border: 0.5px solid $gunmetal;
   background-color: $chestnut;
+  cursor: pointer;
 }
 .visited {
   animation: fadeIn ease 1s;
@@ -110,14 +112,14 @@ const divRef = ref(props.ref);
   width: 25px;
   height: 25px;
   border: 0.5px solid $gunmetal;
-  background-color: $earth-yellow;
+  background-color: $mantis;
 }
 .fringe {
   animation: fadeIn ease 1s;
   width: 25px;
   height: 25px;
   border: 0.5px solid $gunmetal;
-  background-color: $mantis;
+  background-color: $wheat;
 }
 @media screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) {
   .box {

@@ -4,7 +4,7 @@
       <div class="function-buttons">
         <button
           class="toolbar-button"
-          style="background-color: #e76f51"
+          style="background-color: #984334ff"
           :disabled="buttonDisable"
           v-on:click="resetGrid"
         >
@@ -12,7 +12,7 @@
         </button>
         <button
           class="toolbar-button"
-          style="background-color: #e76f51"
+          style="background-color: #984334ff"
           :disabled="buttonDisable"
           v-on:click="resetVis"
         >
