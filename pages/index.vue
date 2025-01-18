@@ -33,6 +33,27 @@
           <PathfindingView></PathfindingView>
         </div>
       </div>
+      <div class="copyright">
+        <p>
+          Built by
+          <a
+            href="https://www.zaidsbaghal.com"
+            target="_blank"
+            class="highlighted-link"
+          >
+            Zaid Baghal
+          </a>
+          for
+          <a
+            href="https://www.zaidsbaghal.com"
+            target="_blank"
+            class="highlighted-link"
+          >
+            Rawi.</a
+          >
+        </p>
+        © 2025 Rawi Studios. All rights reserved.
+      </div>
     </client-only>
   </div>
 </template>
@@ -100,6 +121,30 @@ select {
       background-color: $white-smoke;
       border: none;
       color: $gunmetal;
+    }
+  }
+
+  .copyright {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: $gunmetal;
+    opacity: 0.5;
+    line-height: 1.4;
+
+    p {
+      margin: 0;
+    }
+
+    .highlighted-link {
+      color: $gunmetal;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }
