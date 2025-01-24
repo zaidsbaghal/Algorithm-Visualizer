@@ -45,7 +45,7 @@
           </a>
           for
           <a
-            href="https://www.zaidsbaghal.com"
+            href="https://www.rawistudios.com"
             target="_blank"
             class="highlighted-link"
           >
